@@ -114,7 +114,7 @@ function handleHint() {
   const current = state.order[state.index];
   state.hintsUsedThisWord += 1;
   const hintText = document.getElementById("scramble-hint-text");
-  hintText.textContent = `רמז: ${current.definition}`;
+  hintText.textContent = `רמז: ${current.translation}`;
   hintText.classList.add("visible");
 }
 

@@ -58,7 +58,7 @@ function switchMode(mode) {
 function renderFlashcard() {
   const card = state.words[state.fcIndex];
   document.getElementById("fc-word").textContent = card.word;
-  document.getElementById("fc-def").textContent = card.definition;
+  document.getElementById("fc-def").textContent = card.translation;
   document.getElementById("fc-example").textContent = card.example;
   document.getElementById("fc-progress").textContent = `${state.fcIndex + 1} מתוך ${state.words.length}`;
   document.getElementById("flashcard").classList.remove("flipped");
@@ -129,7 +129,7 @@ function renderQuizQuestion() {
   options.forEach((opt) => {
     const btn = document.createElement("button");
     btn.className = "quiz-option";
-    btn.textContent = opt.definition;
+    btn.textContent = opt.translation;
     btn.addEventListener("click", () => handleAnswer(btn, opt, current));
     optionsEl.appendChild(btn);
   });
@@ -150,9 +150,9 @@ function handleAnswer(btn, chosen, correct) {
   } else {
     btn.classList.add("incorrect");
     allBtns.forEach((b) => {
-      if (b.textContent === correct.definition) b.classList.add("correct");
+      if (b.textContent === correct.translation) b.classList.add("correct");
     });
-    feedback.textContent = `לא נכון. התשובה הנכונה הייתה: "${correct.definition}"`;
+    feedback.textContent = `לא נכון. התשובה הנכונה הייתה: "${correct.translation}"`;
     feedback.style.color = "var(--red)";
     state.streak = 0;
   }
