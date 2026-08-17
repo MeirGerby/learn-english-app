@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Scramble - Learn English</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <a class="back-link" href="index.html">⟵ Home</a>
+  <header>
+    <h1>🔤 Word Scramble</h1>
+    <div class="stats">
+      <span id="score">Score: 0</span>
+      <span id="streak">Streak: 0</span>
+    </div>
+  </header>
+
+  <div class="category-bar">
+    <label for="category">Category:</label>
+    <select id="category"></select>
+  </div>
+
+  <main>
+    <section class="view">
+      <div class="scramble-progress">
+        <span id="scramble-progress-text">Word 1 / 10</span>
+        <div class="progress-bar"><div id="scramble-progress-fill"></div></div>
+      </div>
+
+      <p class="scramble-prompt">Unscramble the letters to find the word:</p>
+      <div class="scramble-letters" id="scramble-letters"></div>
+
+      <p class="scramble-hint-text" id="scramble-hint-text"></p>
+
+      <form id="scramble-form" autocomplete="off">
+        <input type="text" id="scramble-input" placeholder="Type your answer..." autocapitalize="off" spellcheck="false">
+        <button type="submit">Check ✓</button>
+      </form>
+
+      <div id="scramble-feedback" class="quiz-feedback"></div>
+
+      <div class="scramble-controls">
+        <button id="scramble-hint-btn">💡 Hint</button>
+        <button id="scramble-skip-btn">Skip ⟶</button>
+      </div>
+    </section>
+
+    <section id="scramble-results-view" class="view hidden">
+      <h2>Round Complete! 🎉</h2>
+      <p id="scramble-results-summary"></p>
+      <button id="scramble-restart">Play Again</button>
+    </section>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="scramble.js"></script>
+</body>
+</html>
