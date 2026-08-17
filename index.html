@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn English</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>📚 Learn English</h1>
+    <div class="stats">
+      <span id="score">Score: 0</span>
+      <span id="streak">Streak: 0</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-mode="flashcards">Flashcards</button>
+    <button class="tab-btn" data-mode="quiz">Quiz</button>
+  </nav>
+
+  <div class="category-bar">
+    <label for="category">Category:</label>
+    <select id="category"></select>
+  </div>
+
+  <main>
+    <!-- Flashcards mode -->
+    <section id="flashcards-view" class="view">
+      <div class="card-wrap">
+        <div class="card" id="flashcard">
+          <div class="card-face card-front">
+            <span class="word" id="fc-word">word</span>
+          </div>
+          <div class="card-face card-back">
+            <span class="definition" id="fc-def">definition</span>
+            <span class="example" id="fc-example">example sentence</span>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Click the card to flip</p>
+      <div class="controls">
+        <button id="fc-prev">⟵ Prev</button>
+        <span id="fc-progress">1 / 10</span>
+        <button id="fc-next">Next ⟶</button>
+      </div>
+      <div class="know-controls">
+        <button id="fc-unknown" class="btn-unknown">Still learning</button>
+        <button id="fc-known" class="btn-known">I know this ✓</button>
+      </div>
+    </section>
+
+    <!-- Quiz mode -->
+    <section id="quiz-view" class="view hidden">
+      <div class="quiz-progress">
+        <span id="quiz-progress-text">Question 1 / 10</span>
+        <div class="progress-bar"><div id="quiz-progress-fill"></div></div>
+      </div>
+      <div class="quiz-question">
+        <p class="quiz-prompt">What does this word mean?</p>
+        <h2 id="quiz-word">word</h2>
+      </div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div id="quiz-feedback" class="quiz-feedback"></div>
+      <button id="quiz-next" class="hidden">Next Question ⟶</button>
+    </section>
+
+    <!-- Results -->
+    <section id="results-view" class="view hidden">
+      <h2>Quiz Complete! 🎉</h2>
+      <p id="results-summary"></p>
+      <button id="quiz-restart">Try Again</button>
+    </section>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
