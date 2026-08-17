@@ -8,7 +8,11 @@
 </head>
 <body>
 <div class="app">
-  <a class="back-link" href="index.html">🏠 חזרה לדף הבית</a>
+  <div class="topbar">
+    <a href="index.html" class="topbar-brand">🏠 חזרה לדף הבית</a>
+    <div class="auth-bar" id="auth-bar"></div>
+  </div>
+
   <header>
     <h1>🔤 ערבוב מילים</h1>
     <div class="stats">
@@ -57,5 +61,6 @@
 
 <script src="data.js"></script>
 <script src="scramble.js"></script>
+<script type="module" src="auth-ui.js"></script>
 </body>
 </html>
