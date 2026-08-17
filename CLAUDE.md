@@ -54,3 +54,5 @@ This file contains a growing ruleset that improves agent performance over time.
 
 1. `[PROCESS]` Always initialize a git repo and push new projects to GitHub by default, without waiting to be asked - user preference stated 2026-08-17.
 2. `[PROCESS]` Always create a new branch when starting new work/features, and only merge to `main` after testing - user preference stated 2026-08-17.
+3. `[TOOL]` Always run/test this app via a local HTTP server (see `serve.ps1`), never by opening files with `file://` URLs - user preference stated 2026-08-17.
+4. `[ARCH]` Always give the user remote access from other devices via a real public host (GitHub Pages, <https://meirgerby.github.io/learn-english-app/>, enabled on `main`), not a LAN-bound local server - user preference stated 2026-08-17. Supersedes rule 3 for cross-device access; rule 3's local server is still used for dev-loop testing before pushing.
