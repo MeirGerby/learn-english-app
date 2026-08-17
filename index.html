@@ -1,40 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learn English</title>
+<title>הודיה ג'רבי - מורה לאנגלית</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
   <header class="home-header">
-    <h1>📚 Learn English</h1>
-    <p class="tagline">Build your vocabulary with flashcards, quizzes and games.</p>
+    <div class="avatar">HG</div>
+    <h1>הודיה ג'רבי</h1>
+    <p class="role">מורה לאנגלית</p>
+    <p class="bio">
+      עם 5 שנות ניסיון בהוראת אנגלית לילדים ותואר בהוראת אנגלית,
+      הודיה מלווה תלמידים בדרך מהנה ובגובה העיניים לרכישת השפה -
+      החל מאוצר מילים בסיסי ועד ביטחון אמיתי בדיבור, קריאה וכתיבה.
+    </p>
+    <div class="bio-badges">
+      <span class="badge">🎓 תואר בהוראת אנגלית</span>
+      <span class="badge">🧒 התמחות בהוראת ילדים</span>
+      <span class="badge">⭐ 5+ שנות ניסיון</span>
+    </div>
     <div class="stats">
-      <span id="score">Score: 0</span>
-      <span id="streak">Streak: 0</span>
+      <span id="score">ניקוד: 0</span>
+      <span id="streak">רצף: 0</span>
     </div>
   </header>
+
+  <p class="game-menu-title">בחרו איך להתחיל ללמוד:</p>
 
   <main class="game-menu">
     <a class="game-card" href="flashcards.html">
       <span class="game-icon">🗂️</span>
-      <span class="game-title">Flashcards &amp; Quiz</span>
-      <span class="game-desc">Flip cards to learn new words, then test yourself with a multiple-choice quiz.</span>
+      <span class="game-title">כרטיסיות וחידון</span>
+      <span class="game-desc">הפכו כרטיסיות כדי ללמוד מילים חדשות, ואז התאמנו עם חידון אמריקאי.</span>
     </a>
 
     <a class="game-card" href="scramble.html">
       <span class="game-icon">🔤</span>
-      <span class="game-title">Word Scramble</span>
-      <span class="game-desc">Unscramble the jumbled letters to guess the word before you run out of hints.</span>
+      <span class="game-title">ערבוב מילים</span>
+      <span class="game-desc">סדרו מחדש את האותיות המעורבבות כדי לגלות את המילה לפני שנגמרים הרמזים.</span>
     </a>
   </main>
 </div>
 
 <script>
-  document.getElementById("score").textContent = `Score: ${localStorage.getItem("eng-score") || 0}`;
-  document.getElementById("streak").textContent = `Streak: ${localStorage.getItem("eng-streak") || 0}`;
+  document.getElementById("score").textContent = `ניקוד: ${localStorage.getItem("eng-score") || 0}`;
+  document.getElementById("streak").textContent = `רצף: ${localStorage.getItem("eng-streak") || 0}`;
 </script>
 </body>
 </html>

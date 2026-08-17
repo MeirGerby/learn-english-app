@@ -67,6 +67,57 @@ header h1 {
   max-width: 380px;
 }
 
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), #7c6ff0);
+  color: white;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.home-header .role {
+  color: var(--primary-dark);
+  font-weight: 700;
+  margin: 0;
+}
+
+.home-header .bio {
+  color: var(--muted);
+  margin: 4px 0 0;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.bio-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0 4px;
+}
+
+.badge {
+  background: #e9eaf7;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.game-menu-title {
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
 .game-menu {
   display: flex;
   flex-direction: column;
