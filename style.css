@@ -545,3 +545,136 @@ header h1 {
   header h1 { font-size: 1.2rem; }
   .card { height: 190px; }
 }
+
+/* Generic utility */
+.hidden { display: none; }
+
+/* Auth topbar (login/register/admin pages) */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.topbar-brand {
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.05rem;
+}
+
+.auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.auth-email {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.auth-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-primary {
+  background: var(--primary);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+.auth-primary:hover {
+  text-decoration: none;
+  background: var(--primary-dark);
+}
+
+.auth-logout {
+  color: var(--red);
+}
+
+/* Login / register forms */
+.auth-page {
+  max-width: 360px;
+  margin: 40px auto 0;
+}
+
+.auth-page h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.auth-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.auth-form input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.auth-form button {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-form button:hover {
+  background: var(--primary-dark);
+}
+
+.form-error {
+  color: var(--red);
+  font-size: 0.85rem;
+  min-height: 18px;
+  margin: 4px 0 0;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.auth-switch a {
+  color: var(--primary);
+  font-weight: 600;
+}

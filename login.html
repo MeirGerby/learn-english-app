@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>התחברות - Learn English</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <a href="index.html" class="topbar-brand">📚 Learn English</a>
+    <div class="auth-bar" id="auth-bar"></div>
+  </div>
+
+  <main class="auth-page">
+    <h1>התחברות</h1>
+    <form id="login-form" class="auth-form">
+      <label for="login-email">אימייל</label>
+      <input type="email" id="login-email" required autocomplete="email">
+
+      <label for="login-password">סיסמה</label>
+      <input type="password" id="login-password" required autocomplete="current-password">
+
+      <p id="login-error" class="form-error"></p>
+
+      <button type="submit">התחברות</button>
+    </form>
+    <p class="auth-switch">אין לכם חשבון? <a href="register.html">הרשמה</a></p>
+  </main>
+</div>
+
+<script type="module" src="auth-ui.js"></script>
+<script type="module" src="login.js"></script>
+</body>
+</html>

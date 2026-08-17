@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.token.email in ['meirg2001@gmail.com', 'hodayashalom1@gmail.com'];
+    }
+
+    // Admin improvement/feedback log - only the two admin accounts may
+    // read, create, or delete entries. Regular signed-in users have no
+    // access to this collection at all.
+    match /feedback/{feedbackId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Everything else is denied by default (no other rules match).
+  }
+}

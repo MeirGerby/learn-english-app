@@ -8,6 +8,11 @@
 </head>
 <body>
 <div class="app">
+  <div class="topbar">
+    <a href="index.html" class="topbar-brand">📚 Learn English</a>
+    <div class="auth-bar" id="auth-bar"></div>
+  </div>
+
   <header class="home-header">
     <div class="avatar">HG</div>
     <h1>הודיה ג'רבי</h1>
@@ -49,5 +54,6 @@
   document.getElementById("score").textContent = `ניקוד: ${localStorage.getItem("eng-score") || 0}`;
   document.getElementById("streak").textContent = `רצף: ${localStorage.getItem("eng-streak") || 0}`;
 </script>
+<script type="module" src="auth-ui.js"></script>
 </body>
 </html>
