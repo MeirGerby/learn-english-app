@@ -109,7 +109,6 @@ function setupQuiz() {
   state.quizIndex = 0;
   state.quizCorrectCount = 0;
   views.results.classList.add("hidden");
-  views.quiz.classList.remove("hidden");
   renderQuizQuestion();
 }
 
