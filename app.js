@@ -22,15 +22,15 @@ const views = {
 function saveStats() {
   localStorage.setItem("eng-score", state.score);
   localStorage.setItem("eng-streak", state.streak);
-  document.getElementById("score").textContent = `Score: ${state.score}`;
-  document.getElementById("streak").textContent = `Streak: ${state.streak}`;
+  document.getElementById("score").textContent = `ניקוד: ${state.score}`;
+  document.getElementById("streak").textContent = `רצף: ${state.streak}`;
 }
 
 function populateCategories() {
   Object.keys(WORD_DATA).forEach((key) => {
     const opt = document.createElement("option");
     opt.value = key;
-    opt.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    opt.textContent = CATEGORY_LABELS[key] || key;
     categorySelect.appendChild(opt);
   });
   categorySelect.value = state.category;
@@ -60,7 +60,7 @@ function renderFlashcard() {
   document.getElementById("fc-word").textContent = card.word;
   document.getElementById("fc-def").textContent = card.definition;
   document.getElementById("fc-example").textContent = card.example;
-  document.getElementById("fc-progress").textContent = `${state.fcIndex + 1} / ${state.words.length}`;
+  document.getElementById("fc-progress").textContent = `${state.fcIndex + 1} מתוך ${state.words.length}`;
   document.getElementById("flashcard").classList.remove("flipped");
   state.flipped = false;
 }
@@ -115,7 +115,7 @@ function setupQuiz() {
 function renderQuizQuestion() {
   const total = state.quizOrder.length;
   const current = state.quizOrder[state.quizIndex];
-  document.getElementById("quiz-progress-text").textContent = `Question ${state.quizIndex + 1} / ${total}`;
+  document.getElementById("quiz-progress-text").textContent = `שאלה ${state.quizIndex + 1} מתוך ${total}`;
   document.getElementById("quiz-progress-fill").style.width = `${(state.quizIndex / total) * 100}%`;
   document.getElementById("quiz-word").textContent = current.word;
   document.getElementById("quiz-feedback").textContent = "";
@@ -142,7 +142,7 @@ function handleAnswer(btn, chosen, correct) {
   const feedback = document.getElementById("quiz-feedback");
   if (chosen.word === correct.word) {
     btn.classList.add("correct");
-    feedback.textContent = "Correct! ✓";
+    feedback.textContent = "נכון! ✓";
     feedback.style.color = "var(--green)";
     state.score += 10;
     state.streak += 1;
@@ -152,7 +152,7 @@ function handleAnswer(btn, chosen, correct) {
     allBtns.forEach((b) => {
       if (b.textContent === correct.definition) b.classList.add("correct");
     });
-    feedback.textContent = `Incorrect. The answer was: "${correct.definition}"`;
+    feedback.textContent = `לא נכון. התשובה הנכונה הייתה: "${correct.definition}"`;
     feedback.style.color = "var(--red)";
     state.streak = 0;
   }
@@ -174,7 +174,7 @@ function showResults() {
   views.results.classList.remove("hidden");
   const total = state.quizOrder.length;
   document.getElementById("results-summary").textContent =
-    `You got ${state.quizCorrectCount} out of ${total} correct.`;
+    `ענית נכון על ${state.quizCorrectCount} מתוך ${total} שאלות.`;
 }
 
 document.getElementById("quiz-restart").addEventListener("click", setupQuiz);

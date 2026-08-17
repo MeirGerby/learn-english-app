@@ -16,15 +16,15 @@ const resultsView = document.getElementById("scramble-results-view");
 function saveStats() {
   localStorage.setItem("eng-score", state.score);
   localStorage.setItem("eng-streak", state.streak);
-  document.getElementById("score").textContent = `Score: ${state.score}`;
-  document.getElementById("streak").textContent = `Streak: ${state.streak}`;
+  document.getElementById("score").textContent = `ניקוד: ${state.score}`;
+  document.getElementById("streak").textContent = `רצף: ${state.streak}`;
 }
 
 function populateCategories() {
   Object.keys(WORD_DATA).forEach((key) => {
     const opt = document.createElement("option");
     opt.value = key;
-    opt.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    opt.textContent = CATEGORY_LABELS[key] || key;
     categorySelect.appendChild(opt);
   });
   categorySelect.value = state.category;
@@ -63,7 +63,7 @@ function renderWord() {
   const current = state.order[state.index];
   state.hintsUsedThisWord = 0;
 
-  document.getElementById("scramble-progress-text").textContent = `Word ${state.index + 1} / ${total}`;
+  document.getElementById("scramble-progress-text").textContent = `מילה ${state.index + 1} מתוך ${total}`;
   document.getElementById("scramble-progress-fill").style.width = `${(state.index / total) * 100}%`;
   document.getElementById("scramble-letters").textContent = scrambleWord(current.word);
   document.getElementById("scramble-hint-text").textContent = "";
@@ -88,13 +88,13 @@ function handleSubmit(e) {
     state.score += points;
     state.streak += 1;
     state.correctCount += 1;
-    feedback.textContent = `Correct! +${points} points ✓`;
+    feedback.textContent = `נכון! +${points} נקודות ✓`;
     feedback.style.color = "var(--green)";
     input.disabled = true;
     saveStats();
     setTimeout(advance, 900);
   } else {
-    feedback.textContent = "Not quite, try again!";
+    feedback.textContent = "לא בדיוק, נסו שוב!";
     feedback.style.color = "var(--red)";
     state.streak = 0;
     saveStats();
@@ -114,14 +114,14 @@ function handleHint() {
   const current = state.order[state.index];
   state.hintsUsedThisWord += 1;
   const hintText = document.getElementById("scramble-hint-text");
-  hintText.textContent = `Hint: ${current.definition}`;
+  hintText.textContent = `רמז: ${current.definition}`;
   hintText.classList.add("visible");
 }
 
 function handleSkip() {
   const current = state.order[state.index];
   const feedback = document.getElementById("scramble-feedback");
-  feedback.textContent = `The word was: ${current.word}`;
+  feedback.textContent = `המילה הייתה: ${current.word}`;
   feedback.style.color = "var(--red)";
   state.streak = 0;
   saveStats();
@@ -133,7 +133,7 @@ function showResults() {
   mainView.classList.add("hidden");
   resultsView.classList.remove("hidden");
   document.getElementById("scramble-results-summary").textContent =
-    `You unscrambled ${state.correctCount} out of ${state.order.length} words correctly.`;
+    `פתרתם נכון ${state.correctCount} מתוך ${state.order.length} מילים.`;
 }
 
 document.getElementById("scramble-form").addEventListener("submit", handleSubmit);
