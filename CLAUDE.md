@@ -51,3 +51,6 @@ This file contains a growing ruleset that improves agent performance over time.
 ## Learned Rules
 
 <!-- New rules are appended below this line. Do not edit above this section. -->
+
+1. `[PROCESS]` Always initialize a git repo and push new projects to GitHub by default, without waiting to be asked - user preference stated 2026-08-17.
+2. `[PROCESS]` Always create a new branch when starting new work/features, and only merge to `main` after testing - user preference stated 2026-08-17.
