@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
-import { LevelBadge } from "@/components/LevelBadge";
+import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
-import { loadWords, getCategoryKeys, getCategoryLevel, shuffle } from "@/lib/wordsDb";
+import { usePlacement } from "@/hooks/usePlacement";
+import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -14,12 +15,17 @@ import { cn } from "@/lib/utils";
 const ROUND_SIZE = 12;
 const TIME_PER_QUESTION_MS = 6000;
 const POINTS_PER_CORRECT = 15;
-// Speed Round pulls from every category (not just advanced ones) per user
-// request - more variety, useful as a fast-recall drill at any level.
+// Speed Round spans every band's categories, not just one tier - per
+// earlier user request for more variety as a fast-recall drill. Now that
+// band-gating exists, "every category" means every category the user has
+// unlocked; individual categories still lock per their band like
+// everywhere else (see CATEGORIES + unlockedCategories below).
 const CATEGORIES = getCategoryKeys();
 
 export default function SpeedRoundPage() {
   const { score, streak, recordLocal } = useGameScore();
+  const { unlockedBand } = usePlacement();
+  const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState<WordEntry[]>([]);
@@ -121,7 +127,6 @@ export default function SpeedRoundPage() {
   }
 
   const current = order[index];
-  const isAdvanced = getCategoryLevel(category) === "advanced";
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
@@ -129,13 +134,13 @@ export default function SpeedRoundPage() {
       <GameHeader
         title={
           <>
-            ⏱️ סבב מהיר {isAdvanced && <LevelBadge />}
+            ⏱️ סבב מהיר <BandBadge band={getCategoryBand(category)} />
           </>
         }
         score={score}
         streak={streak}
       />
-      <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} />
+      <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} unlockedCategories={unlockedCategories} />
 
       {loading ? (
         <p className="text-center text-muted-foreground text-sm">טוען מילים...</p>

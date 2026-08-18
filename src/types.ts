@@ -14,7 +14,10 @@ export type CategoryKey =
   | "phrasalVerbs"
   | "advancedVocab";
 
-export type CategoryLevel = "beginner" | "advanced";
+// 3-tier difficulty system modeled on the Cambridge-style band convention
+// used by Israeli schools: Band 1 (beginner), Band 2 (intermediate),
+// Band 3 (advanced). Every category is tagged with exactly one band.
+export type Band = 1 | 2 | 3;
 
 export interface RoundsCompleted {
   quiz?: number;
@@ -31,6 +34,12 @@ export interface UserStats {
   bestStreak: number;
   roundsCompleted: RoundsCompleted;
   achievements: string[];
+  // Set once the user completes the placement test; determines which
+  // bands are unlocked across all games. Absent until they take it.
+  placementBand?: Band;
+  placementScore?: number;
+  placementTotalQuestions?: number;
+  placementCompletedAt?: number;
 }
 
 export interface Achievement {

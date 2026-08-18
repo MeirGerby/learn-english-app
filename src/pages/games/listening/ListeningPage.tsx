@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
-import { LevelBadge } from "@/components/LevelBadge";
+import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
-import { loadWords, getAdvancedCategoryKeys, shuffle } from "@/lib/wordsDb";
+import { usePlacement } from "@/hooks/usePlacement";
+import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -13,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 const ROUND_SIZE = 10;
-const CATEGORIES = getAdvancedCategoryKeys();
+const CATEGORIES = getCategoryKeysForBand(3);
 const speechSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
 function speak(text: string) {
@@ -31,6 +33,8 @@ function normalize(text: string): string {
 
 export default function ListeningPage() {
   const { score, streak, recordLocal } = useGameScore();
+  const { unlockedBand, loading: placementLoading } = usePlacement();
+  const gameLocked = !placementLoading && unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<WordEntry[]>([]);
@@ -119,16 +123,35 @@ export default function ListeningPage() {
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
-      <TopBar backTo={{ href: "/", label: "🏠 חזרה לדף הבית" }} />
+      <TopBar backTo={{ href: "/games", label: "🏠 חזרה למשחקים" }} />
       <GameHeader
         title={
           <>
-            🎧 אתגר האזנה <LevelBadge />
+            🎧 אתגר האזנה <BandBadge band={3} />
           </>
         }
         score={score}
         streak={streak}
       />
+
+      {gameLocked ? (
+        <section className="text-center py-10">
+          <p className="text-4xl mb-3">🔒</p>
+          <h2 className="text-primary font-bold text-xl mb-2">משחק זה דורש רמה 3 - מתקדם</h2>
+          <p className="text-muted-foreground mb-6">
+            עברו את מבחן הרמה בהצלחה גבוהה יותר, או תרגלו במשחקים אחרים כדי להתקדם לרמה המתקדמת.
+          </p>
+          <div className="flex gap-2.5 justify-center">
+            <Link to="/placement-test">
+              <Button>מבחן רמה</Button>
+            </Link>
+            <Link to="/games">
+              <Button variant="outline">חזרה למשחקים</Button>
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <>
       <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} />
 
       {!speechSupported && (
@@ -192,6 +215,8 @@ export default function ListeningPage() {
             </div>
           </section>
         )
+      )}
+        </>
       )}
     </div>
   );
