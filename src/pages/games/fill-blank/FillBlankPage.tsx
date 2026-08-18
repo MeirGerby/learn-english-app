@@ -4,6 +4,7 @@ import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
+import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
@@ -137,7 +138,7 @@ export default function FillBlankPage() {
           <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
         </section>
       ) : (
-        current && (
+        current ? (
           <section>
             <div className="mb-5">
               <span className="text-sm text-muted-foreground">
@@ -180,6 +181,8 @@ export default function FillBlankPage() {
               </p>
             )}
           </section>
+        ) : (
+          <EmptyGameState />
         )
       )}
         </>

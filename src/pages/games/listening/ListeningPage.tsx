@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { EmptyGameState } from "@/components/EmptyGameState";
 
 const ROUND_SIZE = 10;
 const CATEGORIES = getCategoryKeysForBand(3);
@@ -170,51 +171,51 @@ export default function ListeningPage() {
           </p>
           <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
         </section>
-      ) : (
-        current && (
-          <section>
-            <div className="mb-5">
-              <span className="text-sm text-muted-foreground">
-                מילה {index + 1} מתוך {order.length}
-              </span>
-              <Progress value={(index / order.length) * 100} className="mt-1.5" />
-            </div>
+      ) : current ? (
+        <section>
+          <div className="mb-5">
+            <span className="text-sm text-muted-foreground">
+              מילה {index + 1} מתוך {order.length}
+            </span>
+            <Progress value={(index / order.length) * 100} className="mt-1.5" />
+          </div>
 
-            <p className="text-center text-muted-foreground mb-2">הקשיבו וכתבו את מה ששמעתם:</p>
-            <Button
-              type="button"
-              className="block mx-auto mb-5 rounded-full px-8 py-6 text-lg"
-              onClick={() => speak(current.word)}
-            >
-              🔊 השמיעו
+          <p className="text-center text-muted-foreground mb-2">הקשיבו וכתבו את מה ששמעתם:</p>
+          <Button
+            type="button"
+            className="block mx-auto mb-5 rounded-full px-8 py-6 text-lg"
+            onClick={() => speak(current.word)}
+          >
+            🔊 השמיעו
+          </Button>
+
+          <form onSubmit={handleSubmit} className="flex gap-2.5 mb-3">
+            <Input
+              ref={inputRef}
+              dir="ltr"
+              autoCapitalize="off"
+              spellCheck={false}
+              placeholder="הקלידו כאן..."
+              value={input}
+              disabled={disabled}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <Button type="submit">בדיקה ✓</Button>
+          </form>
+
+          {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
+
+          <div className="flex gap-2.5">
+            <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
+              💡 רמז (תרגום)
             </Button>
-
-            <form onSubmit={handleSubmit} className="flex gap-2.5 mb-3">
-              <Input
-                ref={inputRef}
-                dir="ltr"
-                autoCapitalize="off"
-                spellCheck={false}
-                placeholder="הקלידו כאן..."
-                value={input}
-                disabled={disabled}
-                onChange={(e) => setInput(e.target.value)}
-              />
-              <Button type="submit">בדיקה ✓</Button>
-            </form>
-
-            {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
-
-            <div className="flex gap-2.5">
-              <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
-                💡 רמז (תרגום)
-              </Button>
-              <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
-                דלגו
-              </Button>
-            </div>
-          </section>
-        )
+            <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
+              דלגו
+            </Button>
+          </div>
+        </section>
+      ) : (
+        <EmptyGameState />
       )}
         </>
       )}
