@@ -11,7 +11,7 @@
     <script>
       // Decode the path re-encoded by public/404.html's SPA redirect trick.
       (function (l) {
-        if (l.search[1] === "p" && l.search[2] === "=") {
+        if (l.search[1] === "/") {
           var decoded = l.search
             .slice(1)
             .split("&")
