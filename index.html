@@ -1,86 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>הודיה ג'רבי - מורה לאנגלית</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="app">
-  <div class="topbar">
-    <a href="index.html" class="topbar-brand">📚 Learn English</a>
-    <div class="auth-bar" id="auth-bar"></div>
-  </div>
-
-  <header class="home-header">
-    <div class="avatar">HG</div>
-    <h1>הודיה ג'רבי</h1>
-    <p class="role">מורה לאנגלית</p>
-    <p class="bio">
-      עם 5 שנות ניסיון בהוראת אנגלית לילדים ותואר בהוראת אנגלית,
-      הודיה מלווה תלמידים בדרך מהנה ובגובה העיניים לרכישת השפה -
-      החל מאוצר מילים בסיסי ועד ביטחון אמיתי בדיבור, קריאה וכתיבה.
-    </p>
-    <div class="bio-badges">
-      <span class="badge">🎓 תואר בהוראת אנגלית</span>
-      <span class="badge">🧒 התמחות בהוראת ילדים</span>
-      <span class="badge">⭐ 5+ שנות ניסיון</span>
-    </div>
-    <div class="stats">
-      <span id="score">ניקוד: 0</span>
-      <span id="streak">רצף: 0</span>
-    </div>
-  </header>
-
-  <p class="game-menu-title">בחרו איך להתחיל ללמוד:</p>
-
-  <main class="game-menu">
-    <a class="game-card" href="flashcards.html">
-      <span class="game-icon">🗂️</span>
-      <span class="game-title">כרטיסיות וחידון</span>
-      <span class="game-desc">הפכו כרטיסיות כדי ללמוד מילים חדשות, ואז התאמנו עם חידון אמריקאי.</span>
-    </a>
-
-    <a class="game-card" href="scramble.html">
-      <span class="game-icon">🔤</span>
-      <span class="game-title">ערבוב מילים</span>
-      <span class="game-desc">סדרו מחדש את האותיות המעורבבות כדי לגלות את המילה לפני שנגמרים הרמזים.</span>
-    </a>
-
-    <a class="game-card" href="fill-blank.html">
-      <span class="level-badge">רמה מתקדמת</span>
-      <span class="game-icon">✏️</span>
-      <span class="game-title">השלמת משפטים</span>
-      <span class="game-desc">השלימו את המילה החסרה במשפט - ניבים, פעלים דו-מיליים ואוצר מילים מתקדם.</span>
-    </a>
-
-    <a class="game-card" href="listening.html">
-      <span class="level-badge">רמה מתקדמת</span>
-      <span class="game-icon">🎧</span>
-      <span class="game-title">אתגר האזנה</span>
-      <span class="game-desc">הקשיבו למילה או לניב וכתבו את מה ששמעתם - תרגול הבנת הנשמע.</span>
-    </a>
-
-    <a class="game-card" href="speed-round.html">
-      <span class="level-badge">רמה מתקדמת</span>
-      <span class="game-icon">⏱️</span>
-      <span class="game-title">סבב מהיר</span>
-      <span class="game-desc">ענו נכון כמה שיותר מהר לפני שהזמן נגמר - חידון קצב למתקדמים.</span>
-    </a>
-  </main>
-
-  <section class="achievements-section hidden" id="achievements-section">
-    <p class="achievements-title" id="achievements-title">ההישגים שלי</p>
-    <div class="achievements-row" id="achievements-row"></div>
-  </section>
-</div>
-
-<script>
-  document.getElementById("score").textContent = `ניקוד: ${localStorage.getItem("eng-score") || 0}`;
-  document.getElementById("streak").textContent = `רצף: ${localStorage.getItem("eng-streak") || 0}`;
-</script>
-<script type="module" src="auth-ui.js"></script>
-<script type="module" src="home-stats.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>הודיה ג'רבי - מורה לאנגלית</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Decode the path re-encoded by public/404.html's SPA redirect trick.
+      (function (l) {
+        if (l.search[1] === "p" && l.search[2] === "=") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(null, "", l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

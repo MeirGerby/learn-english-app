@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Learn English</title>
+    <script>
+      // GitHub Pages SPA redirect trick: it can only serve real files, so a
+      // direct navigation/refresh on a client-side route (e.g.
+      // /learn-english-app/games/flashcards) 404s here. Re-encode the path
+      // into a query string and redirect to index.html, which decodes it
+      // back via history.replaceState (see the inline script in index.html).
+      var segmentCount = 1; // "/learn-english-app"
+      var l = window.location;
+      var path = l.pathname.split("/").slice(1).slice(segmentCount).join("/");
+      l.replace(
+        l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") +
+        l.pathname.split("/").slice(0, 1 + segmentCount).join("/") + "/" +
+        "?p=/" + path.replace(/&/g, "~and~") + l.search.replace(/^\?/, "&").replace(/&/g, "~and~") + l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

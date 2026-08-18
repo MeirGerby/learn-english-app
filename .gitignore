@@ -2,3 +2,7 @@
 Thumbs.db
 node_modules/
 gemini-comparison/
+dist/
+*.tsbuildinfo
+.env
+.env.local
