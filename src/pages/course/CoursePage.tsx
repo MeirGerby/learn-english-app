@@ -1,0 +1,131 @@
+import { useEffect, useState, type FormEvent } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  addCourseItem,
+  deleteCourseItem,
+  getYouTubeEmbedUrl,
+  subscribeToCourseContent,
+} from "@/lib/courseContent";
+import { TopBar } from "@/components/TopBar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+interface CourseItem {
+  id: string;
+  type: "video" | "image";
+  url: string;
+  caption: string;
+}
+
+export default function CoursePage() {
+  const { user, admin, loading } = useAuth();
+  const [items, setItems] = useState<CourseItem[]>([]);
+  const [type, setType] = useState<"video" | "image">("video");
+  const [url, setUrl] = useState("");
+  const [caption, setCaption] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    return subscribeToCourseContent(setItems);
+  }, [user]);
+
+  async function handleAdd(e: FormEvent) {
+    e.preventDefault();
+    if (!url.trim()) return;
+    await addCourseItem({ type, url: url.trim(), caption: caption.trim() });
+    setUrl("");
+    setCaption("");
+  }
+
+  if (loading) {
+    return (
+      <div className="app mx-auto max-w-xl w-full px-4 py-6">
+        <TopBar />
+        <p className="text-center text-muted-foreground py-12">בודק הרשאות...</p>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  return (
+    <div className="app mx-auto max-w-xl w-full px-4 py-6">
+      <TopBar backTo={{ href: "/", label: "🏠 חזרה לדף הבית" }} />
+
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold mb-1">🎓 הקורס של הודיה</h1>
+        <p className="text-muted-foreground text-sm">סרטונים ותמונות מהקורס יופיעו כאן.</p>
+      </header>
+
+      {admin && (
+        <section className="bg-card border rounded-xl p-5 mb-8 shadow-sm">
+          <h2 className="font-semibold mb-3">הוספת תוכן</h2>
+          <form onSubmit={handleAdd} className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <Button type="button" variant={type === "video" ? "default" : "outline"} className="flex-1" onClick={() => setType("video")}>
+                🎬 סרטון
+              </Button>
+              <Button type="button" variant={type === "image" ? "default" : "outline"} className="flex-1" onClick={() => setType("image")}>
+                🖼️ תמונה
+              </Button>
+            </div>
+            <div>
+              <Label htmlFor="course-url" className="text-muted-foreground text-sm">
+                {type === "video" ? "קישור לסרטון (YouTube או קישור ישיר ל-mp4)" : "קישור לתמונה"}
+              </Label>
+              <Input id="course-url" dir="ltr" required value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="course-caption" className="text-muted-foreground text-sm">
+                כיתוב (רשות)
+              </Label>
+              <Input id="course-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1" />
+            </div>
+            <Button type="submit" className="self-start">
+              הוספה
+            </Button>
+          </form>
+        </section>
+      )}
+
+      {items.length === 0 ? (
+        <p className="text-center text-muted-foreground py-12">עדיין אין תוכן בקורס. חזרו לבדוק בקרוב!</p>
+      ) : (
+        <div className="flex flex-col gap-5">
+          {items.map((item) => {
+            const embedUrl = item.type === "video" ? getYouTubeEmbedUrl(item.url) : null;
+            return (
+              <div key={item.id} className="bg-card border rounded-xl overflow-hidden shadow-sm">
+                {item.type === "image" ? (
+                  <img src={item.url} alt={item.caption || ""} className="w-full h-auto" />
+                ) : embedUrl ? (
+                  <div className="aspect-video">
+                    <iframe
+                      src={embedUrl}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption
+                  <video src={item.url} controls className="w-full h-auto" />
+                )}
+                <div className="p-3 flex items-center justify-between gap-2">
+                  <p className="text-sm text-muted-foreground m-0">{item.caption}</p>
+                  {admin && (
+                    <Button variant="outline" size="sm" onClick={() => deleteCourseItem(item.id)}>
+                      מחיקה
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}

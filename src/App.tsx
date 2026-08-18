@@ -3,6 +3,8 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import AdminPage from "@/pages/admin/AdminPage";
+import CoursePage from "@/pages/course/CoursePage";
+import GamesListPage from "@/pages/games/GamesListPage";
 import FlashcardsPage from "@/pages/games/flashcards/FlashcardsPage";
 import ScramblePage from "@/pages/games/scramble/ScramblePage";
 import FillBlankPage from "@/pages/games/fill-blank/FillBlankPage";
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/course" element={<CoursePage />} />
+        <Route path="/games" element={<GamesListPage />} />
         <Route path="/games/flashcards" element={<FlashcardsPage />} />
         <Route path="/games/scramble" element={<ScramblePage />} />
         <Route path="/games/fill-blank" element={<FillBlankPage />} />

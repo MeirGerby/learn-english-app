@@ -40,3 +40,11 @@ export interface Achievement {
   descHe: string;
   check: (stats: UserStats) => boolean;
 }
+
+export interface CourseItem {
+  id: string;
+  type: "video" | "image";
+  url: string;
+  caption: string;
+  createdAt: number;
+}
