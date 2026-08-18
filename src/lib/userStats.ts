@@ -139,6 +139,9 @@ async function checkAchievements(): Promise<string[]> {
 
   if (newlyUnlocked.length) {
     await setDoc(ref, { achievements: arrayUnion(...newlyUnlocked) }, { merge: true });
+    window.dispatchEvent(
+      new CustomEvent("achievement-unlocked", { detail: { ids: newlyUnlocked } })
+    );
   }
   return newlyUnlocked;
 }
