@@ -32,6 +32,13 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Course content (videos/images for Hodaya's course). Any signed-in
+    // user may view it - only admins may add/remove items.
+    match /courseContent/{itemId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
     // Everything else is denied by default (no other rules match).
   }
 }
