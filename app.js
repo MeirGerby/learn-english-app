@@ -1,3 +1,5 @@
+const QUIZ_SESSION_SIZE = 10;
+
 const state = {
   mode: "flashcards",
   category: "basics",
@@ -105,7 +107,7 @@ function shuffle(arr) {
 }
 
 function setupQuiz() {
-  state.quizOrder = shuffle(state.words);
+  state.quizOrder = shuffle(state.words).slice(0, Math.min(QUIZ_SESSION_SIZE, state.words.length));
   state.quizIndex = 0;
   state.quizCorrectCount = 0;
   views.results.classList.add("hidden");

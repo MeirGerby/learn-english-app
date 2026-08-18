@@ -1,3 +1,5 @@
+const SCRAMBLE_SESSION_SIZE = 10;
+
 const state = {
   category: "basics",
   words: [],
@@ -50,7 +52,13 @@ function scrambleWord(word) {
 
 function startRound() {
   state.words = WORD_DATA[state.category];
-  state.order = shuffle(state.words);
+  // Multi-word phrases (e.g. "ask for", "a lot of") don't work as a letter
+  // scramble - their spaces/slashes get shuffled into nonsense. Prefer
+  // single-word entries for this game; fall back to the full list only if
+  // a category has too few single words to fill a session.
+  const singleWordCandidates = state.words.filter((w) => !/[\s/]/.test(w.word));
+  const pool = singleWordCandidates.length >= SCRAMBLE_SESSION_SIZE ? singleWordCandidates : state.words;
+  state.order = shuffle(pool).slice(0, Math.min(SCRAMBLE_SESSION_SIZE, pool.length));
   state.index = 0;
   state.correctCount = 0;
   resultsView.classList.add("hidden");
