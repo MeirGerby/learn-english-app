@@ -103,6 +103,7 @@ export default function ScramblePage() {
       setFeedback({ text: "לא בדיוק, נסו שוב!", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      inputRef.current?.select();
     }
   }
 

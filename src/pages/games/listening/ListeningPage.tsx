@@ -105,6 +105,7 @@ export default function ListeningPage() {
       setFeedback({ text: "לא בדיוק, נסו שוב! (או האזינו שוב)", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      inputRef.current?.select();
     }
   }
 
