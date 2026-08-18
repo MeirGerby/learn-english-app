@@ -1,0 +1,197 @@
+import { useEffect, useRef, useState } from "react";
+import { TopBar } from "@/components/TopBar";
+import { GameHeader } from "@/components/GameHeader";
+import { CategorySelect } from "@/components/CategorySelect";
+import { LevelBadge } from "@/components/LevelBadge";
+import { useGameScore } from "@/hooks/useGameScore";
+import { loadWords, getCategoryKeys, getCategoryLevel, shuffle } from "@/lib/wordsDb";
+import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
+import type { CategoryKey, WordEntry } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+
+const ROUND_SIZE = 12;
+const TIME_PER_QUESTION_MS = 6000;
+const POINTS_PER_CORRECT = 15;
+// Speed Round pulls from every category (not just advanced ones) per user
+// request - more variety, useful as a fast-recall drill at any level.
+const CATEGORIES = getCategoryKeys();
+
+export default function SpeedRoundPage() {
+  const { score, streak, recordLocal } = useGameScore();
+  const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
+  const [loading, setLoading] = useState(true);
+  const [pool, setPool] = useState<WordEntry[]>([]);
+  const [order, setOrder] = useState<WordEntry[]>([]);
+  const [index, setIndex] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [options, setOptions] = useState<WordEntry[]>([]);
+  const [answered, setAnswered] = useState<WordEntry | null>(null);
+  const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [roundKey, setRoundKey] = useState(0);
+  const [timerKey, setTimerKey] = useState(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerFillRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    loadWords(category).then((words) => {
+      if (cancelled) return;
+      const nextOrder = shuffle(words).slice(0, Math.min(ROUND_SIZE, words.length));
+      setPool(words);
+      setOrder(nextOrder);
+      setIndex(0);
+      setCorrectCount(0);
+      setShowResults(false);
+      setLoading(false);
+      if (nextOrder.length) startQuestion(nextOrder[0], words);
+    });
+    return () => {
+      cancelled = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, roundKey]);
+
+  function buildOptions(current: WordEntry, words: WordEntry[]) {
+    const wrong = shuffle(words.filter((w) => w.word !== current.word)).slice(0, 3);
+    return shuffle([current, ...wrong]);
+  }
+
+  function startQuestion(word: WordEntry, words: WordEntry[]) {
+    setAnswered(null);
+    setFeedback(null);
+    setOptions(buildOptions(word, words));
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setTimerKey((k) => k + 1);
+    timeoutRef.current = setTimeout(() => handleTimeout(word), TIME_PER_QUESTION_MS);
+  }
+
+  useEffect(() => {
+    const el = timerFillRef.current;
+    if (!el) return;
+    el.style.transition = "none";
+    el.style.width = "100%";
+    void el.offsetWidth;
+    el.style.transition = `width ${TIME_PER_QUESTION_MS}ms linear`;
+    el.style.width = "0%";
+  }, [timerKey]);
+
+  function advance() {
+    const next = index + 1;
+    if (next >= order.length) {
+      setShowResults(true);
+      recordGameCompleted("speedRound");
+      return;
+    }
+    setIndex(next);
+    startQuestion(order[next], pool);
+  }
+
+  function handleTimeout(current: WordEntry) {
+    setAnswered((prev) => prev ?? current); // marks answered without a chosen option
+    setFeedback({ text: `הזמן נגמר! התשובה הנכונה: "${current.translation}"`, color: "text-red-600" });
+    recordLocal(0, false);
+    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    setTimeout(advance, 1200);
+  }
+
+  function handleAnswer(opt: WordEntry) {
+    if (answered) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const current = order[index];
+    const isCorrect = opt.word === current.word;
+    setAnswered(opt);
+    recordLocal(POINTS_PER_CORRECT, isCorrect);
+    if (isCorrect) setCorrectCount((c) => c + 1);
+    setFeedback(
+      isCorrect
+        ? { text: "נכון! ✓", color: "text-green-600" }
+        : { text: `לא נכון. התשובה הנכונה: "${current.translation}"`, color: "text-red-600" }
+    );
+    recordAnswer({
+      points: isCorrect ? POINTS_PER_CORRECT : 0,
+      correct: isCorrect,
+      currentStreak: isCorrect ? streak + 1 : 0,
+    });
+    setTimeout(advance, 900);
+  }
+
+  const current = order[index];
+  const isAdvanced = getCategoryLevel(category) === "advanced";
+
+  return (
+    <div className="app mx-auto max-w-xl w-full px-4 py-6">
+      <TopBar backTo={{ href: "/", label: "🏠 חזרה לדף הבית" }} />
+      <GameHeader
+        title={
+          <>
+            ⏱️ סבב מהיר {isAdvanced && <LevelBadge />}
+          </>
+        }
+        score={score}
+        streak={streak}
+      />
+      <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} />
+
+      {loading ? (
+        <p className="text-center text-muted-foreground text-sm">טוען מילים...</p>
+      ) : showResults ? (
+        <section className="text-center py-10">
+          <h2 className="text-primary font-bold text-xl mb-2">הסבב הושלם! 🎉</h2>
+          <p className="text-muted-foreground mb-6">
+            ענית נכון על {correctCount} מתוך {order.length} שאלות.
+          </p>
+          <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+        </section>
+      ) : (
+        current && (
+          <section>
+            <div className="mb-3">
+              <span className="text-sm text-muted-foreground">
+                שאלה {index + 1} מתוך {order.length}
+              </span>
+              <Progress value={(index / order.length) * 100} className="mt-1.5" />
+            </div>
+
+            <div className="h-1.5 bg-muted rounded-full mb-5 overflow-hidden">
+              <div ref={timerFillRef} className="h-full bg-primary w-full" />
+            </div>
+
+            <div className="text-center mb-6">
+              <p className="text-muted-foreground mb-1.5">מה המשמעות של המילה?</p>
+              <h2 className="text-3xl text-primary font-bold m-0">{current.word}</h2>
+            </div>
+
+            <div className="flex flex-col gap-2.5">
+              {options.map((opt) => {
+                const isThisCorrect = opt.word === current.word;
+                const isAnswered = !!answered;
+                return (
+                  <button
+                    key={opt.word}
+                    disabled={isAnswered}
+                    onClick={() => handleAnswer(opt)}
+                    className={cn(
+                      "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",
+                      !isAnswered && "hover:bg-accent cursor-pointer",
+                      isAnswered && isThisCorrect && "bg-green-100 border-green-500 text-green-700 font-semibold",
+                      isAnswered && !isThisCorrect && answered && opt.word === answered.word && "bg-red-100 border-red-500 text-red-700 font-semibold"
+                    )}
+                  >
+                    {opt.translation}
+                  </button>
+                );
+              })}
+            </div>
+
+            {feedback && <p className={cn("text-center font-semibold mt-3.5", feedback.color)}>{feedback.text}</p>}
+          </section>
+        )
+      )}
+    </div>
+  );
+}
