@@ -9,6 +9,8 @@ export type CategoryKey =
   | "food"
   | "travel"
   | "business"
+  | "technology"
+  | "society"
   | "foundation"
   | "idioms"
   | "phrasalVerbs"
