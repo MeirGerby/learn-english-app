@@ -41,6 +41,7 @@ export default function ScramblePage() {
   const [hint, setHint] = useState<string | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -61,7 +62,8 @@ export default function ScramblePage() {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, roundKey]);
 
   function startWord(word: WordEntry) {
     setScrambled(scrambleWord(word.word));
@@ -137,7 +139,7 @@ export default function ScramblePage() {
           <p className="text-muted-foreground mb-6">
             פתרתם נכון {correctCount} מתוך {order.length} מילים.
           </p>
-          <Button onClick={() => startWord(order[0])}>שחקו שוב</Button>
+          <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
         </section>
       ) : (
         order.length > 0 && (
