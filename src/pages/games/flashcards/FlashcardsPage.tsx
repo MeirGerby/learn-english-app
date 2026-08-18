@@ -160,11 +160,22 @@ export default function FlashcardsPage() {
             <section>
               <div className="[perspective:1200px] mb-3">
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={flipped}
                   className={cn(
-                    "relative h-56 rounded-2xl cursor-pointer transition-transform duration-500 shadow-lg [transform-style:preserve-3d]",
+                    "relative h-56 rounded-2xl cursor-pointer transition-transform duration-500 shadow-lg [transform-style:preserve-3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     flipped && "[transform:rotateY(180deg)]"
                   )}
                   onClick={() => setFlipped((f) => !f)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      if (event.key === " ") {
+                        event.preventDefault();
+                      }
+                      setFlipped((f) => !f);
+                    }
+                  }}
                 >
                   <div className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] bg-gradient-to-br from-primary to-indigo-400 text-white">
                     <span className="text-3xl font-bold">{card.word}</span>
