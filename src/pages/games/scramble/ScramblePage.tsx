@@ -3,6 +3,7 @@ import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
+import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
@@ -139,51 +140,51 @@ export default function ScramblePage() {
           </p>
           <Button onClick={() => startWord(order[0])}>שחקו שוב</Button>
         </section>
+      ) : order.length > 0 ? (
+        <section>
+          <div className="mb-5">
+            <span className="text-sm text-muted-foreground">
+              מילה {index + 1} מתוך {order.length}
+            </span>
+            <Progress value={(index / order.length) * 100} className="mt-1.5" />
+          </div>
+
+          <p className="text-center text-muted-foreground mb-2">סדרו את האותיות כדי לגלות את המילה:</p>
+          <div className="text-center text-3xl font-extrabold tracking-widest text-primary bg-card border rounded-2xl py-5 px-2.5 mb-3 ltr:direction-ltr" dir="ltr">
+            {scrambled}
+          </div>
+
+          <p className={cn("min-h-5 text-center italic text-muted-foreground text-sm mb-3 transition-opacity", hint ? "opacity-100" : "opacity-0")}>
+            {hint}
+          </p>
+
+          <form onSubmit={handleSubmit} className="flex gap-2.5 mb-3">
+            <Input
+              ref={inputRef}
+              dir="ltr"
+              autoCapitalize="off"
+              spellCheck={false}
+              placeholder="הקלידו את התשובה..."
+              value={input}
+              disabled={disabled}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <Button type="submit">בדיקה ✓</Button>
+          </form>
+
+          {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
+
+          <div className="flex gap-2.5">
+            <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
+              💡 רמז
+            </Button>
+            <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
+              דלגו
+            </Button>
+          </div>
+        </section>
       ) : (
-        order.length > 0 && (
-          <section>
-            <div className="mb-5">
-              <span className="text-sm text-muted-foreground">
-                מילה {index + 1} מתוך {order.length}
-              </span>
-              <Progress value={(index / order.length) * 100} className="mt-1.5" />
-            </div>
-
-            <p className="text-center text-muted-foreground mb-2">סדרו את האותיות כדי לגלות את המילה:</p>
-            <div className="text-center text-3xl font-extrabold tracking-widest text-primary bg-card border rounded-2xl py-5 px-2.5 mb-3 ltr:direction-ltr" dir="ltr">
-              {scrambled}
-            </div>
-
-            <p className={cn("min-h-5 text-center italic text-muted-foreground text-sm mb-3 transition-opacity", hint ? "opacity-100" : "opacity-0")}>
-              {hint}
-            </p>
-
-            <form onSubmit={handleSubmit} className="flex gap-2.5 mb-3">
-              <Input
-                ref={inputRef}
-                dir="ltr"
-                autoCapitalize="off"
-                spellCheck={false}
-                placeholder="הקלידו את התשובה..."
-                value={input}
-                disabled={disabled}
-                onChange={(e) => setInput(e.target.value)}
-              />
-              <Button type="submit">בדיקה ✓</Button>
-            </form>
-
-            {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
-
-            <div className="flex gap-2.5">
-              <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
-                💡 רמז
-              </Button>
-              <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
-                דלגו
-              </Button>
-            </div>
-          </section>
-        )
+        <EmptyGameState />
       )}
     </div>
   );

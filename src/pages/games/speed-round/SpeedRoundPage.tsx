@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
+import { EmptyGameState } from "@/components/EmptyGameState";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
@@ -152,50 +153,50 @@ export default function SpeedRoundPage() {
           </p>
           <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
         </section>
+      ) : current ? (
+        <section>
+          <div className="mb-3">
+            <span className="text-sm text-muted-foreground">
+              שאלה {index + 1} מתוך {order.length}
+            </span>
+            <Progress value={(index / order.length) * 100} className="mt-1.5" />
+          </div>
+
+          <div className="h-1.5 bg-muted rounded-full mb-5 overflow-hidden">
+            <div ref={timerFillRef} className="h-full bg-primary w-full" />
+          </div>
+
+          <div className="text-center mb-6">
+            <p className="text-muted-foreground mb-1.5">מה המשמעות של המילה?</p>
+            <h2 className="text-3xl text-primary font-bold m-0">{current.word}</h2>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            {options.map((opt) => {
+              const isThisCorrect = opt.word === current.word;
+              const isAnswered = !!answered;
+              return (
+                <button
+                  key={opt.word}
+                  disabled={isAnswered}
+                  onClick={() => handleAnswer(opt)}
+                  className={cn(
+                    "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",
+                    !isAnswered && "hover:bg-accent cursor-pointer",
+                    isAnswered && isThisCorrect && "bg-green-100 border-green-500 text-green-700 font-semibold",
+                    isAnswered && !isThisCorrect && answered && opt.word === answered.word && "bg-red-100 border-red-500 text-red-700 font-semibold"
+                  )}
+                >
+                  {opt.translation}
+                </button>
+              );
+            })}
+          </div>
+
+          {feedback && <p className={cn("text-center font-semibold mt-3.5", feedback.color)}>{feedback.text}</p>}
+        </section>
       ) : (
-        current && (
-          <section>
-            <div className="mb-3">
-              <span className="text-sm text-muted-foreground">
-                שאלה {index + 1} מתוך {order.length}
-              </span>
-              <Progress value={(index / order.length) * 100} className="mt-1.5" />
-            </div>
-
-            <div className="h-1.5 bg-muted rounded-full mb-5 overflow-hidden">
-              <div ref={timerFillRef} className="h-full bg-primary w-full" />
-            </div>
-
-            <div className="text-center mb-6">
-              <p className="text-muted-foreground mb-1.5">מה המשמעות של המילה?</p>
-              <h2 className="text-3xl text-primary font-bold m-0">{current.word}</h2>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              {options.map((opt) => {
-                const isThisCorrect = opt.word === current.word;
-                const isAnswered = !!answered;
-                return (
-                  <button
-                    key={opt.word}
-                    disabled={isAnswered}
-                    onClick={() => handleAnswer(opt)}
-                    className={cn(
-                      "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",
-                      !isAnswered && "hover:bg-accent cursor-pointer",
-                      isAnswered && isThisCorrect && "bg-green-100 border-green-500 text-green-700 font-semibold",
-                      isAnswered && !isThisCorrect && answered && opt.word === answered.word && "bg-red-100 border-red-500 text-red-700 font-semibold"
-                    )}
-                  >
-                    {opt.translation}
-                  </button>
-                );
-              })}
-            </div>
-
-            {feedback && <p className={cn("text-center font-semibold mt-3.5", feedback.color)}>{feedback.text}</p>}
-          </section>
-        )
+        <EmptyGameState />
       )}
     </div>
   );
