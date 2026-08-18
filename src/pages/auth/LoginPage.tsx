@@ -20,17 +20,22 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (isSubmitting) return;
     setError("");
+    setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (err) {
       const code = (err as AuthError).code;
       setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -59,8 +64,8 @@ export default function LoginPage() {
 
           <p className="text-destructive text-sm min-h-[18px] mt-1">{error}</p>
 
-          <Button type="submit" className="mt-4">
-            התחברות
+          <Button type="submit" className="mt-4" disabled={isSubmitting}>
+            {isSubmitting ? "מתחברים..." : "התחברות"}
           </Button>
         </form>
         <p className="text-center mt-4 text-muted-foreground text-sm">
