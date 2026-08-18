@@ -1,14 +1,17 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getCategoryLabel } from "@/lib/wordsDb";
+import { getBandLabel, getCategoryBand, getCategoryLabel } from "@/lib/wordsDb";
 import type { CategoryKey } from "@/types";
 
 interface CategorySelectProps {
   categories: CategoryKey[];
   value: CategoryKey;
   onChange: (value: CategoryKey) => void;
+  // If provided, categories not in this list render disabled/locked
+  // instead of being selectable (band-gating).
+  unlockedCategories?: CategoryKey[];
 }
 
-export function CategorySelect({ categories, value, onChange }: CategorySelectProps) {
+export function CategorySelect({ categories, value, onChange, unlockedCategories }: CategorySelectProps) {
   return (
     <div className="flex items-center gap-2 mb-5 text-sm text-muted-foreground">
       <label htmlFor="category">קטגוריה:</label>
@@ -17,11 +20,14 @@ export function CategorySelect({ categories, value, onChange }: CategorySelectPr
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {categories.map((key) => (
-            <SelectItem key={key} value={key}>
-              {getCategoryLabel(key)}
-            </SelectItem>
-          ))}
+          {categories.map((key) => {
+            const locked = !!unlockedCategories && !unlockedCategories.includes(key);
+            return (
+              <SelectItem key={key} value={key} disabled={locked}>
+                {locked ? `🔒 ${getCategoryLabel(key)} (${getBandLabel(getCategoryBand(key))})` : getCategoryLabel(key)}
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
     </div>

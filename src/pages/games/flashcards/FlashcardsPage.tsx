@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
-import { LevelBadge } from "@/components/LevelBadge";
+import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
-import { loadWords, getCategoryKeys, getCategoryLevel, shuffle } from "@/lib/wordsDb";
+import { usePlacement } from "@/hooks/usePlacement";
+import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,8 @@ function buildOptions(current: WordEntry, pool: WordEntry[]): WordEntry[] {
 
 export default function FlashcardsPage() {
   const { score, streak, recordLocal } = useGameScore();
+  const { unlockedBand } = usePlacement();
+  const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>("basics");
   const [words, setWords] = useState<WordEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,7 +118,6 @@ export default function FlashcardsPage() {
   }
 
   const currentQuizWord = quizOrder[quizIndex];
-  const isAdvanced = getCategoryLevel(category) === "advanced";
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
@@ -124,14 +126,14 @@ export default function FlashcardsPage() {
       <GameHeader
         title={
           <>
-            🗂️ כרטיסיות וחידון {isAdvanced && <LevelBadge />}
+            🗂️ כרטיסיות וחידון <BandBadge band={getCategoryBand(category)} />
           </>
         }
         score={score}
         streak={streak}
       />
 
-      <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} />
+      <CategorySelect categories={CATEGORIES} value={category} onChange={setCategory} unlockedCategories={unlockedCategories} />
 
       {loading ? (
         <p className="text-center text-muted-foreground text-sm">טוען מילים...</p>

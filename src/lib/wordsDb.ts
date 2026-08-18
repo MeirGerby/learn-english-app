@@ -1,7 +1,13 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
-import { WORD_DATA, CATEGORY_LABELS, CATEGORY_LEVELS } from "@/data/wordData";
-import type { CategoryKey, WordEntry } from "@/types";
+import { WORD_DATA, CATEGORY_LABELS, CATEGORY_BANDS } from "@/data/wordData";
+import type { Band, CategoryKey, WordEntry } from "@/types";
+
+const BAND_LABELS: Record<Band, string> = {
+  1: "רמה 1 - בסיס",
+  2: "רמה 2 - בינוני",
+  3: "רמה 3 - מתקדם",
+};
 
 const FETCH_TIMEOUT_MS = 5000;
 
@@ -43,16 +49,22 @@ export function getCategoryLabel(key: CategoryKey): string {
   return CATEGORY_LABELS[key] ?? key;
 }
 
-export function getCategoryLevel(key: CategoryKey): "beginner" | "advanced" {
-  return CATEGORY_LEVELS[key] ?? "beginner";
+export function getCategoryBand(key: CategoryKey): Band {
+  return CATEGORY_BANDS[key] ?? 1;
 }
 
-export function getAdvancedCategoryKeys(): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryLevel(key) === "advanced");
+export function getBandLabel(band: Band): string {
+  return BAND_LABELS[band];
 }
 
-export function getBeginnerCategoryKeys(): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryLevel(key) === "beginner");
+export function getCategoryKeysForBand(band: Band): CategoryKey[] {
+  return getCategoryKeys().filter((key) => getCategoryBand(key) === band);
+}
+
+// Every category at or below the given band - what a user placed into
+// that band has unlocked.
+export function getCategoryKeysUpToBand(maxBand: Band): CategoryKey[] {
+  return getCategoryKeys().filter((key) => getCategoryBand(key) <= maxBand);
 }
 
 export function shuffle<T>(arr: T[]): T[] {

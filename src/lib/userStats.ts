@@ -1,7 +1,7 @@
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { increment } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import type { Achievement, UserStats } from "@/types";
+import type { Achievement, Band, UserStats } from "@/types";
 
 // Achievements are computed from cumulative userStats fields. Add new ones
 // here; existing users automatically unlock them next time they play.
@@ -93,6 +93,24 @@ export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: R
   }
 
   await checkAchievements();
+}
+
+// Saves the result of the placement test, which determines the bands
+// unlocked across every game. No-op for anonymous visitors - they can
+// take the test but the result only persists once they're signed in.
+export async function savePlacementResult(band: Band, score: number, totalQuestions: number) {
+  const user = auth.currentUser;
+  if (!user) return;
+  await setDoc(
+    statsDocRef(user.uid),
+    {
+      placementBand: band,
+      placementScore: score,
+      placementTotalQuestions: totalQuestions,
+      placementCompletedAt: Date.now(),
+    },
+    { merge: true }
+  );
 }
 
 export type GameKey = "quiz" | "scramble" | "fillBlank" | "listening" | "speedRound";
