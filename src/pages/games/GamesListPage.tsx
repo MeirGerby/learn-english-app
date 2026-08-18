@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { BandBadge } from "@/components/BandBadge";
@@ -49,6 +50,7 @@ const GAMES: { href: string; icon: string; title: string; desc: string; minBand:
 export default function GamesListPage() {
   const { stats, loading, loggedIn } = useAchievements();
   const { user, admin, unlockedBand, loading: placementLoading } = usePlacement();
+  const [expandedAchievementId, setExpandedAchievementId] = useState<string | null>(null);
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
@@ -108,17 +110,30 @@ export default function GamesListPage() {
           <div className="flex flex-wrap justify-center gap-2">
             {ACHIEVEMENTS.map((ach) => {
               const unlocked = stats?.achievements?.includes(ach.id) ?? false;
+              const isExpanded = expandedAchievementId === ach.id;
+              const descId = `achievement-desc-${ach.id}`;
               return (
-                <span
-                  key={ach.id}
-                  title={ach.descHe}
-                  className={cn(
-                    "text-sm font-semibold px-3 py-1.5 rounded-full border",
-                    unlocked ? "bg-amber-50 border-amber-200 text-amber-800" : "bg-muted border-border text-muted-foreground opacity-60"
+                <div key={ach.id} className="flex flex-col items-center gap-1 max-w-[9rem]">
+                  <button
+                    type="button"
+                    title={ach.descHe}
+                    aria-expanded={isExpanded}
+                    aria-controls={descId}
+                    onClick={() => setExpandedAchievementId(isExpanded ? null : ach.id)}
+                    className={cn(
+                      "text-sm font-semibold px-3 py-1.5 rounded-full border transition-colors",
+                      unlocked ? "bg-amber-50 border-amber-200 text-amber-800" : "bg-muted border-border text-muted-foreground opacity-60",
+                      isExpanded && "ring-2 ring-primary"
+                    )}
+                  >
+                    {ach.icon} {ach.nameHe}
+                  </button>
+                  {isExpanded && (
+                    <p id={descId} className="text-xs text-muted-foreground text-center">
+                      {ach.descHe}
+                    </p>
                   )}
-                >
-                  {ach.icon} {ach.nameHe}
-                </span>
+                </div>
               );
             })}
           </div>
