@@ -1,3 +1,6 @@
+import { loadWords, getCategoryKeys, getCategoryLabel } from "./words-db.js";
+import { recordAnswer, recordGameCompleted } from "./user-stats.js";
+
 const SCRAMBLE_SESSION_SIZE = 10;
 
 const state = {
@@ -12,7 +15,9 @@ const state = {
 };
 
 const categorySelect = document.getElementById("category");
-const mainView = document.querySelector("main .view");
+const loadingMessage = document.getElementById("loading-message");
+const gameArea = document.getElementById("game-area");
+const mainView = document.querySelector("#game-area .view");
 const resultsView = document.getElementById("scramble-results-view");
 
 function saveStats() {
@@ -23,10 +28,10 @@ function saveStats() {
 }
 
 function populateCategories() {
-  Object.keys(WORD_DATA).forEach((key) => {
+  getCategoryKeys().forEach((key) => {
     const opt = document.createElement("option");
     opt.value = key;
-    opt.textContent = CATEGORY_LABELS[key] || key;
+    opt.textContent = getCategoryLabel(key);
     categorySelect.appendChild(opt);
   });
   categorySelect.value = state.category;
@@ -50,8 +55,12 @@ function scrambleWord(word) {
   return scrambled;
 }
 
-function startRound() {
-  state.words = WORD_DATA[state.category];
+async function startRound() {
+  loadingMessage.classList.remove("hidden");
+  gameArea.classList.add("hidden");
+
+  const words = await loadWords(state.category);
+  state.words = words;
   // Multi-word phrases (e.g. "ask for", "a lot of") don't work as a letter
   // scramble - their spaces/slashes get shuffled into nonsense. Prefer
   // single-word entries for this game; fall back to the full list only if
@@ -61,6 +70,9 @@ function startRound() {
   state.order = shuffle(pool).slice(0, Math.min(SCRAMBLE_SESSION_SIZE, pool.length));
   state.index = 0;
   state.correctCount = 0;
+
+  loadingMessage.classList.add("hidden");
+  gameArea.classList.remove("hidden");
   resultsView.classList.add("hidden");
   mainView.classList.remove("hidden");
   renderWord();
@@ -100,12 +112,14 @@ function handleSubmit(e) {
     feedback.style.color = "var(--green)";
     input.disabled = true;
     saveStats();
+    recordAnswer({ points, correct: true, currentStreak: state.streak });
     setTimeout(advance, 900);
   } else {
     feedback.textContent = "לא בדיוק, נסו שוב!";
     feedback.style.color = "var(--red)";
     state.streak = 0;
     saveStats();
+    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
   }
 }
 
@@ -142,6 +156,7 @@ function showResults() {
   resultsView.classList.remove("hidden");
   document.getElementById("scramble-results-summary").textContent =
     `פתרתם נכון ${state.correctCount} מתוך ${state.order.length} מילים.`;
+  recordGameCompleted("scramble");
 }
 
 document.getElementById("scramble-form").addEventListener("submit", handleSubmit);

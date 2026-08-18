@@ -47,7 +47,33 @@
       <span class="game-title">ערבוב מילים</span>
       <span class="game-desc">סדרו מחדש את האותיות המעורבבות כדי לגלות את המילה לפני שנגמרים הרמזים.</span>
     </a>
+
+    <a class="game-card" href="fill-blank.html">
+      <span class="level-badge">רמה מתקדמת</span>
+      <span class="game-icon">✏️</span>
+      <span class="game-title">השלמת משפטים</span>
+      <span class="game-desc">השלימו את המילה החסרה במשפט - ניבים, פעלים דו-מיליים ואוצר מילים מתקדם.</span>
+    </a>
+
+    <a class="game-card" href="listening.html">
+      <span class="level-badge">רמה מתקדמת</span>
+      <span class="game-icon">🎧</span>
+      <span class="game-title">אתגר האזנה</span>
+      <span class="game-desc">הקשיבו למילה או לניב וכתבו את מה ששמעתם - תרגול הבנת הנשמע.</span>
+    </a>
+
+    <a class="game-card" href="speed-round.html">
+      <span class="level-badge">רמה מתקדמת</span>
+      <span class="game-icon">⏱️</span>
+      <span class="game-title">סבב מהיר</span>
+      <span class="game-desc">ענו נכון כמה שיותר מהר לפני שהזמן נגמר - חידון קצב למתקדמים.</span>
+    </a>
   </main>
+
+  <section class="achievements-section hidden" id="achievements-section">
+    <p class="achievements-title" id="achievements-title">ההישגים שלי</p>
+    <div class="achievements-row" id="achievements-row"></div>
+  </section>
 </div>
 
 <script>
@@ -55,5 +81,6 @@
   document.getElementById("streak").textContent = `רצף: ${localStorage.getItem("eng-streak") || 0}`;
 </script>
 <script type="module" src="auth-ui.js"></script>
+<script type="module" src="home-stats.js"></script>
 </body>
 </html>

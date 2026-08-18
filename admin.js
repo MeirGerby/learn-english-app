@@ -9,6 +9,7 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
+  writeBatch,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 const guardMessage = document.getElementById("admin-guard-message");
@@ -100,3 +101,48 @@ function subscribeFeedback() {
     });
   });
 }
+
+// --- Word database import (one-time / re-runnable) ---
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+async function importWords() {
+  const btn = document.getElementById("import-words-btn");
+  const status = document.getElementById("import-status");
+  btn.disabled = true;
+  status.textContent = "מתחיל ייבוא...";
+
+  const entries = [];
+  Object.entries(window.WORD_DATA).forEach(([category, words]) => {
+    words.forEach((w) => entries.push({ ...w, category }));
+  });
+
+  const BATCH_LIMIT = 450;
+  let written = 0;
+
+  try {
+    for (let i = 0; i < entries.length; i += BATCH_LIMIT) {
+      const chunk = entries.slice(i, i + BATCH_LIMIT);
+      const batch = writeBatch(db);
+      chunk.forEach((entry) => {
+        const id = `${entry.category}__${slugify(entry.word)}`;
+        batch.set(doc(db, "words", id), entry);
+      });
+      await batch.commit();
+      written += chunk.length;
+      status.textContent = `מייבא... ${written} / ${entries.length}`;
+    }
+    status.textContent = `✓ הייבוא הושלם! ${written} מילים יובאו בהצלחה.`;
+  } catch (err) {
+    status.textContent = `שגיאה בייבוא: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("import-words-btn").addEventListener("click", importWords);

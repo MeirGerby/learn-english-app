@@ -202,6 +202,38 @@
     padding: 3rem 1rem;
   }
 
+  .admin-card-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+  }
+
+  #import-words-btn {
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  #import-words-btn:hover {
+    background-color: var(--primary-dark);
+  }
+
+  #import-words-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  #import-status {
+    margin: 0.75rem 0 0;
+  }
+
   /* Responsive layout overrides */
   @media (max-width: 480px) {
     .admin-container {
@@ -265,10 +297,21 @@
         <h2 class="section-heading">משובים ונושאים לטיפול</h2>
         <ul id="feedback-list" class="feedback-list"></ul>
       </section>
+
+      <section class="admin-card">
+        <h2 class="section-heading">ייבוא מילים למאגר הנתונים</h2>
+        <p class="admin-card-desc">
+          מעביר את כל רשימות המילים לבסיס הנתונים (Firestore), כדי שהמשחקים ישתמשו בו במקום ברשימה המקומית.
+          אפשר להריץ שוב בבטחה - מילים קיימות יתעדכנו ולא ישוכפלו.
+        </p>
+        <button id="import-words-btn" type="button">📥 ייבוא מילים</button>
+        <p id="import-status" class="admin-card-desc"></p>
+      </section>
     </div>
   </main>
 </div>
 
+<script src="data.js"></script>
 <script type="module" src="auth-ui.js"></script>
 <script type="module" src="admin.js"></script>
 </body>

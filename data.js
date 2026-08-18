@@ -646,7 +646,90 @@ const WORD_DATA = {
   { word: "young", translation: "צעיר", example: "The young puppy plays all day." },
   { word: "your", translation: "שלך", example: "Where is your bag?" },
   { word: "drive", translation: "לנהוג", example: "He drives to work every day." }
-  ]
+  ],
+  idioms: [
+    { word: "break the ice", translation: "לשבור את הקרח", example: "The host told a lighthearted joke at the beginning of the seminar to break the ice among the international participants." },
+    { word: "piece of cake", translation: "עניין של מה בכך", example: "Given her extensive background in software engineering, passing the entry-level coding exam was a piece of cake." },
+    { word: "under the weather", translation: "לא להרגיש טוב", example: "Although she was feeling slightly under the weather, she managed to deliver her presentation seamlessly." },
+    { word: "hit the books", translation: "לשקוד על הלימודים", example: "With final exams approaching next week, the medical students had no choice but to hit the books immediately." },
+    { word: "once in a blue moon", translation: "לעיתים רחוקות מאוד", example: "Living abroad means he only gets to visit his hometown once in a blue moon." },
+    { word: "cost an arm and a leg", translation: "לעלות הון תועפות", example: "Renovating the historic property according to modern safety standards cost an arm and a leg." },
+    { word: "let the cat out of the bag", translation: "לגלות את הסוד", example: "We were planning a surprise anniversary party, but her younger brother inadvertently let the cat out of the bag." },
+    { word: "on the same page", translation: "להיות באותו ראש", example: "Before proceeding with the acquisition, the board members needed to ensure they were all on the same page." },
+    { word: "spill the beans", translation: "לגלות סוד", example: "Despite intense pressure during the interview, the former executive refused to spill the beans about the confidential project." },
+    { word: "the ball is in your court", translation: "הכדור בידיים שלך", example: "I have submitted all the required documentation, so now the ball is in their court." },
+    { word: "bite the bullet", translation: "לבלוע את הגלולה המרה", example: "Realizing that the outdated system was costing the company money, the director decided to bite the bullet and fund a complete overhaul." },
+    { word: "actions speak louder than words", translation: "מעשים מדברים חזק יותר ממילים", example: "He promised to improve his punctuality, but actions speak louder than words." },
+    { word: "better late than never", translation: "מוטב מאוחר מאשר לעולם לא", example: "She finally submitted her research paper two days after the deadline, believing it was better late than never." },
+    { word: "get out of hand", translation: "לצאת מכלל שליטה", example: "Security was called when the protest began to get out of hand near the parliament building." },
+    { word: "hit the nail on the head", translation: "לפגוע בול", example: "Her analysis of the market trends hit the nail on the head, accurately predicting the upcoming recession." },
+    { word: "kill two birds with one stone", translation: "להרוג שתי ציפורים במכה אחת", example: "By attending the conference in Berlin, he managed to network with potential clients and visit his family, killing two birds with one stone." },
+    { word: "miss the boat", translation: "להחמיץ את ההזדמנות", example: "Investors who hesitated to buy tech stocks early last year completely missed the boat." },
+    { word: "pull yourself together", translation: "להתעשת", example: "Despite the unexpected crisis, the team manager had to pull himself together and make a rational decision." },
+    { word: "see eye to eye", translation: "לראות עין בעין", example: "Although they are close friends, they rarely see eye to eye when it comes to political matters." },
+    { word: "speak of the devil", translation: "מדברים על החמור", example: "We were just discussing how much Sarah enjoyed her trip, and speak of the devil, she walked into the room." },
+    { word: "take it with a grain of salt", translation: "לקחת בעירבון מוגבל", example: "Given the source\u0027s bias, you should take those rumors with a grain of salt." },
+    { word: "the best of both worlds", translation: "ליהנות מכל העולמות", example: "Working remotely from a countryside home allows her to enjoy the best of both worlds: a rewarding career and a peaceful lifestyle." },
+    { word: "time flies", translation: "הזמן טס", example: "It is hard to believe we graduated five years ago; time flies when you are pursuing your goals." },
+    { word: "when pigs fly", translation: "כשחזירים יעופו", example: "He claims he will start going to the gym every morning, but considering his sleeping habits, that will happen when pigs fly." },
+    { word: "a blessing in disguise", translation: "ברכה בתחפושת", example: "Losing that job felt devastating at first, but it turned out to be a blessing in disguise when it led her to start her own successful business." }  ],
+  phrasalVerbs: [
+    { word: "give up", translation: "לוותר", example: "Despite numerous setbacks during the experiment, the research team refused to give up." },
+    { word: "look forward to", translation: "לצפות ל...", example: "The regional directors are looking forward to reviewing the annual performance reports next month." },
+    { word: "find out", translation: "לגלות", example: "Investigators are working tirelessly to find out the root cause of the system failure." },
+    { word: "get along with", translation: "להסתדר עם", example: "A successful project manager must be able to get along with colleagues from diverse backgrounds." },
+    { word: "break down", translation: "להתפרק", example: "If the negotiations break down, both parties risk losing millions in potential revenue." },
+    { word: "bring up", translation: "להעלות נושא", example: "During the strategy session, she decided to bring up the issue of employee burnout." },
+    { word: "call off", translation: "לבטל", example: "Due to severe weather conditions, the organizers had to call off the outdoor festival." },
+    { word: "carry on", translation: "להמשיך", example: "Despite the noisy background, the speaker managed to carry on with her lecture." },
+    { word: "come across", translation: "להיתקל ב...", example: "While researching in the national archives, the historian came across a rare 18th-century manuscript." },
+    { word: "cut down on", translation: "לצמצם", example: "To meet their sustainability goals, the corporation plans to cut down on single-use plastics across all offices." },
+    { word: "deal with", translation: "ללמוד להתמודד עם", example: "The customer service department had to deal with an influx of inquiries following the software update." },
+    { word: "drop by", translation: "לקפוץ לביקור", example: "Feel free to drop by my office tomorrow afternoon if you need clarification on the assignment." },
+    { word: "end up", translation: "לסיים ב...", example: "If you don\u0027t stick to your budget, you might end up spending all your savings on non-essential items." },
+    { word: "figure out", translation: "לפענח", example: "It took the engineers several days to figure out how to bypass the security flaw." },
+    { word: "get away with", translation: "לחמוק מעונש", example: "The corrupt official thought he could get away with embezzling funds, but an internal audit exposed him." },
+    { word: "get over", translation: "להתגבר על", example: "It took her several months to get over the disappointment of not getting the promotion." },
+    { word: "go through", translation: "לעבור תהליך", example: "The company is currently going through a major restructuring process to improve efficiency." },
+    { word: "hang out", translation: "לבלות", example: "In their spare time, the researchers like to hang out at a local coffee shop to discuss non-work topics." },
+    { word: "hold on", translation: "להמתין", example: "Please hold on for a moment while I transfer your call to the department head." },
+    { word: "keep up with", translation: "לעמוד בקצב של", example: "With technology evolving so rapidly, professionals must continuously learn to keep up with industry standards." },
+    { word: "look after", translation: "לטפל ב...", example: "She took a sabbatical year to look after her elderly parents." },
+    { word: "make up", translation: "להמציא", example: "He attempted to make up an elaborate excuse for his absence, but no one believed him." },
+    { word: "put off", translation: "לדחות", example: "You shouldn\u0027t put off scheduling your annual health checkup simply because you are busy." },
+    { word: "run into", translation: "להיתקל ב...", example: "I was surprised to run into my former university professor while attending an international conference in Chicago." },
+    { word: "set up", translation: "להקים", example: "The non-profit organization was set up to provide educational resources to underprivileged communities." }  ],
+  advancedVocab: [
+    { word: "achieve", translation: "להשיג", example: "Through dedication and strategic planning, the company managed to achieve record sales this fiscal year." },
+    { word: "accomplish", translation: "להשלים בהצלחה", example: "It is remarkable how much the small team was able to accomplish within such a tight deadline." },
+    { word: "ambitious", translation: "שאפתני", example: "The city unveiled an ambitious plan to achieve carbon neutrality within the next decade." },
+    { word: "beneficial", translation: "מועיל", example: "Establishing regular communication channels proved beneficial for long-term collaboration." },
+    { word: "challenging", translation: "מאתגר", example: "Navigating the complex regulatory framework presented a challenging obstacle for the startup." },
+    { word: "collaborate", translation: "לשתף פעולה", example: "Scientists from multiple disciplines were asked to collaborate on developing sustainable energy solutions." },
+    { word: "consequence", translation: "תוצאה", example: "Failing to address climate change in a timely manner will have severe economic consequences." },
+    { word: "considerable", translation: "ניכר", example: "The research team devoted a considerable amount of time to verifying the statistical accuracy of the data." },
+    { word: "contribute", translation: "לתרום", example: "Every employee is encouraged to contribute innovative ideas to the company\u0027s weekly brainstorming sessions." },
+    { word: "convince", translation: "לשכנע", example: "The persuasive presentation failed to convince the investors to provide additional funding." },
+    { word: "curious", translation: "סקרן", example: "Her curious nature constantly drives her to explore new fields of study outside her comfort zone." },
+    { word: "determine", translation: "לקבוע", example: "The findings of the investigation will determine whether further safety measures need to be implemented." },
+    { word: "efficient", translation: "יעיל", example: "Adopting automated workflow tools enabled the team to become significantly more efficient." },
+    { word: "enormous", translation: "עצום", example: "The construction of the new transportation hub required an enormous financial investment." },
+    { word: "essential", translation: "חיוני", example: "Developing strong critical thinking skills is essential for academic success in higher education." },
+    { word: "establish", translation: "לבסס", example: "The university hopes to establish a research center dedicated to renewable energy technologies." },
+    { word: "evaluate", translation: "להעריך", example: "The panel of experts was appointed to evaluate the feasibility of the proposed urban development project." },
+    { word: "exhausted", translation: "תשוש", example: "After working a seventy-hour work week, the medical staff was visibly exhausted." },
+    { word: "fascinating", translation: "מרתק", example: "The documentary offered a fascinating glimpse into the social structure of deep-sea marine life." },
+    { word: "flexible", translation: "גמיש", example: "Modern organizations require flexible employees who can easily adapt to changing market conditions." },
+    { word: "frustrated", translation: "מתוסכל", example: "The software developers grew frustrated after encountering repeated bugs during the testing phase." },
+    { word: "generous", translation: "נדיב", example: "The university received a generous donation from an anonymous benefactor to expand its library." },
+    { word: "genuine", translation: "אמיתי", example: "His genuine interest in the welfare of his colleagues made him a highly respected manager." },
+    { word: "gradually", translation: "בהדרגה", example: "As economic stability returned, public confidence in the banking sector gradually increased." },
+    { word: "guarantee", translation: "להבטיח", example: "The manufacturer offers a five-year warranty to guarantee the reliability of its product." },
+    { word: "inevitable", translation: "בלתי נמנע", example: "In any rapidly expanding company, experiencing organizational growing pains is almost inevitable." },
+    { word: "influence", translation: "להשפיע", example: "Cultural factors can significantly influence consumer behavior in global markets." },
+    { word: "inspire", translation: "לעורר השראה", example: "The CEO\u0027s passion and visionary leadership served to inspire employees across all departments." },
+    { word: "maintain", translation: "לתחזק", example: "To maintain high quality standards, the factory conducts rigorous daily inspections of all machinery." },
+    { word: "motivate", translation: "להניע", example: "Offering performance-based bonuses is an effective strategy to motivate sales staff." }  ]
 };
 
 // Hebrew display labels for each category key.
@@ -655,5 +738,28 @@ const CATEGORY_LABELS = {
   food: "אוכל",
   travel: "טיולים",
   business: "עסקים",
-  foundation: "אוצר מילים - Band I"
+  foundation: "אוצר מילים - Band I",
+  idioms: "ניבים",
+  phrasalVerbs: "פעלים דו-מיליים",
+  advancedVocab: "אוצר מילים מתקדם"
 };
+
+// Which categories are beginner vs. advanced level (used for game badging
+// and to restrict advanced-only games to appropriate content).
+const CATEGORY_LEVELS = {
+  basics: "beginner",
+  food: "beginner",
+  travel: "beginner",
+  business: "beginner",
+  foundation: "beginner",
+  idioms: "advanced",
+  phrasalVerbs: "advanced",
+  advancedVocab: "advanced"
+};
+
+// Explicit window exposure so module scripts (which only reliably see
+// globals via `window`, not classic-script `const` bindings) can use this
+// as offline/fallback data - see words-db.js.
+window.WORD_DATA = WORD_DATA;
+window.CATEGORY_LABELS = CATEGORY_LABELS;
+window.CATEGORY_LEVELS = CATEGORY_LEVELS;

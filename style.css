@@ -678,3 +678,106 @@ header h1 {
   color: var(--primary);
   font-weight: 600;
 }
+
+/* Advanced-level badge (shown next to game titles and on home page cards) */
+.level-badge {
+  display: inline-block;
+  vertical-align: middle;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-inline-start: 8px;
+}
+
+.game-card .level-badge {
+  align-self: flex-start;
+  margin-inline-start: 0;
+  margin-bottom: 4px;
+}
+
+/* Speed Round timer bar */
+.timer-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+#sr-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--primary);
+}
+
+/* Fill in the Blank sentence display */
+.fill-blank-sentence {
+  text-align: center;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 18px;
+  margin-bottom: 20px;
+  direction: ltr;
+}
+
+/* Listening Challenge */
+.listen-play-btn {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 16px 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.listen-play-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Achievements (home page) */
+.achievements-section {
+  margin-top: 20px;
+}
+
+.achievements-title {
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0 0 10px;
+}
+
+.achievements-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.achievement-badge {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.achievement-badge.locked {
+  background: #f4f6fb;
+  border-color: var(--border);
+  color: var(--muted);
+  opacity: 0.6;
+}

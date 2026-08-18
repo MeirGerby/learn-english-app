@@ -31,7 +31,9 @@
     <select id="category"></select>
   </div>
 
-  <main>
+  <p id="loading-message" class="hint">טוען מילים...</p>
+
+  <main id="game-area" class="hidden">
     <!-- Flashcards mode -->
     <section id="flashcards-view" class="view">
       <div class="card-wrap">
@@ -82,7 +84,7 @@
 </div>
 
 <script src="data.js"></script>
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 <script type="module" src="auth-ui.js"></script>
 </body>
 </html>

@@ -1,3 +1,6 @@
+import { loadWords, getCategoryKeys, getCategoryLabel } from "./words-db.js";
+import { recordAnswer, recordGameCompleted } from "./user-stats.js";
+
 const QUIZ_SESSION_SIZE = 10;
 
 const state = {
@@ -15,6 +18,8 @@ const state = {
 
 const categorySelect = document.getElementById("category");
 const tabBtns = document.querySelectorAll(".tab-btn");
+const loadingMessage = document.getElementById("loading-message");
+const gameArea = document.getElementById("game-area");
 const views = {
   flashcards: document.getElementById("flashcards-view"),
   quiz: document.getElementById("quiz-view"),
@@ -29,19 +34,26 @@ function saveStats() {
 }
 
 function populateCategories() {
-  Object.keys(WORD_DATA).forEach((key) => {
+  getCategoryKeys().forEach((key) => {
     const opt = document.createElement("option");
     opt.value = key;
-    opt.textContent = CATEGORY_LABELS[key] || key;
+    opt.textContent = getCategoryLabel(key);
     categorySelect.appendChild(opt);
   });
   categorySelect.value = state.category;
 }
 
-function loadCategory() {
-  state.words = WORD_DATA[state.category];
+async function loadCategory() {
+  loadingMessage.classList.remove("hidden");
+  gameArea.classList.add("hidden");
+
+  state.words = await loadWords(state.category);
   state.fcIndex = 0;
   state.flipped = false;
+
+  loadingMessage.classList.add("hidden");
+  gameArea.classList.remove("hidden");
+
   renderFlashcard();
   setupQuiz();
 }
@@ -87,11 +99,16 @@ document.getElementById("fc-prev").addEventListener("click", prevFlashcard);
 
 document.getElementById("fc-known").addEventListener("click", () => {
   state.score += 1;
+  state.streak += 1;
   saveStats();
+  recordAnswer({ points: 1, correct: true, currentStreak: state.streak });
   nextFlashcard();
 });
 
 document.getElementById("fc-unknown").addEventListener("click", () => {
+  state.streak = 0;
+  saveStats();
+  recordAnswer({ points: 0, correct: false, currentStreak: 0 });
   nextFlashcard();
 });
 
@@ -142,7 +159,8 @@ function handleAnswer(btn, chosen, correct) {
   allBtns.forEach((b) => (b.disabled = true));
 
   const feedback = document.getElementById("quiz-feedback");
-  if (chosen.word === correct.word) {
+  const isCorrect = chosen.word === correct.word;
+  if (isCorrect) {
     btn.classList.add("correct");
     feedback.textContent = "נכון! ✓";
     feedback.style.color = "var(--green)";
@@ -159,6 +177,7 @@ function handleAnswer(btn, chosen, correct) {
     state.streak = 0;
   }
   saveStats();
+  recordAnswer({ points: isCorrect ? 10 : 0, correct: isCorrect, currentStreak: state.streak });
   document.getElementById("quiz-next").classList.remove("hidden");
 }
 
@@ -177,6 +196,7 @@ function showResults() {
   const total = state.quizOrder.length;
   document.getElementById("results-summary").textContent =
     `ענית נכון על ${state.quizCorrectCount} מתוך ${total} שאלות.`;
+  recordGameCompleted("quiz");
 }
 
 document.getElementById("quiz-restart").addEventListener("click", setupQuiz);

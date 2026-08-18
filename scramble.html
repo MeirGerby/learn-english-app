@@ -26,7 +26,9 @@
     <select id="category"></select>
   </div>
 
-  <main>
+  <p id="loading-message" class="hint">טוען מילים...</p>
+
+  <main id="game-area" class="hidden">
     <section class="view">
       <div class="scramble-progress">
         <span id="scramble-progress-text">מילה 1 מתוך 10</span>
@@ -60,7 +62,7 @@
 </div>
 
 <script src="data.js"></script>
-<script src="scramble.js"></script>
+<script type="module" src="scramble.js"></script>
 <script type="module" src="auth-ui.js"></script>
 </body>
 </html>
