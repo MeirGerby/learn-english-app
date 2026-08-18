@@ -12,10 +12,12 @@ import FillBlankPage from "@/pages/games/fill-blank/FillBlankPage";
 import ListeningPage from "@/pages/games/listening/ListeningPage";
 import SpeedRoundPage from "@/pages/games/speed-round/SpeedRoundPage";
 import { RequirePlacement } from "@/components/RequirePlacement";
+import { AchievementToast } from "@/components/AchievementToast";
 
 export default function App() {
   return (
     <BrowserRouter basename="/learn-english-app">
+      <AchievementToast />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
