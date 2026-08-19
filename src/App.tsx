@@ -11,12 +11,17 @@ import ScramblePage from "@/pages/games/scramble/ScramblePage";
 import FillBlankPage from "@/pages/games/fill-blank/FillBlankPage";
 import ListeningPage from "@/pages/games/listening/ListeningPage";
 import SpeedRoundPage from "@/pages/games/speed-round/SpeedRoundPage";
+import WordMatchPage from "@/pages/games/word-match/WordMatchPage";
+import TypeWordPage from "@/pages/games/type-word/TypeWordPage";
+import SentenceBuilderPage from "@/pages/games/sentence-builder/SentenceBuilderPage";
 import { RequirePlacement } from "@/components/RequirePlacement";
 import { AchievementToast } from "@/components/AchievementToast";
+import { PlacementProvider } from "@/hooks/usePlacement";
 
 export default function App() {
   return (
     <BrowserRouter basename="/learn-english-app">
+      <PlacementProvider>
       <AchievementToast />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -73,7 +78,32 @@ export default function App() {
             </RequirePlacement>
           }
         />
+        <Route
+          path="/games/word-match"
+          element={
+            <RequirePlacement>
+              <WordMatchPage />
+            </RequirePlacement>
+          }
+        />
+        <Route
+          path="/games/type-word"
+          element={
+            <RequirePlacement>
+              <TypeWordPage />
+            </RequirePlacement>
+          }
+        />
+        <Route
+          path="/games/sentence-builder"
+          element={
+            <RequirePlacement>
+              <SentenceBuilderPage />
+            </RequirePlacement>
+          }
+        />
       </Routes>
+      </PlacementProvider>
     </BrowserRouter>
   );
 }
