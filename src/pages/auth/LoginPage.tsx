@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, type AuthError } from "firebase/auth";
+import { Eye, EyeOff } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ export default function LoginPage() {
   const [resetMessage, setResetMessage] = useState("");
   const [resetError, setResetError] = useState("");
   const [resetSubmitting, setResetSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
@@ -130,15 +132,25 @@ export default function LoginPage() {
           <Label htmlFor="login-password" className="text-muted-foreground mt-2">
             סיסמה
           </Label>
-          <Input
-            id="login-password"
-            type="password"
-            required
-            autoComplete="current-password"
-            className="h-11"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              required
+              autoComplete="current-password"
+              className="h-11 pe-9"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute top-1/2 -translate-y-1/2 end-2 min-w-8 min-h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+            >
+              {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
+            </button>
+          </div>
 
           <p aria-live="polite" className="text-destructive text-sm min-h-[18px] mt-1">
             {error}
