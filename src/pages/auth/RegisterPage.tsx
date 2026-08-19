@@ -80,7 +80,9 @@ export default function RegisterPage() {
             onChange={(e) => setConfirm(e.target.value)}
           />
 
-          <p className="text-destructive text-sm min-h-[18px] mt-1">{error}</p>
+          <p aria-live="polite" className="text-destructive text-sm min-h-[18px] mt-1">
+            {error}
+          </p>
 
           <Button type="submit" className="mt-4" disabled={isSubmitting}>
             {isSubmitting ? "נרשמים..." : "הרשמה"}
