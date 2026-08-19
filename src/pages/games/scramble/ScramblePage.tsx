@@ -175,7 +175,9 @@ export default function ScramblePage() {
             <Button type="submit">בדיקה ✓</Button>
           </form>
 
-          {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
+          <p aria-live="polite" className={cn("min-h-6 text-center font-semibold mb-3", feedback?.color)}>
+            {feedback?.text}
+          </p>
 
           <div className="flex gap-2.5">
             <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
