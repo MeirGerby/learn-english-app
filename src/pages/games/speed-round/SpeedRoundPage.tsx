@@ -41,6 +41,14 @@ export default function SpeedRoundPage() {
   const [timerKey, setTimerKey] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerFillRef = useRef<HTMLDivElement>(null);
+  // Always points at the latest advance() closure. startQuestion() is
+  // called synchronously from the data-loading effect's .then(), before
+  // that render has committed - so the handleTimeout/advance it schedules
+  // via setTimeout would otherwise close over stale index/order/pool
+  // (still the initial empty state), ending the round after just one
+  // unanswered question. Routing every advance() call through this ref
+  // instead guarantees the freshest render's version always runs.
+  const advanceRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     let cancelled = false;
@@ -98,12 +106,16 @@ export default function SpeedRoundPage() {
     startQuestion(order[next], pool);
   }
 
+  useEffect(() => {
+    advanceRef.current = advance;
+  });
+
   function handleTimeout(current: WordEntry) {
     setAnswered((prev) => prev ?? current); // marks answered without a chosen option
     setFeedback({ text: `הזמן נגמר! התשובה הנכונה: "${current.translation}"`, color: "text-red-600" });
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
-    setTimeout(advance, 1200);
+    setTimeout(() => advanceRef.current(), 1200);
   }
 
   function handleAnswer(opt: WordEntry) {
@@ -124,7 +136,7 @@ export default function SpeedRoundPage() {
       correct: isCorrect,
       currentStreak: isCorrect ? streak + 1 : 0,
     });
-    setTimeout(advance, 900);
+    setTimeout(() => advanceRef.current(), 900);
   }
 
   const current = order[index];
