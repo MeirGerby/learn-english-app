@@ -51,6 +51,16 @@ export const ACHIEVEMENTS: Achievement[] = [
       (s.roundsCompleted?.listening ?? 0) > 0 &&
       (s.roundsCompleted?.speedRound ?? 0) > 0,
   },
+  {
+    id: "intermediate_explorer",
+    icon: "🧭",
+    nameHe: "חוקר/ת בינוני/ת",
+    descHe: "שיחקת בכל שלושת המשחקים ברמה הבינונית",
+    check: (s) =>
+      (s.roundsCompleted?.wordMatch ?? 0) > 0 &&
+      (s.roundsCompleted?.typeWord ?? 0) > 0 &&
+      (s.roundsCompleted?.sentenceBuilder ?? 0) > 0,
+  },
 ];
 
 function statsDocRef(uid: string) {
@@ -113,7 +123,15 @@ export async function savePlacementResult(band: Band, score: number, totalQuesti
   );
 }
 
-export type GameKey = "quiz" | "scramble" | "fillBlank" | "listening" | "speedRound";
+export type GameKey =
+  | "quiz"
+  | "scramble"
+  | "fillBlank"
+  | "listening"
+  | "speedRound"
+  | "wordMatch"
+  | "typeWord"
+  | "sentenceBuilder";
 
 // Records that the user finished one round of a game (used for the
 // "played all advanced games" achievement).

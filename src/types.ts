@@ -27,6 +27,9 @@ export interface RoundsCompleted {
   fillBlank?: number;
   listening?: number;
   speedRound?: number;
+  wordMatch?: number;
+  typeWord?: number;
+  sentenceBuilder?: number;
 }
 
 export interface UserStats {

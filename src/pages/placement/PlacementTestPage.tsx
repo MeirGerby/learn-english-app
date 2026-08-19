@@ -8,10 +8,12 @@ import { generatePlacementTest, scoreToBand, type PlacementQuestion } from "@/li
 import { savePlacementResult } from "@/lib/userStats";
 import { getBandLabel } from "@/lib/wordsDb";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlacement } from "@/hooks/usePlacement";
 import type { Band, WordEntry } from "@/types";
 
 export default function PlacementTestPage() {
   const { user, loading: authLoading } = useAuth();
+  const { applyPlacementResult } = usePlacement();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
@@ -48,6 +50,11 @@ export default function PlacementTestPage() {
         const band = scoreToBand(nextCorrect, questions.length);
         setResultBand(band);
         setDone(true);
+        // Update the shared placement state immediately - don't wait on the
+        // Firestore write below, which can be slow/time out (rule 12) and
+        // would otherwise make every other page think the test was never
+        // taken, bouncing the user right back into it.
+        applyPlacementResult(band);
         savePlacementResult(band, nextCorrect, questions.length);
         return;
       }
