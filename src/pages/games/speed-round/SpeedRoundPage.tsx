@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
@@ -163,7 +164,12 @@ export default function SpeedRoundPage() {
           <p className="text-muted-foreground mb-6">
             ענית נכון על {correctCount} מתוך {order.length} שאלות.
           </p>
-          <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+          <div className="flex gap-2.5 justify-center">
+            <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+            <Link to="/games">
+              <Button variant="outline">לרשימת המשחקים</Button>
+            </Link>
+          </div>
         </section>
       ) : current ? (
         <section>

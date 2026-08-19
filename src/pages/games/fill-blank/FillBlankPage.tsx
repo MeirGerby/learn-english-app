@@ -135,7 +135,12 @@ export default function FillBlankPage() {
           <p className="text-muted-foreground mb-6">
             ענית נכון על {correctCount} מתוך {order.length} משפטים.
           </p>
-          <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+          <div className="flex gap-2.5 justify-center">
+            <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+            <Link to="/games">
+              <Button variant="outline">לרשימת המשחקים</Button>
+            </Link>
+          </div>
         </section>
       ) : (
         current ? (

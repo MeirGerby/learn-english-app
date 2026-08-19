@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
@@ -284,7 +285,12 @@ export default function FlashcardsPage() {
               <p className="text-muted-foreground mb-6">
                 ענית נכון על {quizCorrectCount} מתוך {quizOrder.length} שאלות.
               </p>
-              <Button onClick={restartQuiz}>נסו שוב</Button>
+              <div className="flex gap-2.5 justify-center">
+                <Button onClick={restartQuiz}>נסו שוב</Button>
+                <Link to="/games">
+                  <Button variant="outline">לרשימת המשחקים</Button>
+                </Link>
+              </div>
             </section>
           )}
         </>
