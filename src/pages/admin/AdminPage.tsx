@@ -39,6 +39,7 @@ export default function AdminPage() {
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [importStatus, setImportStatus] = useState("");
   const [importing, setImporting] = useState(false);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   useEffect(() => {
     if (!admin) return;
@@ -61,14 +62,22 @@ export default function AdminPage() {
 
   async function handleSubmitFeedback(e: FormEvent) {
     e.preventDefault();
+    if (isSubmittingFeedback) return;
     const text = feedbackText.trim();
     if (!text || !user) return;
-    await addDoc(collection(db, "feedback"), {
-      text,
-      authorEmail: user.email,
-      createdAt: serverTimestamp(),
-    });
-    setFeedbackText("");
+    setIsSubmittingFeedback(true);
+    try {
+      await addDoc(collection(db, "feedback"), {
+        text,
+        authorEmail: user.email,
+        createdAt: serverTimestamp(),
+      });
+      setFeedbackText("");
+    } catch {
+      alert("שמירת המשוב נכשלה. נסו שוב.");
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
   }
 
   async function handleImportWords() {
@@ -143,8 +152,8 @@ export default function AdminPage() {
               placeholder="תארו את הבאג, הרעיון או השיפור הנדרש..."
               className="min-h-24"
             />
-            <Button type="submit" className="self-start mt-1">
-              שמירת משוב
+            <Button type="submit" className="self-start mt-1" disabled={isSubmittingFeedback}>
+              {isSubmittingFeedback ? "שומרת..." : "שמירת משוב"}
             </Button>
           </form>
         </section>
