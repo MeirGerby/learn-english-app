@@ -136,6 +136,20 @@ export default function PlacementTestPage() {
                 );
               })}
             </div>
+
+            <p
+              aria-live="polite"
+              className={cn(
+                "min-h-6 text-center font-semibold mt-3.5",
+                answered && (answered.word === current.word.word ? "text-green-600" : "text-red-600")
+              )}
+            >
+              {answered
+                ? answered.word === current.word.word
+                  ? "נכון! ✓"
+                  : `לא נכון. התשובה הנכונה: "${current.word.translation}"`
+                : ""}
+            </p>
           </section>
         )
       )}

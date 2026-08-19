@@ -22,6 +22,7 @@ interface CourseItem {
 export default function CoursePage() {
   const { user, admin, loading } = useAuth();
   const [items, setItems] = useState<CourseItem[]>([]);
+  const [contentLoading, setContentLoading] = useState(true);
   const [type, setType] = useState<"video" | "image">("video");
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
@@ -29,7 +30,10 @@ export default function CoursePage() {
 
   useEffect(() => {
     if (!user) return;
-    return subscribeToCourseContent(setItems);
+    return subscribeToCourseContent((newItems) => {
+      setItems(newItems);
+      setContentLoading(false);
+    });
   }, [user]);
 
   async function handleAdd(e: FormEvent) {
@@ -99,7 +103,9 @@ export default function CoursePage() {
         </section>
       )}
 
-      {items.length === 0 ? (
+      {contentLoading ? (
+        <p className="text-center text-muted-foreground py-12">טוען תוכן...</p>
+      ) : items.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">עדיין אין תוכן בקורס. חזרו לבדוק בקרוב!</p>
       ) : (
         <div className="flex flex-col gap-5">
