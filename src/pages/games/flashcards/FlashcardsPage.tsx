@@ -3,6 +3,7 @@ import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
+import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
@@ -156,7 +157,7 @@ export default function FlashcardsPage() {
             </Button>
           </div>
 
-          {mode === "flashcards" && card && (
+          {mode === "flashcards" && (card ? (
             <section>
               <div className="[perspective:1200px] mb-3">
                 <div
@@ -213,9 +214,11 @@ export default function FlashcardsPage() {
                 </Button>
               </div>
             </section>
-          )}
+          ) : (
+            <EmptyGameState />
+          ))}
 
-          {mode === "quiz" && !showQuizResults && currentQuizWord && (
+          {mode === "quiz" && !showQuizResults && (currentQuizWord ? (
             <section>
               <div className="mb-5">
                 <span className="text-sm text-muted-foreground">
@@ -269,7 +272,9 @@ export default function FlashcardsPage() {
                 </Button>
               )}
             </section>
-          )}
+          ) : (
+            <EmptyGameState />
+          ))}
 
           {mode === "quiz" && showQuizResults && (
             <section className="text-center py-10">
