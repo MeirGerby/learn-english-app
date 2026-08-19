@@ -42,6 +42,16 @@ export const ACHIEVEMENTS: Achievement[] = [
     check: (s) => (s.totalScore || 0) >= 500,
   },
   {
+    id: "beginner_explorer",
+    icon: "🔰",
+    nameHe: "חוקר/ת מתחיל/ה",
+    descHe: "שיחקת בכל שלושת המשחקים ברמה הבסיסית",
+    check: (s) =>
+      (s.roundsCompleted?.quiz ?? 0) > 0 &&
+      (s.roundsCompleted?.scramble ?? 0) > 0 &&
+      (s.roundsCompleted?.speedRound ?? 0) > 0,
+  },
+  {
     id: "advanced_explorer",
     icon: "🚀",
     nameHe: "חוקר/ת מתקדם/ת",
