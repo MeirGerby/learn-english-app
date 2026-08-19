@@ -186,20 +186,20 @@ export default function SentenceBuilderPage() {
                     dir="ltr"
                     disabled={!!result}
                     onClick={() => returnChip(id)}
-                    className="rounded-lg border bg-primary/10 border-primary px-3 py-1.5 text-sm"
+                    className="rounded-lg border bg-primary/10 border-primary px-3.5 py-2.5 text-sm min-h-11"
                   >
                     {tokens[id]}
                   </button>
                 ))}
               </div>
 
-              <div dir="ltr" className="flex flex-wrap gap-2 mb-3 min-h-10">
+              <div dir="ltr" className="flex flex-wrap gap-2 mb-3 min-h-11">
                 {bankIds.map((id) => (
                   <button
                     key={id}
                     dir="ltr"
                     onClick={() => placeChip(id)}
-                    className="rounded-lg border px-3 py-1.5 text-sm hover:bg-accent cursor-pointer"
+                    className="rounded-lg border px-3.5 py-2.5 text-sm min-h-11 hover:bg-accent cursor-pointer"
                   >
                     {tokens[id]}
                   </button>
