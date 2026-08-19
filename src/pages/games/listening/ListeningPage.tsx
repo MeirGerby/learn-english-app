@@ -200,8 +200,9 @@ export default function ListeningPage() {
               value={input}
               disabled={disabled}
               onChange={(e) => setInput(e.target.value)}
+              className="h-11"
             />
-            <Button type="submit">בדיקה ✓</Button>
+            <Button type="submit" className="h-11">בדיקה ✓</Button>
           </form>
 
           <p
@@ -212,10 +213,10 @@ export default function ListeningPage() {
           </p>
 
           <div className="flex gap-2.5">
-            <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
+            <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleHint}>
               💡 רמז (תרגום)
             </Button>
-            <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
+            <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleSkip}>
               דלגו
             </Button>
           </div>

@@ -171,8 +171,9 @@ export default function ScramblePage() {
               value={input}
               disabled={disabled}
               onChange={(e) => setInput(e.target.value)}
+              className="h-11"
             />
-            <Button type="submit">בדיקה ✓</Button>
+            <Button type="submit" className="h-11">בדיקה ✓</Button>
           </form>
 
           <p aria-live="polite" className={cn("min-h-6 text-center font-semibold mb-3", feedback?.color)}>
@@ -180,10 +181,10 @@ export default function ScramblePage() {
           </p>
 
           <div className="flex gap-2.5">
-            <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
+            <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleHint}>
               💡 רמז
             </Button>
-            <Button variant="outline" className="flex-1" type="button" onClick={handleSkip}>
+            <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleSkip}>
               דלגו
             </Button>
           </div>
