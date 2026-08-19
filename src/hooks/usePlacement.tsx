@@ -51,7 +51,15 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+    // Deliberately keyed on user?.uid (a stable primitive), not the user
+    // object itself: Firebase's onAuthStateChanged can fire more than once
+    // for the same signed-in session with a new User object reference each
+    // time. Depending on the object caused this effect to re-run on every
+    // such firing, resetting statsLoading back to true before the previous
+    // fetch resolved - if firings kept coming, loading never settled and
+    // RequirePlacement's "בודק הרשאות..." screen never went away.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.uid]);
 
   const loading = authLoading || (!!user && statsLoading);
   const effectiveBand = overrideBand ?? (stats?.placementBand as Band | undefined);

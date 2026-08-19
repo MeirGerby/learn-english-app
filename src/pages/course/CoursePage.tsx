@@ -34,7 +34,9 @@ export default function CoursePage() {
       setItems(newItems);
       setContentLoading(false);
     });
-  }, [user]);
+    // Keyed on user?.uid, not the user object - see usePlacement.tsx for why.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.uid]);
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
