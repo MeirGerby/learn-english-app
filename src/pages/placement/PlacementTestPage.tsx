@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { Band, WordEntry } from "@/types";
 
 export default function PlacementTestPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
@@ -63,6 +63,16 @@ export default function PlacementTestPage() {
       <p className="text-center text-muted-foreground text-sm mb-6">
         ענו על השאלות כדי שנתאים לכם את רמת המשחקים הנכונה. אפשר לחזור על המבחן בעתיד ולהתקדם.
       </p>
+
+      {!authLoading && !user && !done && (
+        <p className="text-center text-muted-foreground text-sm mb-6">
+          אתם לא מחוברים - התוצאה לא תישמר.{" "}
+          <Link to="/login" className="text-primary hover:underline">
+            מומלץ להתחבר
+          </Link>{" "}
+          לפני שמתחילים.
+        </p>
+      )}
 
       {loading ? (
         <p className="text-center text-muted-foreground text-sm">טוען שאלות...</p>
