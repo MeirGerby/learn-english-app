@@ -159,7 +159,19 @@ export default function AdminPage() {
                   <span>
                     {item.authorEmail} · {item.createdAt ? item.createdAt.toDate().toLocaleString("he-IL") : ""}
                   </span>
-                  <Button variant="outline" size="sm" onClick={() => deleteDoc(doc(db, "feedback", item.id))}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      const snippet = item.text.length > 40 ? `${item.text.slice(0, 40)}...` : item.text;
+                      if (!window.confirm(`למחוק את המשוב "${snippet}"? לא ניתן לבטל פעולה זו.`)) return;
+                      try {
+                        await deleteDoc(doc(db, "feedback", item.id));
+                      } catch {
+                        alert("מחיקת המשוב נכשלה. נסו שוב.");
+                      }
+                    }}
+                  >
                     מחיקה
                   </Button>
                 </div>
