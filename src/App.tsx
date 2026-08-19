@@ -16,6 +16,7 @@ import TypeWordPage from "@/pages/games/type-word/TypeWordPage";
 import SentenceBuilderPage from "@/pages/games/sentence-builder/SentenceBuilderPage";
 import { RequirePlacement } from "@/components/RequirePlacement";
 import { AchievementToast } from "@/components/AchievementToast";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PlacementProvider } from "@/hooks/usePlacement";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
     <BrowserRouter basename="/learn-english-app">
       <PlacementProvider>
       <AchievementToast />
+      <ErrorBoundary>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -103,6 +105,7 @@ export default function App() {
           }
         />
       </Routes>
+      </ErrorBoundary>
       </PlacementProvider>
     </BrowserRouter>
   );
