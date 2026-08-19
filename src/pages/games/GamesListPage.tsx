@@ -75,6 +75,7 @@ export default function GamesListPage() {
   const { stats, loading, loggedIn } = useAchievements();
   const { user, admin, unlockedBand, loading: placementLoading } = usePlacement();
   const [expandedAchievementId, setExpandedAchievementId] = useState<string | null>(null);
+  const [expandedGameHref, setExpandedGameHref] = useState<string | null>(null);
 
   return (
     <div className="app mx-auto max-w-3xl w-full px-4 py-6">
@@ -100,30 +101,51 @@ export default function GamesListPage() {
         </p>
       )}
 
-      <main className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+      <main className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 items-start">
         {GAMES.map((game) => {
           const locked = !placementLoading && game.minBand > unlockedBand;
+          const isExpanded = expandedGameHref === game.href;
+          const descId = `game-desc-${game.href}`;
           return (
-            <Link
+            <div
               key={game.href}
-              to={game.href}
-              title={game.desc}
               className={cn(
-                "flex flex-col items-center text-center gap-1.5 p-3 sm:p-4 rounded-2xl bg-card border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all no-underline text-foreground",
+                "relative flex flex-col rounded-2xl bg-card border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all",
                 locked && "opacity-70"
               )}
             >
-              {game.minBand > 1 ? (
-                <div className="flex items-center gap-1">
-                  <BandBadge band={game.minBand} />
-                  {locked && <span title="נדרשת רמה גבוהה יותר">🔒</span>}
-                </div>
-              ) : (
-                <div className="h-5" />
+              <Link
+                to={game.href}
+                className="flex flex-col items-center text-center gap-1.5 p-3 sm:p-4 no-underline text-foreground"
+              >
+                {game.minBand > 1 ? (
+                  <div className="flex items-center gap-1">
+                    <BandBadge band={game.minBand} />
+                    {locked && <span title="נדרשת רמה גבוהה יותר">🔒</span>}
+                  </div>
+                ) : (
+                  <div className="h-5" />
+                )}
+                <span className="text-3xl sm:text-4xl">{game.icon}</span>
+                <span className="text-sm sm:text-base font-bold text-primary leading-tight">{game.title}</span>
+              </Link>
+              <button
+                type="button"
+                title={game.desc}
+                aria-label="מידע על המשחק"
+                aria-expanded={isExpanded}
+                aria-controls={descId}
+                onClick={() => setExpandedGameHref(isExpanded ? null : game.href)}
+                className="absolute top-1 end-1 min-w-8 min-h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+              >
+                ⓘ
+              </button>
+              {isExpanded && (
+                <p id={descId} className="text-xs text-muted-foreground text-center px-3 pb-3 -mt-1">
+                  {game.desc}
+                </p>
               )}
-              <span className="text-3xl sm:text-4xl">{game.icon}</span>
-              <span className="text-sm sm:text-base font-bold text-primary leading-tight">{game.title}</span>
-            </Link>
+            </div>
           );
         })}
       </main>
