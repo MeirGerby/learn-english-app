@@ -16,7 +16,7 @@ export function CategorySelect({ categories, value, onChange, unlockedCategories
     <div className="flex items-center gap-2 mb-5 text-sm text-muted-foreground">
       <label htmlFor="category">קטגוריה:</label>
       <Select value={value} onValueChange={(v) => onChange(v as CategoryKey)}>
-        <SelectTrigger id="category" className="flex-1">
+        <SelectTrigger id="category" className="flex-1 data-[size=default]:h-11">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
