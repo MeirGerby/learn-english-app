@@ -108,11 +108,13 @@ export default function ScramblePage() {
   }
 
   function handleHint() {
+    if (disabled) return;
     setHintsUsed((h) => h + 1);
     setHint(`רמז: ${order[index].translation}`);
   }
 
   function handleSkip() {
+    if (disabled) return;
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
     setDisabled(true);

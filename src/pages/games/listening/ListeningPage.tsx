@@ -110,11 +110,13 @@ export default function ListeningPage() {
   }
 
   function handleHint() {
+    if (disabled) return;
     setHintUsed(true);
     setFeedback({ text: `רמז: ${order[index].translation}`, color: "text-muted-foreground" });
   }
 
   function handleSkip() {
+    if (disabled) return;
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
     setDisabled(true);
