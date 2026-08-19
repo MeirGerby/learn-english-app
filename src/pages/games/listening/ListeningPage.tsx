@@ -35,7 +35,7 @@ function normalize(text: string): string {
 export default function ListeningPage() {
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
-  const gameLocked = !placementLoading && unlockedBand < 3;
+  const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<WordEntry[]>([]);
