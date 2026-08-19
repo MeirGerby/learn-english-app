@@ -33,6 +33,7 @@ export default function WordMatchPage() {
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
+  const [statusMessage, setStatusMessage] = useState<{ text: string; color: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,6 +50,7 @@ export default function WordMatchPage() {
       setWrongFlash(null);
       setWrongAttempts(0);
       setShowResults(false);
+      setStatusMessage(null);
       setLoading(false);
     });
     return () => {
@@ -64,6 +66,7 @@ export default function WordMatchPage() {
       setMatched(nextMatched);
       setSelectedLeft(null);
       setSelectedRight(null);
+      setStatusMessage({ text: "התאמה נכונה! ✓", color: "text-green-600" });
       recordLocal(POINTS_PER_MATCH, true);
       recordAnswer({ points: POINTS_PER_MATCH, correct: true, currentStreak: streak + 1 });
       if (nextMatched.size >= pairs.length) {
@@ -73,12 +76,14 @@ export default function WordMatchPage() {
     } else {
       setWrongFlash({ left: leftWord, right: rightWord });
       setWrongAttempts((n) => n + 1);
+      setStatusMessage({ text: "לא נכון, נסו שוב", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
       setTimeout(() => {
         setWrongFlash(null);
         setSelectedLeft(null);
         setSelectedRight(null);
+        setStatusMessage(null);
       }, 600);
     }
   }
@@ -190,6 +195,9 @@ export default function WordMatchPage() {
               </div>
               <p className="text-center text-muted-foreground text-sm mt-4">
                 {matched.size} מתוך {pairs.length} זוגות
+              </p>
+              <p aria-live="polite" className={cn("min-h-6 text-center font-semibold", statusMessage?.color)}>
+                {statusMessage?.text}
               </p>
             </section>
           ) : (
