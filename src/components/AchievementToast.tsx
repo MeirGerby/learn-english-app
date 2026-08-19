@@ -42,11 +42,10 @@ export function AchievementToast() {
     return () => window.removeEventListener("achievement-unlocked", handleUnlock);
   }, []);
 
-  if (!toasts.length) return null;
-
   return (
     <div
       dir="rtl"
+      aria-live="polite"
       className="pointer-events-none fixed inset-x-0 top-4 z-50 flex flex-col items-center gap-2 px-4"
     >
       {toasts.map((t) => (

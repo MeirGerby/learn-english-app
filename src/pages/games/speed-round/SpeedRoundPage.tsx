@@ -193,7 +193,9 @@ export default function SpeedRoundPage() {
             })}
           </div>
 
-          {feedback && <p className={cn("text-center font-semibold mt-3.5", feedback.color)}>{feedback.text}</p>}
+          <p aria-live="polite" className={cn("min-h-6 text-center font-semibold mt-3.5", feedback?.color)}>
+            {feedback?.text}
+          </p>
         </section>
       ) : (
         <EmptyGameState />

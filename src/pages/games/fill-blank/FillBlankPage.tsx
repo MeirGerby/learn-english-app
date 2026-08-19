@@ -175,11 +175,15 @@ export default function FillBlankPage() {
               })}
             </div>
 
-            {answered && (
-              <p className={cn("text-center font-semibold mt-3.5", answered.word === current.word ? "text-green-600" : "text-red-600")}>
-                {answered.word === current.word ? "נכון! ✓" : `לא נכון. המילה הנכונה: "${current.word}"`}
-              </p>
-            )}
+            <p
+              aria-live="polite"
+              className={cn(
+                "min-h-6 text-center font-semibold mt-3.5",
+                answered && (answered.word === current.word ? "text-green-600" : "text-red-600")
+              )}
+            >
+              {answered ? (answered.word === current.word ? "נכון! ✓" : `לא נכון. המילה הנכונה: "${current.word}"`) : ""}
+            </p>
           </section>
         ) : (
           <EmptyGameState />

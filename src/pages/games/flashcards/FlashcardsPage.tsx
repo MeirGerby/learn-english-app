@@ -254,18 +254,20 @@ export default function FlashcardsPage() {
                   );
                 })}
               </div>
-              {answeredOption && (
-                <p
-                  className={cn(
-                    "text-center mt-3.5 font-semibold",
-                    answeredOption.word === currentQuizWord.word ? "text-green-600" : "text-red-600"
-                  )}
-                >
-                  {answeredOption.word === currentQuizWord.word
+              <p
+                aria-live="polite"
+                className={cn(
+                  "text-center mt-3.5 font-semibold min-h-6",
+                  answeredOption &&
+                    (answeredOption.word === currentQuizWord.word ? "text-green-600" : "text-red-600")
+                )}
+              >
+                {answeredOption
+                  ? answeredOption.word === currentQuizWord.word
                     ? "נכון! ✓"
-                    : `לא נכון. התשובה הנכונה הייתה: "${currentQuizWord.translation}"`}
-                </p>
-              )}
+                    : `לא נכון. התשובה הנכונה הייתה: "${currentQuizWord.translation}"`
+                  : ""}
+              </p>
               {answeredOption && (
                 <Button className="block mx-auto mt-5" onClick={nextQuizQuestion}>
                   לשאלה הבאה
