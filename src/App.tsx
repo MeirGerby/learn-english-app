@@ -14,6 +14,7 @@ import SpeedRoundPage from "@/pages/games/speed-round/SpeedRoundPage";
 import WordMatchPage from "@/pages/games/word-match/WordMatchPage";
 import TypeWordPage from "@/pages/games/type-word/TypeWordPage";
 import SentenceBuilderPage from "@/pages/games/sentence-builder/SentenceBuilderPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 import { RequirePlacement } from "@/components/RequirePlacement";
 import { AchievementToast } from "@/components/AchievementToast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -104,6 +105,7 @@ export default function App() {
             </RequirePlacement>
           }
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </ErrorBoundary>
       </PlacementProvider>
