@@ -167,7 +167,12 @@ export default function TypeWordPage() {
               <p className="text-muted-foreground mb-6">
                 כתבתם נכון {correctCount} מתוך {order.length} מילים.
               </p>
-              <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+              <div className="flex gap-2.5 justify-center">
+                <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+                <Link to="/games">
+                  <Button variant="outline">לרשימת המשחקים</Button>
+                </Link>
+              </div>
             </section>
           ) : current ? (
             <section>
