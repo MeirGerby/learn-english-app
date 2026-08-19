@@ -16,12 +16,20 @@ export function useAchievements() {
       return;
     }
     setLoading(true);
-    getStats().then((s) => {
-      if (!cancelled) {
-        setStats(s);
-        setLoading(false);
-      }
-    });
+    getStats()
+      .then((s) => {
+        if (!cancelled) {
+          setStats(s);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn("useAchievements: getStats() failed unexpectedly.", err);
+        if (!cancelled) {
+          setStats(null);
+          setLoading(false);
+        }
+      });
     return () => {
       cancelled = true;
     };
