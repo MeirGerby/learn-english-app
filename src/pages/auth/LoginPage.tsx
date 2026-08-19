@@ -62,7 +62,9 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <p className="text-destructive text-sm min-h-[18px] mt-1">{error}</p>
+          <p aria-live="polite" className="text-destructive text-sm min-h-[18px] mt-1">
+            {error}
+          </p>
 
           <Button type="submit" className="mt-4" disabled={isSubmitting}>
             {isSubmitting ? "מתחברים..." : "התחברות"}
