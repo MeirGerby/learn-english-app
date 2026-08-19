@@ -25,6 +25,7 @@ export default function CoursePage() {
   const [type, setType] = useState<"video" | "image">("video");
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -33,10 +34,18 @@ export default function CoursePage() {
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!url.trim()) return;
-    await addCourseItem({ type, url: url.trim(), caption: caption.trim() });
-    setUrl("");
-    setCaption("");
+    setIsSubmitting(true);
+    try {
+      await addCourseItem({ type, url: url.trim(), caption: caption.trim() });
+      setUrl("");
+      setCaption("");
+    } catch {
+      alert("הוספת התוכן נכשלה. נסי שוב.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (loading) {
@@ -83,8 +92,8 @@ export default function CoursePage() {
               </Label>
               <Input id="course-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1" />
             </div>
-            <Button type="submit" className="self-start">
-              הוספה
+            <Button type="submit" className="self-start" disabled={isSubmitting}>
+              {isSubmitting ? "מוסיפה..." : "הוספה"}
             </Button>
           </form>
         </section>
