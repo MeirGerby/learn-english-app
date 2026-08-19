@@ -3,6 +3,7 @@ import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
+import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
@@ -156,15 +157,26 @@ export default function FlashcardsPage() {
             </Button>
           </div>
 
-          {mode === "flashcards" && card && (
+          {mode === "flashcards" && (card ? (
             <section>
               <div className="[perspective:1200px] mb-3">
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={flipped}
                   className={cn(
-                    "relative h-56 rounded-2xl cursor-pointer transition-transform duration-500 shadow-lg [transform-style:preserve-3d]",
+                    "relative h-56 rounded-2xl cursor-pointer transition-transform duration-500 shadow-lg [transform-style:preserve-3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     flipped && "[transform:rotateY(180deg)]"
                   )}
                   onClick={() => setFlipped((f) => !f)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      if (event.key === " ") {
+                        event.preventDefault();
+                      }
+                      setFlipped((f) => !f);
+                    }
+                  }}
                 >
                   <div className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] bg-gradient-to-br from-primary to-indigo-400 text-white">
                     <span className="text-3xl font-bold">{card.word}</span>
@@ -202,9 +214,11 @@ export default function FlashcardsPage() {
                 </Button>
               </div>
             </section>
-          )}
+          ) : (
+            <EmptyGameState />
+          ))}
 
-          {mode === "quiz" && !showQuizResults && currentQuizWord && (
+          {mode === "quiz" && !showQuizResults && (currentQuizWord ? (
             <section>
               <div className="mb-5">
                 <span className="text-sm text-muted-foreground">
@@ -240,25 +254,29 @@ export default function FlashcardsPage() {
                   );
                 })}
               </div>
-              {answeredOption && (
-                <p
-                  className={cn(
-                    "text-center mt-3.5 font-semibold",
-                    answeredOption.word === currentQuizWord.word ? "text-green-600" : "text-red-600"
-                  )}
-                >
-                  {answeredOption.word === currentQuizWord.word
+              <p
+                aria-live="polite"
+                className={cn(
+                  "text-center mt-3.5 font-semibold min-h-6",
+                  answeredOption &&
+                    (answeredOption.word === currentQuizWord.word ? "text-green-600" : "text-red-600")
+                )}
+              >
+                {answeredOption
+                  ? answeredOption.word === currentQuizWord.word
                     ? "נכון! ✓"
-                    : `לא נכון. התשובה הנכונה הייתה: "${currentQuizWord.translation}"`}
-                </p>
-              )}
+                    : `לא נכון. התשובה הנכונה הייתה: "${currentQuizWord.translation}"`
+                  : ""}
+              </p>
               {answeredOption && (
                 <Button className="block mx-auto mt-5" onClick={nextQuizQuestion}>
                   לשאלה הבאה
                 </Button>
               )}
             </section>
-          )}
+          ) : (
+            <EmptyGameState />
+          ))}
 
           {mode === "quiz" && showQuizResults && (
             <section className="text-center py-10">

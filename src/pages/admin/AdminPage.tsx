@@ -39,6 +39,7 @@ export default function AdminPage() {
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [importStatus, setImportStatus] = useState("");
   const [importing, setImporting] = useState(false);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   useEffect(() => {
     if (!admin) return;
@@ -61,14 +62,22 @@ export default function AdminPage() {
 
   async function handleSubmitFeedback(e: FormEvent) {
     e.preventDefault();
+    if (isSubmittingFeedback) return;
     const text = feedbackText.trim();
     if (!text || !user) return;
-    await addDoc(collection(db, "feedback"), {
-      text,
-      authorEmail: user.email,
-      createdAt: serverTimestamp(),
-    });
-    setFeedbackText("");
+    setIsSubmittingFeedback(true);
+    try {
+      await addDoc(collection(db, "feedback"), {
+        text,
+        authorEmail: user.email,
+        createdAt: serverTimestamp(),
+      });
+      setFeedbackText("");
+    } catch {
+      alert("שמירת המשוב נכשלה. נסו שוב.");
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
   }
 
   async function handleImportWords() {
@@ -143,8 +152,8 @@ export default function AdminPage() {
               placeholder="תארו את הבאג, הרעיון או השיפור הנדרש..."
               className="min-h-24"
             />
-            <Button type="submit" className="self-start mt-1">
-              שמירת משוב
+            <Button type="submit" className="self-start mt-1" disabled={isSubmittingFeedback}>
+              {isSubmittingFeedback ? "שומרת..." : "שמירת משוב"}
             </Button>
           </form>
         </section>
@@ -159,7 +168,19 @@ export default function AdminPage() {
                   <span>
                     {item.authorEmail} · {item.createdAt ? item.createdAt.toDate().toLocaleString("he-IL") : ""}
                   </span>
-                  <Button variant="outline" size="sm" onClick={() => deleteDoc(doc(db, "feedback", item.id))}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      const snippet = item.text.length > 40 ? `${item.text.slice(0, 40)}...` : item.text;
+                      if (!window.confirm(`למחוק את המשוב "${snippet}"? לא ניתן לבטל פעולה זו.`)) return;
+                      try {
+                        await deleteDoc(doc(db, "feedback", item.id));
+                      } catch {
+                        alert("מחיקת המשוב נכשלה. נסו שוב.");
+                      }
+                    }}
+                  >
                     מחיקה
                   </Button>
                 </div>

@@ -42,6 +42,7 @@ export default function ScramblePage() {
   const [hint, setHint] = useState<string | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -62,7 +63,8 @@ export default function ScramblePage() {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, roundKey]);
 
   function startWord(word: WordEntry) {
     setScrambled(scrambleWord(word.word));
@@ -101,6 +103,7 @@ export default function ScramblePage() {
       setFeedback({ text: "לא בדיוק, נסו שוב!", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      inputRef.current?.select();
     }
   }
 
@@ -138,7 +141,7 @@ export default function ScramblePage() {
           <p className="text-muted-foreground mb-6">
             פתרתם נכון {correctCount} מתוך {order.length} מילים.
           </p>
-          <Button onClick={() => startWord(order[0])}>שחקו שוב</Button>
+          <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
         </section>
       ) : order.length > 0 ? (
         <section>
@@ -172,7 +175,9 @@ export default function ScramblePage() {
             <Button type="submit">בדיקה ✓</Button>
           </form>
 
-          {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
+          <p aria-live="polite" className={cn("min-h-6 text-center font-semibold mb-3", feedback?.color)}>
+            {feedback?.text}
+          </p>
 
           <div className="flex gap-2.5">
             <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>

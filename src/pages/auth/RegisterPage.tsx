@@ -18,10 +18,12 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (isSubmitting) return;
     setError("");
 
     if (password !== confirm) {
@@ -29,12 +31,15 @@ export default function RegisterPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (err) {
       const code = (err as AuthError).code;
       setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -77,8 +82,8 @@ export default function RegisterPage() {
 
           <p className="text-destructive text-sm min-h-[18px] mt-1">{error}</p>
 
-          <Button type="submit" className="mt-4">
-            הרשמה
+          <Button type="submit" className="mt-4" disabled={isSubmitting}>
+            {isSubmitting ? "נרשמים..." : "הרשמה"}
           </Button>
         </form>
         <p className="text-center mt-4 text-muted-foreground text-sm">

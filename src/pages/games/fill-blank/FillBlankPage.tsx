@@ -27,7 +27,7 @@ function blankOutWord(example: string, word: string): string {
 export default function FillBlankPage() {
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
-  const gameLocked = !placementLoading && unlockedBand < 3;
+  const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState<WordEntry[]>([]);
@@ -175,11 +175,15 @@ export default function FillBlankPage() {
               })}
             </div>
 
-            {answered && (
-              <p className={cn("text-center font-semibold mt-3.5", answered.word === current.word ? "text-green-600" : "text-red-600")}>
-                {answered.word === current.word ? "נכון! ✓" : `לא נכון. המילה הנכונה: "${current.word}"`}
-              </p>
-            )}
+            <p
+              aria-live="polite"
+              className={cn(
+                "min-h-6 text-center font-semibold mt-3.5",
+                answered && (answered.word === current.word ? "text-green-600" : "text-red-600")
+              )}
+            >
+              {answered ? (answered.word === current.word ? "נכון! ✓" : `לא נכון. המילה הנכונה: "${current.word}"`) : ""}
+            </p>
           </section>
         ) : (
           <EmptyGameState />

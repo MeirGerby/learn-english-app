@@ -35,7 +35,7 @@ function normalize(text: string): string {
 export default function ListeningPage() {
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
-  const gameLocked = !placementLoading && unlockedBand < 3;
+  const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<WordEntry[]>([]);
@@ -105,6 +105,7 @@ export default function ListeningPage() {
       setFeedback({ text: "לא בדיוק, נסו שוב! (או האזינו שוב)", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      inputRef.current?.select();
     }
   }
 
@@ -203,7 +204,12 @@ export default function ListeningPage() {
             <Button type="submit">בדיקה ✓</Button>
           </form>
 
-          {feedback && <p className={cn("text-center font-semibold mb-3", feedback.color)}>{feedback.text}</p>}
+          <p
+            aria-live="polite"
+            className={cn("min-h-6 text-center font-semibold mb-3", feedback?.color)}
+          >
+            {feedback?.text}
+          </p>
 
           <div className="flex gap-2.5">
             <Button variant="outline" className="flex-1" type="button" onClick={handleHint}>
