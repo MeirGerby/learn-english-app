@@ -166,14 +166,24 @@ async function checkAchievements(): Promise<string[]> {
 
 // Returns the signed-in user's cumulative stats, or null if signed out,
 // they haven't played anything with an account yet, or Firestore doesn't
-// respond in time (races against a timeout - see wordsDb.ts for why).
+// respond in time or errors out (races against a timeout AND catches
+// rejections - see wordsDb.ts's loadWords() for the same pattern. This
+// function used to only guard against getDoc() hanging, not against it
+// rejecting - e.g. a transient network error on real wifi - which left
+// the caller's loading state stuck forever, since an uncaught rejection
+// here silently skips the .then() that would have cleared it).
 export async function getStats(): Promise<UserStats | null> {
   const user = auth.currentUser;
   if (!user) return null;
-  const result = await Promise.race([getDoc(statsDocRef(user.uid)), timeout(5000)]);
-  if (result === "TIMEOUT") {
-    console.warn("Firestore stats fetch timed out.");
+  try {
+    const result = await Promise.race([getDoc(statsDocRef(user.uid)), timeout(5000)]);
+    if (result === "TIMEOUT") {
+      console.warn("Firestore stats fetch timed out.");
+      return null;
+    }
+    return result.exists() ? (result.data() as UserStats) : null;
+  } catch (err) {
+    console.warn("Firestore stats fetch failed.", err);
     return null;
   }
-  return result.exists() ? (result.data() as UserStats) : null;
 }

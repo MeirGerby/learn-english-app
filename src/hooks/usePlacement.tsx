@@ -42,12 +42,24 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
       return;
     }
     setStatsLoading(true);
-    getStats().then((s) => {
-      if (!cancelled) {
-        setStats(s);
-        setStatsLoading(false);
-      }
-    });
+    getStats()
+      .then((s) => {
+        if (!cancelled) {
+          setStats(s);
+          setStatsLoading(false);
+        }
+      })
+      .catch((err) => {
+        // Belt-and-suspenders: getStats() itself shouldn't reject, but if
+        // it (or anything else) ever does, don't let the loading gate get
+        // stuck forever over it - fall back to "no saved placement" and
+        // let the redirect-to-test path handle it, same as a timeout.
+        console.warn("usePlacement: getStats() failed unexpectedly.", err);
+        if (!cancelled) {
+          setStats(null);
+          setStatsLoading(false);
+        }
+      });
     return () => {
       cancelled = true;
     };
