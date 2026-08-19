@@ -206,12 +206,17 @@ export default function SentenceBuilderPage() {
                 ))}
               </div>
 
-              {result === "incorrect" && (
-                <p className="text-center text-red-600 font-semibold mb-3" dir="ltr">
-                  המשפט הנכון: {tokens.join(" ")}
-                </p>
-              )}
-              {result === "correct" && <p className="text-center text-green-600 font-semibold mb-3">נכון! ✓</p>}
+              <p
+                aria-live="polite"
+                dir={result === "incorrect" ? "ltr" : undefined}
+                className={cn(
+                  "text-center font-semibold mb-3 min-h-[28px]",
+                  result === "correct" && "text-green-600",
+                  result === "incorrect" && "text-red-600"
+                )}
+              >
+                {result === "correct" ? "נכון! ✓" : result === "incorrect" ? `המשפט הנכון: ${tokens.join(" ")}` : ""}
+              </p>
 
               {!result && bankIds.length > 0 && answerIds.length > 0 && (
                 <Button variant="outline" className="w-full" type="button" onClick={resetAttempt}>
