@@ -27,7 +27,7 @@ function blankOutWord(example: string, word: string): string {
 export default function FillBlankPage() {
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
-  const gameLocked = !placementLoading && unlockedBand < 3;
+  const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState<WordEntry[]>([]);
