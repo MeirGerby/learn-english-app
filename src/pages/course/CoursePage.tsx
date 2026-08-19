@@ -116,7 +116,18 @@ export default function CoursePage() {
                 <div className="p-3 flex items-center justify-between gap-2">
                   <p className="text-sm text-muted-foreground m-0">{item.caption}</p>
                   {admin && (
-                    <Button variant="outline" size="sm" onClick={() => deleteCourseItem(item.id)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        if (!window.confirm(`למחוק את "${item.caption || "הפריט"}"? לא ניתן לבטל פעולה זו.`)) return;
+                        try {
+                          await deleteCourseItem(item.id);
+                        } catch {
+                          alert("מחיקת הפריט נכשלה. נסי שוב.");
+                        }
+                      }}
+                    >
                       מחיקה
                     </Button>
                   )}
