@@ -108,6 +108,7 @@ export default function TypeWordPage() {
   }
 
   function handleHint() {
+    if (disabled) return;
     const word = order[index].word;
     setHintsUsed((h) => h + 1);
     const revealCount = Math.min(hintsUsed + 1, word.length - 1 || 1);
@@ -116,6 +117,7 @@ export default function TypeWordPage() {
   }
 
   function handleSkip() {
+    if (disabled) return;
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
     setDisabled(true);
