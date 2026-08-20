@@ -125,6 +125,15 @@ export default function SentenceBuilderPage() {
     setAnswerIds([]);
   }
 
+  function handleSkip() {
+    if (result || busyRef.current) return;
+    busyRef.current = true;
+    setResult("incorrect");
+    recordLocal(0, false);
+    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    setTimeout(advance, 2200);
+  }
+
   const current = order[index];
 
   return (
@@ -246,10 +255,17 @@ export default function SentenceBuilderPage() {
                 )}
               </p>
 
-              {!result && bankIds.length > 0 && answerIds.length > 0 && (
-                <Button variant="outline" className="w-full" type="button" onClick={resetAttempt}>
-                  נקו והתחילו מחדש
-                </Button>
+              {!result && (
+                <div className="flex gap-2.5">
+                  {bankIds.length > 0 && answerIds.length > 0 && (
+                    <Button variant="outline" className="flex-1" type="button" onClick={resetAttempt}>
+                      נקו והתחילו מחדש
+                    </Button>
+                  )}
+                  <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleSkip}>
+                    דלגו
+                  </Button>
+                </div>
               )}
             </section>
           ) : (
