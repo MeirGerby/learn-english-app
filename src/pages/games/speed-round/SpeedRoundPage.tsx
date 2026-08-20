@@ -52,6 +52,17 @@ export default function SpeedRoundPage() {
   // unanswered question. Routing every advance() call through this ref
   // instead guarantees the freshest render's version always runs.
   const advanceRef = useRef<() => void>(() => {});
+  // Guards handleAnswer against a same-tick double-dispatch (e.g. a
+  // bouncing mobile touch firing two click events in the same JS
+  // macrotask, before a useState-based guard's setter would have any
+  // chance to commit a re-render). A ref read is live/mutable rather than
+  // closure-captured, so it correctly blocks the second same-tick call -
+  // see CLAUDE.md rule 73 for the same fix already proven in
+  // FlashcardsPage.tsx. Reset only from startQuestion(), which is only
+  // ever reached asynchronously (a .then() callback or a deferred
+  // setTimeout via advance()), never synchronously within handleAnswer's
+  // own call stack.
+  const answeringRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +91,7 @@ export default function SpeedRoundPage() {
   }
 
   function startQuestion(word: WordEntry, words: WordEntry[]) {
+    answeringRef.current = false;
     setAnswered(null);
     setFeedback(null);
     setOptions(buildOptions(word, words));
@@ -122,7 +134,8 @@ export default function SpeedRoundPage() {
   }
 
   function handleAnswer(opt: WordEntry) {
-    if (answered) return;
+    if (answeringRef.current) return;
+    answeringRef.current = true;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const current = order[index];
     const isCorrect = opt.word === current.word;

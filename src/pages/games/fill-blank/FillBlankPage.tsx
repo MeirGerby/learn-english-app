@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
@@ -39,6 +39,7 @@ export default function FillBlankPage() {
   const [options, setOptions] = useState<WordEntry[]>([]);
   const [answered, setAnswered] = useState<WordEntry | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const answeringRef = useRef(false);
 
   const [roundKey, setRoundKey] = useState(0);
 
@@ -55,6 +56,7 @@ export default function FillBlankPage() {
       setCorrectCount(0);
       setShowResults(false);
       setAnswered(null);
+      answeringRef.current = false;
       setLoading(false);
       if (nextOrder.length) setOptions(buildOptions(nextOrder[0], usable));
     });
@@ -69,7 +71,8 @@ export default function FillBlankPage() {
   }
 
   function handleAnswer(opt: WordEntry) {
-    if (answered) return;
+    if (answeringRef.current) return;
+    answeringRef.current = true;
     const current = order[index];
     const isCorrect = opt.word === current.word;
     setAnswered(opt);
@@ -90,6 +93,7 @@ export default function FillBlankPage() {
       }
       setIndex(next);
       setAnswered(null);
+      answeringRef.current = false;
       setOptions(buildOptions(order[next], pool));
     }, 1200);
   }
