@@ -159,7 +159,14 @@ export async function recordGameCompleted(gameKey: GameKey) {
   const user = auth.currentUser;
   if (!user) return;
   const ref = statsDocRef(user.uid);
-  await setDoc(ref, { roundsCompleted: { [gameKey]: increment(1) } }, { merge: true });
+  try {
+    await setDoc(ref, { roundsCompleted: { [gameKey]: increment(1) } }, { merge: true });
+  } catch (err) {
+    // If the write itself failed, the round genuinely wasn't recorded -
+    // checking achievements against stale data afterward has no value.
+    console.warn("Firestore recordGameCompleted write failed.", err);
+    return;
+  }
   await checkAchievements();
 }
 
