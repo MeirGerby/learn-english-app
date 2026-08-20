@@ -187,7 +187,7 @@ export default function TypeWordPage() {
               <div className="text-center text-2xl font-bold text-primary bg-card border rounded-2xl py-5 px-4 mb-3">
                 {current.translation}
               </div>
-              <p className="text-center text-muted-foreground text-sm italic mb-3" dir="ltr">
+              <p className="text-center text-muted-foreground text-sm italic mb-3" dir="ltr" lang="en">
                 {blankOutWord(current.example, current.word)}
               </p>
 
@@ -199,6 +199,7 @@ export default function TypeWordPage() {
                 <Input
                   ref={inputRef}
                   dir="ltr"
+                  lang="en"
                   autoCapitalize="off"
                   spellCheck={false}
                   placeholder="הקלידו את המילה באנגלית..."

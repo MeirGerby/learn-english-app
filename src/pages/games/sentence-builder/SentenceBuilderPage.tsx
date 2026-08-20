@@ -172,11 +172,12 @@ export default function SentenceBuilderPage() {
               </div>
 
               <p className="text-center text-muted-foreground mb-2">
-                סדרו את המילים כדי לבנות משפט עם המילה <span dir="ltr" className="font-semibold text-primary">{current.word}</span>:
+                סדרו את המילים כדי לבנות משפט עם המילה <span dir="ltr" lang="en" className="font-semibold text-primary">{current.word}</span>:
               </p>
 
               <div
                 dir="ltr"
+                lang="en"
                 className={cn(
                   "min-h-16 flex flex-wrap gap-2 items-start content-start rounded-2xl border-2 border-dashed p-3 mb-3",
                   result === "correct" && "border-green-500 bg-green-50",
@@ -189,6 +190,7 @@ export default function SentenceBuilderPage() {
                   <button
                     key={id}
                     dir="ltr"
+                    lang="en"
                     disabled={!!result}
                     onClick={() => returnChip(id)}
                     className="rounded-lg border bg-primary/10 border-primary px-3.5 py-2.5 text-sm min-h-11"
@@ -198,11 +200,12 @@ export default function SentenceBuilderPage() {
                 ))}
               </div>
 
-              <div dir="ltr" className="flex flex-wrap gap-2 mb-3 min-h-11">
+              <div dir="ltr" lang="en" className="flex flex-wrap gap-2 mb-3 min-h-11">
                 {bankIds.map((id) => (
                   <button
                     key={id}
                     dir="ltr"
+                    lang="en"
                     onClick={() => placeChip(id)}
                     className="rounded-lg border px-3.5 py-2.5 text-sm min-h-11 hover:bg-accent cursor-pointer"
                   >

@@ -161,7 +161,7 @@ export default function ScramblePage() {
           </div>
 
           <p className="text-center text-muted-foreground mb-2">סדרו את האותיות כדי לגלות את המילה:</p>
-          <div className="text-center text-3xl font-extrabold tracking-widest text-primary bg-card border rounded-2xl py-5 px-2.5 mb-3 ltr:direction-ltr" dir="ltr">
+          <div className="text-center text-3xl font-extrabold tracking-widest text-primary bg-card border rounded-2xl py-5 px-2.5 mb-3 ltr:direction-ltr" dir="ltr" lang="en">
             {scrambled}
           </div>
 
@@ -173,6 +173,7 @@ export default function ScramblePage() {
             <Input
               ref={inputRef}
               dir="ltr"
+              lang="en"
               autoCapitalize="off"
               spellCheck={false}
               placeholder="הקלידו את התשובה..."

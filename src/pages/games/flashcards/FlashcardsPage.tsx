@@ -180,11 +180,11 @@ export default function FlashcardsPage() {
                   }}
                 >
                   <div className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] bg-gradient-to-br from-primary to-indigo-400 text-white">
-                    <span className="text-3xl font-bold">{card.word}</span>
+                    <span className="text-3xl font-bold" dir="ltr" lang="en">{card.word}</span>
                   </div>
                   <div className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center gap-2 p-6 text-center [backface-visibility:hidden] [transform:rotateY(180deg)] bg-card border">
                     <span className="text-xl font-semibold">{card.translation}</span>
-                    <span className="text-sm text-muted-foreground italic">{card.example}</span>
+                    <span className="text-sm text-muted-foreground italic" dir="ltr" lang="en">{card.example}</span>
                   </div>
                 </div>
               </div>
