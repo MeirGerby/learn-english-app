@@ -12,6 +12,7 @@ import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 const PAIR_COUNT = 8;
@@ -204,6 +205,7 @@ export default function WordMatchPage() {
               <p className="text-center text-muted-foreground text-sm mt-4">
                 {matched.size} מתוך {pairs.length} זוגות
               </p>
+              <Progress value={(matched.size / pairs.length) * 100} className="mt-1.5" />
               <p aria-live="polite" className={cn("min-h-6 text-center font-semibold", statusMessage?.color)}>
                 {statusMessage?.text}
               </p>
