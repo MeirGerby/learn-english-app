@@ -20,12 +20,20 @@ const SESSION_SIZE = 10;
 const CATEGORIES = getCategoryKeys();
 
 function scrambleWord(word: string): string {
-  const letters = word.toUpperCase().split("");
-  let scrambled: string;
-  do {
-    scrambled = shuffle(letters).join("");
-  } while (scrambled === word.toUpperCase() && letters.length > 1);
-  return scrambled;
+  const upper = word.toUpperCase();
+  return upper
+    .split(/([\s/])/)
+    .map((token) => {
+      if (token === " " || token === "/") return token;
+      const letters = token.split("");
+      if (letters.length <= 1) return token;
+      let scrambled: string;
+      do {
+        scrambled = shuffle(letters).join("");
+      } while (scrambled === token);
+      return scrambled;
+    })
+    .join("");
 }
 
 export default function ScramblePage() {
@@ -53,9 +61,7 @@ export default function ScramblePage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const singleWord = words.filter((w) => !/[\s/]/.test(w.word));
-      const pool = singleWord.length >= SESSION_SIZE ? singleWord : words;
-      const nextOrder = shuffle(pool).slice(0, Math.min(SESSION_SIZE, pool.length));
+      const nextOrder = shuffle(words).slice(0, Math.min(SESSION_SIZE, words.length));
       setOrder(nextOrder);
       setIndex(0);
       setCorrectCount(0);
