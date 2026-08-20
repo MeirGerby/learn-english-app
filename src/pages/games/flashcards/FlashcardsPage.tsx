@@ -43,6 +43,7 @@ export default function FlashcardsPage() {
   const [quizOptions, setQuizOptions] = useState<WordEntry[]>([]);
   const [answeredOption, setAnsweredOption] = useState<WordEntry | null>(null);
   const [showQuizResults, setShowQuizResults] = useState(false);
+  const quizAnsweringRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +61,7 @@ export default function FlashcardsPage() {
       setQuizCorrectCount(0);
       setShowQuizResults(false);
       setAnsweredOption(null);
+      quizAnsweringRef.current = false;
       if (order.length) setQuizOptions(buildOptions(order[0], data));
     });
     return () => {
@@ -106,10 +108,13 @@ export default function FlashcardsPage() {
     setQuizCorrectCount(0);
     setShowQuizResults(false);
     setAnsweredOption(null);
+    quizAnsweringRef.current = false;
     if (order.length) setQuizOptions(buildOptions(order[0], words));
   }
 
   function handleQuizAnswer(opt: WordEntry) {
+    if (quizAnsweringRef.current) return;
+    quizAnsweringRef.current = true;
     if (answeredOption) return;
     const current = quizOrder[quizIndex];
     const isCorrect = opt.word === current.word;
@@ -128,6 +133,7 @@ export default function FlashcardsPage() {
     }
     setQuizIndex(nextIndex);
     setAnsweredOption(null);
+    quizAnsweringRef.current = false;
     setQuizOptions(buildOptions(quizOrder[nextIndex], words));
   }
 
