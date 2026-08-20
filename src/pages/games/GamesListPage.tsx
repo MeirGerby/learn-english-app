@@ -154,9 +154,16 @@ export default function GamesListPage() {
 
       {loggedIn && (
         <section className="mt-5">
-          <p className="text-center text-muted-foreground font-semibold text-sm mb-2.5">
-            {loading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0} · ההישגים שלי`}
-          </p>
+          <div className="mb-2.5">
+            <p className="text-center text-muted-foreground font-semibold text-sm">
+              {loading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0} · ההישגים שלי`}
+            </p>
+            {!loading && (stats?.bestStreak ?? 0) > 0 && (
+              <p className="text-center text-muted-foreground text-xs mt-0.5">
+                השיא שלך: {stats?.bestStreak} תשובות נכונות ברצף
+              </p>
+            )}
+          </div>
           <div className="flex flex-wrap justify-center gap-2">
             {ACHIEVEMENTS.map((ach) => {
               const unlocked = stats?.achievements?.includes(ach.id) ?? false;
