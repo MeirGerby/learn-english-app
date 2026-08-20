@@ -202,6 +202,7 @@ export default function FlashcardsPage() {
                   הבא
                 </Button>
               </div>
+              <Progress value={(fcIndex / words.length) * 100} className="mt-1.5" />
               <div className="flex gap-2.5">
                 <Button
                   className="flex-1 bg-red-100 text-red-600 hover:bg-red-200"
