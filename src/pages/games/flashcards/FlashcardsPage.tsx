@@ -231,7 +231,7 @@ export default function FlashcardsPage() {
               </div>
               <div className="text-center mb-6">
                 <p className="text-muted-foreground mb-1.5">מה המשמעות של המילה?</p>
-                <h2 className="text-3xl text-primary font-bold m-0">{currentQuizWord.word}</h2>
+                <h2 className="text-3xl text-primary font-bold m-0" dir="ltr" lang="en">{currentQuizWord.word}</h2>
               </div>
               <div className="flex flex-col gap-2.5">
                 {quizOptions.map((opt) => {
