@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
@@ -37,6 +37,11 @@ export default function SentenceBuilderPage() {
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
+  const busyRef = useRef(false);
+
+  useEffect(() => {
+    busyRef.current = false;
+  }, [answerIds, bankIds]);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,6 +88,8 @@ export default function SentenceBuilderPage() {
 
   function placeChip(id: number) {
     if (result) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     setBankIds((ids) => ids.filter((x) => x !== id));
     setAnswerIds((ids) => {
       const next = [...ids, id];
@@ -104,12 +111,16 @@ export default function SentenceBuilderPage() {
 
   function returnChip(id: number) {
     if (result) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     setAnswerIds((ids) => ids.filter((x) => x !== id));
     setBankIds((ids) => [...ids, id]);
   }
 
   function resetAttempt() {
     if (result) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     setBankIds(shuffle(tokens.map((_, i) => i)));
     setAnswerIds([]);
   }
