@@ -55,6 +55,7 @@ export default function ScramblePage() {
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const answeringRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +80,7 @@ export default function ScramblePage() {
     setScrambled(scrambleWord(word.word));
     setInput("");
     setDisabled(false);
+    answeringRef.current = false;
     setFeedback(null);
     setHint(null);
     setHintsUsed(0);
@@ -98,7 +100,7 @@ export default function ScramblePage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (disabled) return;
+    if (answeringRef.current) return;
     const current = order[index];
     if (input.trim().toLowerCase() === current.word.toLowerCase()) {
       const points = Math.max(10 - hintsUsed * 3, 2);
@@ -106,6 +108,7 @@ export default function ScramblePage() {
       setCorrectCount((c) => c + 1);
       setFeedback({ text: `נכון! +${points} נקודות ✓`, color: "text-green-600" });
       setDisabled(true);
+      answeringRef.current = true;
       recordAnswer({ points, correct: true, currentStreak: streak + 1 });
       setTimeout(advance, 900);
     } else {
@@ -117,17 +120,18 @@ export default function ScramblePage() {
   }
 
   function handleHint() {
-    if (disabled) return;
+    if (answeringRef.current) return;
     setHintsUsed((h) => h + 1);
     setHint(`רמז: ${order[index].translation}`);
   }
 
   function handleSkip() {
-    if (disabled) return;
+    if (answeringRef.current) return;
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
     setDisabled(true);
+    answeringRef.current = true;
     setTimeout(advance, 1200);
   }
 
