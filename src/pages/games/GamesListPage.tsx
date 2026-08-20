@@ -134,7 +134,7 @@ export default function GamesListPage() {
               <button
                 type="button"
                 title={game.desc}
-                aria-label="מידע על המשחק"
+                aria-label={locked ? "מידע על המשחק ועל הנעילה" : "מידע על המשחק"}
                 aria-expanded={isExpanded}
                 aria-controls={descId}
                 onClick={() => setExpandedGameHref(isExpanded ? null : game.href)}
@@ -144,6 +144,11 @@ export default function GamesListPage() {
               </button>
               {isExpanded && (
                 <p id={descId} className="text-xs text-muted-foreground text-center px-3 pb-3 -mt-1">
+                  {locked && (
+                    <span className="block font-semibold text-foreground mb-1">
+                      🔒 נדרשת רמה גבוהה יותר
+                    </span>
+                  )}
                   {game.desc}
                 </p>
               )}
