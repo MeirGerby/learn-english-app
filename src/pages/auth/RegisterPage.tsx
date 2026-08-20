@@ -57,12 +57,12 @@ export default function RegisterPage() {
           <Label htmlFor="reg-email" className="text-muted-foreground mt-2">
             אימייל
           </Label>
-          <Input id="reg-email" type="email" required autoComplete="email" className="h-11" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input id="reg-email" type="email" required autoComplete="email" dir="ltr" className="h-11" value={email} onChange={(e) => setEmail(e.target.value)} />
 
           <Label htmlFor="reg-password" className="text-muted-foreground mt-2">
             סיסמה
           </Label>
-          <div className="relative">
+          <div className="relative" dir="ltr">
             <Input
               id="reg-password"
               type={showPassword ? "text" : "password"}
@@ -86,7 +86,7 @@ export default function RegisterPage() {
           <Label htmlFor="reg-confirm" className="text-muted-foreground mt-2">
             אימות סיסמה
           </Label>
-          <div className="relative">
+          <div className="relative" dir="ltr">
             <Input
               id="reg-confirm"
               type={showConfirm ? "text" : "password"}
