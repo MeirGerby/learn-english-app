@@ -145,14 +145,14 @@ export default function FlashcardsPage() {
         <>
           <div className="flex gap-2 mb-3">
             <Button
-              className="flex-1"
+              className="flex-1 h-11"
               variant={mode === "flashcards" ? "default" : "secondary"}
               onClick={() => setMode("flashcards")}
             >
               כרטיסיות
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-11"
               variant={mode === "quiz" ? "default" : "secondary"}
               onClick={() => setMode("quiz")}
             >
@@ -192,26 +192,26 @@ export default function FlashcardsPage() {
               </div>
               <p className="text-center text-muted-foreground text-sm mb-4">לחצו על הכרטיס כדי להפוך אותו</p>
               <div className="flex items-center justify-between mb-4">
-                <Button variant="outline" onClick={prevFlashcard}>
+                <Button className="h-11" variant="outline" onClick={prevFlashcard}>
                   הקודם
                 </Button>
                 <span className="text-muted-foreground text-sm">
                   {fcIndex + 1} מתוך {words.length}
                 </span>
-                <Button variant="outline" onClick={nextFlashcard}>
+                <Button className="h-11" variant="outline" onClick={nextFlashcard}>
                   הבא
                 </Button>
               </div>
               <Progress value={(fcIndex / words.length) * 100} className="mt-1.5" />
               <div className="flex gap-2.5">
                 <Button
-                  className="flex-1 bg-red-100 text-red-600 hover:bg-red-200"
+                  className="flex-1 h-11 bg-red-100 text-red-600 hover:bg-red-200"
                   onClick={handleUnknown}
                 >
                   עדיין לומד/ת
                 </Button>
                 <Button
-                  className="flex-1 bg-green-100 text-green-600 hover:bg-green-200"
+                  className="flex-1 h-11 bg-green-100 text-green-600 hover:bg-green-200"
                   onClick={handleKnown}
                 >
                   אני כבר יודע/ת ✓
