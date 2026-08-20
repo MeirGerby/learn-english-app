@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ROUND_SIZE = 10;
 const CATEGORIES = getCategoryKeysForBand(2);
@@ -29,6 +30,7 @@ function normalize(text: string): string {
 }
 
 export default function TypeWordPage() {
+  useDocumentTitle("כתבו את המילה");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;

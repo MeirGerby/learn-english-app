@@ -7,6 +7,7 @@ import { BandBadge } from "@/components/BandBadge";
 import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
@@ -28,6 +29,7 @@ function scrambleWord(word: string): string {
 }
 
 export default function ScramblePage() {
+  useDocumentTitle("ערבוב מילים");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);

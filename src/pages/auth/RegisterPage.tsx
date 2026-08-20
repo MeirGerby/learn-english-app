@@ -7,6 +7,7 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/email-already-in-use": "כתובת האימייל כבר רשומה במערכת.",
@@ -15,6 +16,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default function RegisterPage() {
+  useDocumentTitle("הרשמה");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

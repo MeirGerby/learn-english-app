@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function HomePage() {
+  useDocumentTitle("מורה לאנגלית");
+
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
       <TopBar />

@@ -7,6 +7,7 @@ import { BandBadge } from "@/components/BandBadge";
 import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
@@ -25,6 +26,7 @@ function blankOutWord(example: string, word: string): string {
 }
 
 export default function FillBlankPage() {
+  useDocumentTitle("השלמת משפטים");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 3;

@@ -7,6 +7,7 @@ import { BandBadge } from "@/components/BandBadge";
 import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
@@ -18,6 +19,7 @@ const POINTS_PER_MATCH = 10;
 const CATEGORIES = getCategoryKeysForBand(2);
 
 export default function WordMatchPage() {
+  useDocumentTitle("התאמת מילים");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;
