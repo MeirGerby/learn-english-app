@@ -105,10 +105,16 @@ export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: R
   );
 
   if (currentStreak > 0) {
-    const snap = await getDoc(ref);
-    const existingBest = snap.exists() ? (snap.data().bestStreak ?? 0) : 0;
-    if (currentStreak > existingBest) {
-      await setDoc(ref, { bestStreak: currentStreak }, { merge: true });
+    try {
+      const snap = await getDoc(ref);
+      const existingBest = snap.exists() ? (snap.data().bestStreak ?? 0) : 0;
+      if (currentStreak > existingBest) {
+        await setDoc(ref, { bestStreak: currentStreak }, { merge: true });
+      }
+    } catch (err) {
+      // Don't let a failed bestStreak read/write skip the achievement
+      // check below - it's an independent step on the same call path.
+      console.warn("Firestore bestStreak update failed.", err);
     }
   }
 
@@ -153,25 +159,38 @@ export async function recordGameCompleted(gameKey: GameKey) {
   await checkAchievements();
 }
 
+// Guards against getDoc()/setDoc() rejecting (e.g. a transient network
+// error on real wifi, per rule 12) - previously unguarded, so a rejection
+// here silently killed the promise chain and the achievement check for
+// that answer never ran, with no visible symptom. Same pattern as
+// getStats()'s catch below, minus the timeout race: unlike getStats(),
+// this is only ever awaited from recordAnswer/recordGameCompleted, which
+// are themselves fire-and-forget (rule 13), so a hang has no user-visible
+// symptom to guard against - only rejection does.
 async function checkAchievements(): Promise<string[]> {
   const user = auth.currentUser;
   if (!user) return [];
   const ref = statsDocRef(user.uid);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return [];
-  const stats = snap.data() as UserStats;
-  const unlocked = stats.achievements || [];
-  const newlyUnlocked = ACHIEVEMENTS.filter(
-    (ach) => !unlocked.includes(ach.id) && ach.check(stats)
-  ).map((ach) => ach.id);
+  try {
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return [];
+    const stats = snap.data() as UserStats;
+    const unlocked = stats.achievements || [];
+    const newlyUnlocked = ACHIEVEMENTS.filter(
+      (ach) => !unlocked.includes(ach.id) && ach.check(stats)
+    ).map((ach) => ach.id);
 
-  if (newlyUnlocked.length) {
-    await setDoc(ref, { achievements: arrayUnion(...newlyUnlocked) }, { merge: true });
-    window.dispatchEvent(
-      new CustomEvent("achievement-unlocked", { detail: { ids: newlyUnlocked } })
-    );
+    if (newlyUnlocked.length) {
+      await setDoc(ref, { achievements: arrayUnion(...newlyUnlocked) }, { merge: true });
+      window.dispatchEvent(
+        new CustomEvent("achievement-unlocked", { detail: { ids: newlyUnlocked } })
+      );
+    }
+    return newlyUnlocked;
+  } catch (err) {
+    console.warn("Firestore achievement check failed.", err);
+    return [];
   }
-  return newlyUnlocked;
 }
 
 // Returns the signed-in user's cumulative stats, or null if signed out,
