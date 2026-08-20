@@ -121,6 +121,7 @@ export default function ListeningPage() {
     if (disabled) return;
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
+    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
     setDisabled(true);
     setTimeout(advance, 1400);
   }
