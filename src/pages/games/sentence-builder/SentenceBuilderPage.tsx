@@ -229,14 +229,21 @@ export default function SentenceBuilderPage() {
 
               <p
                 aria-live="polite"
-                dir={result === "incorrect" ? "ltr" : undefined}
                 className={cn(
                   "text-center font-semibold mb-3 min-h-[28px]",
                   result === "correct" && "text-green-600",
                   result === "incorrect" && "text-red-600"
                 )}
               >
-                {result === "correct" ? "נכון! ✓" : result === "incorrect" ? `המשפט הנכון: ${tokens.join(" ")}` : ""}
+                {result === "correct" ? (
+                  "נכון! ✓"
+                ) : result === "incorrect" ? (
+                  <>
+                    המשפט הנכון: <span dir="ltr" lang="en">{tokens.join(" ")}</span>
+                  </>
+                ) : (
+                  ""
+                )}
               </p>
 
               {!result && bankIds.length > 0 && answerIds.length > 0 && (
