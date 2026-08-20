@@ -18,6 +18,7 @@ import { WORD_DATA } from "@/data/wordData";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 interface FeedbackItem {
   id: string;
@@ -34,6 +35,7 @@ function slugify(text: string): string {
 }
 
 export default function AdminPage() {
+  useDocumentTitle("ניהול");
   const { user, admin, loading } = useAuth();
   const [feedbackText, setFeedbackText] = useState("");
   const [items, setItems] = useState<FeedbackItem[]>([]);

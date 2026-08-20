@@ -7,6 +7,7 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-email": "כתובת אימייל לא תקינה.",
@@ -20,6 +21,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 const RESET_SENT_MESSAGE = "אם קיים חשבון עם אימייל זה, נשלח אליו קישור לאיפוס סיסמה.";
 
 export default function LoginPage() {
+  useDocumentTitle("התחברות");
   const [mode, setMode] = useState<"login" | "reset">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

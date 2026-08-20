@@ -11,6 +11,7 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 interface CourseItem {
   id: string;
@@ -20,6 +21,7 @@ interface CourseItem {
 }
 
 export default function CoursePage() {
+  useDocumentTitle("קורס");
   const { user, admin, loading } = useAuth();
   const [items, setItems] = useState<CourseItem[]>([]);
   const [contentLoading, setContentLoading] = useState(true);

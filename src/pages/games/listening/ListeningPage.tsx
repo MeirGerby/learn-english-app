@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { EmptyGameState } from "@/components/EmptyGameState";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ROUND_SIZE = 10;
 const CATEGORIES = getCategoryKeysForBand(3);
@@ -33,6 +34,7 @@ function normalize(text: string): string {
 }
 
 export default function ListeningPage() {
+  useDocumentTitle("אתגר האזנה");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 3;

@@ -13,6 +13,7 @@ import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ROUND_SIZE = 12;
 const TIME_PER_QUESTION_MS = 6000;
@@ -25,6 +26,7 @@ const POINTS_PER_CORRECT = 15;
 const CATEGORIES = getCategoryKeys();
 
 export default function SpeedRoundPage() {
+  useDocumentTitle("סבב מהיר");
   const { score, streak, recordLocal } = useGameScore();
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);

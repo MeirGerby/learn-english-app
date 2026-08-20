@@ -9,9 +9,11 @@ import { savePlacementResult } from "@/lib/userStats";
 import { getBandLabel } from "@/lib/wordsDb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlacement } from "@/hooks/usePlacement";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import type { Band, WordEntry } from "@/types";
 
 export default function PlacementTestPage() {
+  useDocumentTitle("מבחן מיון רמה");
   const { user, loading: authLoading } = useAuth();
   const { applyPlacementResult } = usePlacement();
   const navigate = useNavigate();
