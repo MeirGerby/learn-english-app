@@ -153,7 +153,7 @@ export default function FillBlankPage() {
             </div>
 
             <p className="text-center text-muted-foreground mb-2">השלימו את המשפט עם המילה הנכונה:</p>
-            <div className="text-center text-lg leading-relaxed bg-card border rounded-2xl py-6 px-4.5 mb-5" dir="ltr">
+            <div className="text-center text-lg leading-relaxed bg-card border rounded-2xl py-6 px-4.5 mb-5" dir="ltr" lang="en">
               {blankOutWord(current.example, current.word)}
             </div>
 
@@ -166,6 +166,7 @@ export default function FillBlankPage() {
                     key={opt.word}
                     disabled={isAnswered}
                     dir="ltr"
+                    lang="en"
                     onClick={() => handleAnswer(opt)}
                     className={cn(
                       "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",

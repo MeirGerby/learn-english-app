@@ -177,6 +177,7 @@ export default function WordMatchPage() {
                     <button
                       key={w.word}
                       dir="ltr"
+                      lang="en"
                       disabled={matched.has(w.word)}
                       onClick={() => clickLeft(w.word)}
                       className={cellClass(w.word, selectedLeft === w.word)}

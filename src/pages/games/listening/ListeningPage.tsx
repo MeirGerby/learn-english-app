@@ -201,6 +201,7 @@ export default function ListeningPage() {
             <Input
               ref={inputRef}
               dir="ltr"
+              lang="en"
               autoCapitalize="off"
               spellCheck={false}
               placeholder="הקלידו כאן..."

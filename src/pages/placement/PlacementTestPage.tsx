@@ -108,7 +108,7 @@ export default function PlacementTestPage() {
             </div>
             <div className="text-center mb-6">
               <p className="text-muted-foreground mb-1.5">מה המשמעות של המילה?</p>
-              <h2 className="text-3xl text-primary font-bold m-0" dir="ltr">
+              <h2 className="text-3xl text-primary font-bold m-0" dir="ltr" lang="en">
                 {current.word.word}
               </h2>
             </div>
