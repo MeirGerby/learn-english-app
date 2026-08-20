@@ -283,7 +283,7 @@ export default function FlashcardsPage() {
                   : ""}
               </p>
               {answeredOption && (
-                <Button className="block mx-auto mt-5" onClick={nextQuizQuestion}>
+                <Button className="block mx-auto mt-5 h-11" onClick={nextQuizQuestion}>
                   לשאלה הבאה
                 </Button>
               )}
