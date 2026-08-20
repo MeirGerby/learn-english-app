@@ -168,7 +168,7 @@ export default function ScramblePage() {
             {scrambled}
           </div>
 
-          <p className={cn("min-h-5 text-center italic text-muted-foreground text-sm mb-3 transition-opacity", hint ? "opacity-100" : "opacity-0")}>
+          <p aria-live="polite" className={cn("min-h-5 text-center italic text-muted-foreground text-sm mb-3 transition-opacity", hint ? "opacity-100" : "opacity-0")}>
             {hint}
           </p>
 
