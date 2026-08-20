@@ -127,16 +127,20 @@ export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: R
 export async function savePlacementResult(band: Band, score: number, totalQuestions: number) {
   const user = auth.currentUser;
   if (!user) return;
-  await setDoc(
-    statsDocRef(user.uid),
-    {
-      placementBand: band,
-      placementScore: score,
-      placementTotalQuestions: totalQuestions,
-      placementCompletedAt: Date.now(),
-    },
-    { merge: true }
-  );
+  try {
+    await setDoc(
+      statsDocRef(user.uid),
+      {
+        placementBand: band,
+        placementScore: score,
+        placementTotalQuestions: totalQuestions,
+        placementCompletedAt: Date.now(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn("Firestore placement-result write failed.", err);
+  }
 }
 
 export type GameKey =
