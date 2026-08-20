@@ -15,7 +15,7 @@ import type { Band, WordEntry } from "@/types";
 export default function PlacementTestPage() {
   useDocumentTitle("מבחן מיון רמה");
   const { user, loading: authLoading } = useAuth();
-  const { applyPlacementResult } = usePlacement();
+  const { applyPlacementResult, unlockedBand } = usePlacement();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
@@ -24,6 +24,7 @@ export default function PlacementTestPage() {
   const [answered, setAnswered] = useState<WordEntry | null>(null);
   const [done, setDone] = useState(false);
   const [resultBand, setResultBand] = useState<Band | null>(null);
+  const [wasClamped, setWasClamped] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,14 +51,22 @@ export default function PlacementTestPage() {
       const next = index + 1;
       if (next >= questions.length) {
         const band = scoreToBand(nextCorrect, questions.length);
-        setResultBand(band);
+        // Retaking is explicitly encouraged as a way to progress (see the
+        // subtitle below and the "retake" link on GamesListPage), but
+        // scoreToBand only looks at this attempt's accuracy - an off-day
+        // retake could otherwise re-lock games the student already
+        // unlocked. Clamp so a retake can only raise or maintain the band,
+        // never lower it.
+        const finalBand: Band = Math.max(band, unlockedBand) as Band;
+        setResultBand(finalBand);
+        setWasClamped(finalBand > band);
         setDone(true);
         // Update the shared placement state immediately - don't wait on the
         // Firestore write below, which can be slow/time out (rule 12) and
         // would otherwise make every other page think the test was never
         // taken, bouncing the user right back into it.
-        applyPlacementResult(band);
-        savePlacementResult(band, nextCorrect, questions.length);
+        applyPlacementResult(finalBand);
+        savePlacementResult(finalBand, nextCorrect, questions.length);
         return;
       }
       setIndex(next);
@@ -91,7 +100,14 @@ export default function PlacementTestPage() {
           <p className="text-muted-foreground mb-2">
             ענית נכון על {correctCount} מתוך {questions.length} שאלות.
           </p>
-          <p className="text-lg font-semibold mb-6">הרמה שלכם: {getBandLabel(resultBand)}</p>
+          <div className="mb-6">
+            <p className="text-lg font-semibold">הרמה שלכם: {getBandLabel(resultBand)}</p>
+            {wasClamped && (
+              <p className="text-sm text-muted-foreground mt-1">
+                הציון הפעם היה נמוך יותר, אך הרמה שלכם לא יורדת - היא נשארת {getBandLabel(resultBand)}.
+              </p>
+            )}
+          </div>
           {!user && (
             <p className="text-sm text-muted-foreground mb-4">
               שימו לב: כדי שהרמה תישמר ותפתח לכם גישה קבועה, יש להתחבר לפני ביצוע המבחן.
