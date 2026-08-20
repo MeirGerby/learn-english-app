@@ -94,6 +94,7 @@ export default function LoginPage() {
               type="email"
               required
               autoComplete="email"
+              dir="ltr"
               className="h-11"
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
@@ -129,12 +130,12 @@ export default function LoginPage() {
           <Label htmlFor="login-email" className="text-muted-foreground mt-2">
             אימייל
           </Label>
-          <Input id="login-email" type="email" required autoComplete="email" className="h-11" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input id="login-email" type="email" required autoComplete="email" dir="ltr" className="h-11" value={email} onChange={(e) => setEmail(e.target.value)} />
 
           <Label htmlFor="login-password" className="text-muted-foreground mt-2">
             סיסמה
           </Label>
-          <div className="relative">
+          <div className="relative" dir="ltr">
             <Input
               id="login-password"
               type={showPassword ? "text" : "password"}
