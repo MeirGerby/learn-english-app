@@ -168,7 +168,7 @@ export default function AdminPage() {
                 <p className="text-sm whitespace-pre-wrap m-0">{item.text}</p>
                 <div className="flex items-center justify-between border-t pt-2.5 text-xs text-muted-foreground flex-wrap gap-2">
                   <span>
-                    {item.authorEmail} · {item.createdAt ? item.createdAt.toDate().toLocaleString("he-IL") : ""}
+                    <span dir="ltr">{item.authorEmail}</span> · {item.createdAt ? item.createdAt.toDate().toLocaleString("he-IL") : ""}
                   </span>
                   <Button
                     variant="outline"

@@ -26,7 +26,7 @@ export function TopBar({ backTo }: TopBarProps) {
       <div className="flex items-center gap-2.5 flex-wrap">
         {user ? (
           <>
-            <span className="text-muted-foreground text-sm">{user.email}</span>
+            <span className="text-muted-foreground text-sm" dir="ltr">{user.email}</span>
             {admin && (
               <Link to="/admin" className="text-primary font-semibold text-sm hover:underline">
                 ⚙️ ניהול
