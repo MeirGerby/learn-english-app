@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
@@ -35,6 +35,7 @@ export default function FlashcardsPage() {
 
   const [fcIndex, setFcIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const answeringRef = useRef(false);
 
   const [quizOrder, setQuizOrder] = useState<WordEntry[]>([]);
   const [quizIndex, setQuizIndex] = useState(0);
@@ -51,6 +52,7 @@ export default function FlashcardsPage() {
       setWords(data);
       setFcIndex(0);
       setFlipped(false);
+      answeringRef.current = false;
       setLoading(false);
       const order = shuffle(data).slice(0, Math.min(QUIZ_SESSION_SIZE, data.length));
       setQuizOrder(order);
@@ -67,6 +69,10 @@ export default function FlashcardsPage() {
 
   const card = words[fcIndex];
 
+  useEffect(() => {
+    answeringRef.current = false;
+  }, [fcIndex]);
+
   function nextFlashcard() {
     setFcIndex((i) => (i + 1) % words.length);
     setFlipped(false);
@@ -78,12 +84,16 @@ export default function FlashcardsPage() {
   }
 
   function handleKnown() {
+    if (answeringRef.current) return;
+    answeringRef.current = true;
     recordLocal(1, true);
     recordAnswer({ points: 1, correct: true, currentStreak: streak + 1 });
     nextFlashcard();
   }
 
   function handleUnknown() {
+    if (answeringRef.current) return;
+    answeringRef.current = true;
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
     nextFlashcard();
