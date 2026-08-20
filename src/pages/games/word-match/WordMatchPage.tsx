@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
@@ -37,6 +37,11 @@ export default function WordMatchPage() {
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
   const [statusMessage, setStatusMessage] = useState<{ text: string; color: string } | null>(null);
+  const busyRef = useRef(false);
+
+  useEffect(() => {
+    busyRef.current = false;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +59,7 @@ export default function WordMatchPage() {
       setWrongAttempts(0);
       setShowResults(false);
       setStatusMessage(null);
+      busyRef.current = false;
       setLoading(false);
     });
     return () => {
@@ -93,6 +99,8 @@ export default function WordMatchPage() {
 
   function clickLeft(word: string) {
     if (matched.has(word) || wrongFlash) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     if (word === selectedLeft) {
       setSelectedLeft(null);
       return;
@@ -103,6 +111,8 @@ export default function WordMatchPage() {
 
   function clickRight(word: string) {
     if (matched.has(word) || wrongFlash) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     if (word === selectedRight) {
       setSelectedRight(null);
       return;
