@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ export default function PlacementTestPage() {
   const [done, setDone] = useState(false);
   const [resultBand, setResultBand] = useState<Band | null>(null);
   const [wasClamped, setWasClamped] = useState(false);
+  const answeringRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +42,8 @@ export default function PlacementTestPage() {
   const current = questions[index];
 
   function handleAnswer(opt: WordEntry) {
-    if (answered || !current) return;
+    if (answeringRef.current || !current) return;
+    answeringRef.current = true;
     setAnswered(opt);
     const isCorrect = opt.word === current.word.word;
     const nextCorrect = isCorrect ? correctCount + 1 : correctCount;
@@ -71,6 +73,7 @@ export default function PlacementTestPage() {
       }
       setIndex(next);
       setAnswered(null);
+      answeringRef.current = false;
     }, 700);
   }
 
