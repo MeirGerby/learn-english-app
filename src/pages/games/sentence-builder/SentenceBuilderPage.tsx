@@ -258,7 +258,7 @@ export default function SentenceBuilderPage() {
               {!result && (
                 <div className="flex gap-2.5">
                   {bankIds.length > 0 && answerIds.length > 0 && (
-                    <Button variant="outline" className="flex-1" type="button" onClick={resetAttempt}>
+                    <Button variant="outline" className="flex-1 h-11" type="button" onClick={resetAttempt}>
                       נקו והתחילו מחדש
                     </Button>
                   )}
