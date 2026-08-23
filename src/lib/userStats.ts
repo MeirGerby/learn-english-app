@@ -94,15 +94,23 @@ export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: R
   if (!user) return;
   const ref = statsDocRef(user.uid);
 
-  await setDoc(
-    ref,
-    {
-      totalScore: increment(points),
-      totalCorrect: increment(correct ? 1 : 0),
-      totalIncorrect: increment(correct ? 0 : 1),
-    },
-    { merge: true }
-  );
+  try {
+    await setDoc(
+      ref,
+      {
+        totalScore: increment(points),
+        totalCorrect: increment(correct ? 1 : 0),
+        totalIncorrect: increment(correct ? 0 : 1),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    // If the write itself failed, the answer genuinely wasn't recorded -
+    // the streak/achievement steps below would only run against data that
+    // doesn't reflect it, so there's no value in attempting them too.
+    console.warn("Firestore answer-record write failed.", err);
+    return;
+  }
 
   if (currentStreak > 0) {
     try {
