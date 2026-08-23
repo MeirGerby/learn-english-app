@@ -35,6 +35,7 @@ export default function SentenceBuilderPage() {
   const [bankIds, setBankIds] = useState<number[]>([]);
   const [answerIds, setAnswerIds] = useState<number[]>([]);
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
   const busyRef = useRef(false);
@@ -73,6 +74,7 @@ export default function SentenceBuilderPage() {
     setBankIds(shuffle(nextTokens.map((_, i) => i)));
     setAnswerIds([]);
     setResult(null);
+    setHintsUsed(0);
   }
 
   function advance() {
@@ -96,10 +98,10 @@ export default function SentenceBuilderPage() {
       if (next.length === tokens.length) {
         const isCorrect = next.every((chipId, i) => chipId === i);
         setResult(isCorrect ? "correct" : "incorrect");
-        recordLocal(isCorrect ? POINTS_PER_CORRECT : 0, isCorrect);
+        recordLocal(isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0, isCorrect);
         if (isCorrect) setCorrectCount((c) => c + 1);
         recordAnswer({
-          points: isCorrect ? POINTS_PER_CORRECT : 0,
+          points: isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0,
           correct: isCorrect,
           currentStreak: isCorrect ? streak + 1 : 0,
         });
@@ -123,6 +125,14 @@ export default function SentenceBuilderPage() {
     busyRef.current = true;
     setBankIds(shuffle(tokens.map((_, i) => i)));
     setAnswerIds([]);
+  }
+
+  function handleHint() {
+    if (result || busyRef.current) return;
+    const nextId = bankIds.find((id) => id === answerIds.length);
+    if (nextId === undefined) return;
+    setHintsUsed((h) => h + 1);
+    placeChip(nextId);
   }
 
   function handleSkip() {
@@ -260,6 +270,11 @@ export default function SentenceBuilderPage() {
                   {bankIds.length > 0 && answerIds.length > 0 && (
                     <Button variant="outline" className="flex-1 h-11" type="button" onClick={resetAttempt}>
                       נקו והתחילו מחדש
+                    </Button>
+                  )}
+                  {bankIds.length > 1 && bankIds.includes(answerIds.length) && (
+                    <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleHint}>
+                      💡 רמז
                     </Button>
                   )}
                   <Button variant="outline" className="flex-1 h-11" type="button" onClick={handleSkip}>
