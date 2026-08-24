@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
   addCourseItem,
@@ -23,6 +23,7 @@ interface CourseItem {
 export default function CoursePage() {
   useDocumentTitle("קורס");
   const { user, admin, loading } = useAuth();
+  const location = useLocation();
   const [items, setItems] = useState<CourseItem[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [type, setType] = useState<"video" | "image">("video");
@@ -65,7 +66,7 @@ export default function CoursePage() {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">

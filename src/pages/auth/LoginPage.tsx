@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, type AuthError } from "firebase/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { auth } from "@/lib/firebase";
@@ -33,6 +33,9 @@ export default function LoginPage() {
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { from?: string } | null;
+  const from = typeof state?.from === "string" && state.from.startsWith("/") ? state.from : "/";
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -41,7 +44,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       const code = (err as AuthError).code;
       setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
@@ -173,7 +176,7 @@ export default function LoginPage() {
         </form>
         <p className="text-center mt-4 text-muted-foreground text-sm">
           אין לכם חשבון?{" "}
-          <Link to="/register" className="text-primary font-semibold">
+          <Link to="/register" state={location.state} className="text-primary font-semibold">
             הרשמה
           </Link>
         </p>
