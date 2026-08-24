@@ -123,6 +123,7 @@ export default function CoursePage() {
                   <div className="aspect-video">
                     <iframe
                       src={embedUrl}
+                      title={item.caption || "סרטון קורס"}
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
