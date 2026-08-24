@@ -40,6 +40,7 @@ export default function SentenceBuilderPage() {
   const [roundKey, setRoundKey] = useState(0);
   const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const busyRef = useRef(false);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   useEffect(() => {
     busyRef.current = false;
@@ -50,12 +51,18 @@ export default function SentenceBuilderPage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const usable = words.filter((w) => {
-        const n = w.example.split(" ").length;
-        return n >= MIN_TOKENS && n <= MAX_TOKENS;
-      });
-      const pool = usable.length >= ROUND_SIZE ? usable : words;
-      const nextOrder = shuffle(pool).slice(0, Math.min(ROUND_SIZE, pool.length));
+      let nextOrder: WordEntry[];
+      if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
+        nextOrder = shuffle(pendingPracticeRef.current.words);
+      } else {
+        const usable = words.filter((w) => {
+          const n = w.example.split(" ").length;
+          return n >= MIN_TOKENS && n <= MAX_TOKENS;
+        });
+        const pool = usable.length >= ROUND_SIZE ? usable : words;
+        nextOrder = shuffle(pool).slice(0, Math.min(ROUND_SIZE, pool.length));
+      }
+      pendingPracticeRef.current = null;
       setOrder(nextOrder);
       setIndex(0);
       setCorrectCount(0);
@@ -69,6 +76,11 @@ export default function SentenceBuilderPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, roundKey]);
+
+  function practiceMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
+  }
 
   function startSentence(word: WordEntry) {
     const nextTokens = word.example.split(" ");
@@ -203,8 +215,20 @@ export default function SentenceBuilderPage() {
                   </ul>
                 </div>
               )}
-              <div className="flex gap-2.5 justify-center">
-                <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+              <div className="flex gap-2.5 justify-center flex-wrap">
+                <Button
+                  onClick={() => {
+                    pendingPracticeRef.current = null;
+                    setRoundKey((k) => k + 1);
+                  }}
+                >
+                  שחקו שוב
+                </Button>
+                {missedWords.length > 0 && (
+                  <Button variant="secondary" onClick={practiceMissed}>
+                    תרגלו את המילים שטעיתם ({missedWords.length})
+                  </Button>
+                )}
                 <Link to="/games">
                   <Button variant="outline">לרשימת המשחקים</Button>
                 </Link>
