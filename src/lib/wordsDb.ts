@@ -103,3 +103,36 @@ export function shuffle<T>(arr: T[]): T[] {
   }
   return copy;
 }
+
+// Picks `count` multiple-choice distractors from `pool` for `correct`,
+// preferring candidates whose Hebrew translation doesn't already appear
+// among the options. English is many-to-one with Hebrew in this word
+// bank (several distinct English words can share one translation), so
+// filtering distractors only by English word - as every call site here
+// used to do - can put two visibly-identical answer buttons in front of
+// a student, one graded correct and one wrong, with no way to tell them
+// apart. Falls back to allowing a duplicate translation only if the pool
+// genuinely doesn't have enough distinct-translation candidates (a thin
+// category) - never throws or loops forever, just does its best with
+// what's actually available.
+export function pickDistractors(pool: WordEntry[], correct: WordEntry, count = 3): WordEntry[] {
+  const candidates = shuffle(pool.filter((w) => w.word !== correct.word));
+  const picked: WordEntry[] = [];
+  const usedTranslations = new Set([correct.translation]);
+  for (const w of candidates) {
+    if (picked.length >= count) break;
+    if (usedTranslations.has(w.translation)) continue;
+    picked.push(w);
+    usedTranslations.add(w.translation);
+  }
+  if (picked.length < count) {
+    const pickedWords = new Set(picked.map((w) => w.word));
+    for (const w of candidates) {
+      if (picked.length >= count) break;
+      if (pickedWords.has(w.word)) continue;
+      picked.push(w);
+      pickedWords.add(w.word);
+    }
+  }
+  return picked;
+}

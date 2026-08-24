@@ -8,7 +8,7 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
+import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,7 @@ const QUIZ_SESSION_SIZE = 10;
 const CATEGORIES = getCategoryKeys();
 
 function buildOptions(current: WordEntry, pool: WordEntry[]): WordEntry[] {
-  const wrong = shuffle(pool.filter((w) => w.word !== current.word)).slice(0, 3);
-  return shuffle([current, ...wrong]);
+  return shuffle([current, ...pickDistractors(pool, current, 3)]);
 }
 
 export default function FlashcardsPage() {
