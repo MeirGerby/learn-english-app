@@ -64,13 +64,31 @@ export default function SpeedRoundPage() {
   // setTimeout via advance()), never synchronously within handleAnswer's
   // own call stack.
   const answeringRef = useRef(false);
+  // Set by handlePracticeMissed() to seed the next round with exactly the
+  // words the student got wrong (skipping the random ROUND_SIZE sample
+  // below), tagged with the category it was requested for and consumed
+  // (cleared) the instant the data-loading effect below observes it -
+  // whether or not it matched - so a stale tag can never leak into a later,
+  // unrelated round. See CLAUDE.md rule 100 for the same fix already
+  // proven in FillBlankPage.tsx.
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const nextOrder = shuffle(words).slice(0, Math.min(ROUND_SIZE, words.length));
+      let nextOrder: WordEntry[];
+      if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
+        nextOrder = shuffle(pendingPracticeRef.current.words);
+      } else {
+        nextOrder = shuffle(words).slice(0, Math.min(ROUND_SIZE, words.length));
+      }
+      pendingPracticeRef.current = null;
+      // pool is always the full loaded category list (not the practice
+      // subset) - buildOptions()/pickDistractors() draws multiple-choice
+      // distractors from it, and a 1-3-word practice set couldn't supply
+      // 3 distinct wrong options on its own.
       setPool(words);
       setOrder(nextOrder);
       setIndex(0);
@@ -126,6 +144,11 @@ export default function SpeedRoundPage() {
   useEffect(() => {
     advanceRef.current = advance;
   });
+
+  function handlePracticeMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
+  }
 
   function handleTimeout(current: WordEntry) {
     if (answeringRef.current) return;
@@ -201,8 +224,13 @@ export default function SpeedRoundPage() {
               </ul>
             </div>
           )}
-          <div className="flex gap-2.5 justify-center">
-            <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+          <div className="flex gap-2.5 justify-center flex-wrap">
+            <Button onClick={() => { pendingPracticeRef.current = null; setRoundKey((k) => k + 1); }}>שחקו שוב</Button>
+            {missedWords.length > 0 && (
+              <Button variant="secondary" onClick={handlePracticeMissed}>
+                תרגלו את המילים שטעיתם ({missedWords.length})
+              </Button>
+            )}
             <Link to="/games">
               <Button variant="outline">לרשימת המשחקים</Button>
             </Link>
