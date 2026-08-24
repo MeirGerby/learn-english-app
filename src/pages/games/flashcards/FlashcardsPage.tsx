@@ -114,6 +114,19 @@ export default function FlashcardsPage() {
     if (order.length) setQuizOptions(buildOptions(order[0], words));
   }
 
+  function practiceMissed() {
+    const practiceWords = missedWords;
+    const order = shuffle(practiceWords);
+    setQuizOrder(order);
+    setQuizIndex(0);
+    setQuizCorrectCount(0);
+    setMissedWords([]);
+    setShowQuizResults(false);
+    setAnsweredOption(null);
+    quizAnsweringRef.current = false;
+    if (order.length) setQuizOptions(buildOptions(order[0], words));
+  }
+
   function handleQuizAnswer(opt: WordEntry) {
     if (quizAnsweringRef.current) return;
     quizAnsweringRef.current = true;
@@ -320,8 +333,13 @@ export default function FlashcardsPage() {
                   </ul>
                 </div>
               )}
-              <div className="flex gap-2.5 justify-center">
+              <div className="flex gap-2.5 justify-center flex-wrap">
                 <Button onClick={restartQuiz}>נסו שוב</Button>
+                {missedWords.length > 0 && (
+                  <Button variant="secondary" onClick={practiceMissed}>
+                    תרגלו את המילים שטעיתם ({missedWords.length})
+                  </Button>
+                )}
                 <Link to="/games">
                   <Button variant="outline">לרשימת המשחקים</Button>
                 </Link>
