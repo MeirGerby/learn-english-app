@@ -38,6 +38,7 @@ export default function SentenceBuilderPage() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
+  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const busyRef = useRef(false);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export default function SentenceBuilderPage() {
       setIndex(0);
       setCorrectCount(0);
       setShowResults(false);
+      setMissedWords([]);
       setLoading(false);
       if (nextOrder.length) startSentence(nextOrder[0]);
     });
@@ -100,6 +102,7 @@ export default function SentenceBuilderPage() {
         setResult(isCorrect ? "correct" : "incorrect");
         recordLocal(isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0, isCorrect);
         if (isCorrect) setCorrectCount((c) => c + 1);
+        else setMissedWords((m) => [...m, current]);
         recordAnswer({
           points: isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0,
           correct: isCorrect,
@@ -141,6 +144,7 @@ export default function SentenceBuilderPage() {
     setResult("incorrect");
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    setMissedWords((m) => [...m, current]);
     setTimeout(advance, 2200);
   }
 
@@ -187,6 +191,18 @@ export default function SentenceBuilderPage() {
               <p className="text-muted-foreground mb-6">
                 בניתם נכון {correctCount} מתוך {order.length} משפטים.
               </p>
+              {missedWords.length > 0 && (
+                <div className="text-start bg-card border rounded-2xl p-4 mb-6 max-w-sm mx-auto">
+                  <h3 className="font-semibold mb-2">מילים לתרגול נוסף</h3>
+                  <ul className="space-y-1 text-sm">
+                    {missedWords.map((w, i) => (
+                      <li key={`${w.word}-${i}`}>
+                        <span dir="ltr" lang="en">{w.word}</span> - {w.translation}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="flex gap-2.5 justify-center">
                 <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
                 <Link to="/games">
