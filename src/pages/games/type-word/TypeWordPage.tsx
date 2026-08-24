@@ -31,7 +31,7 @@ function normalize(text: string): string {
 
 export default function TypeWordPage() {
   useDocumentTitle("כתבו את המילה");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("typeWord");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);

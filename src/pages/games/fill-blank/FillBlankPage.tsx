@@ -27,7 +27,7 @@ function blankOutWord(example: string, word: string): string {
 
 export default function FillBlankPage() {
   useDocumentTitle("השלמת משפטים");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("fillBlank");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);

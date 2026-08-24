@@ -35,7 +35,7 @@ function normalize(text: string): string {
 
 export default function ListeningPage() {
   useDocumentTitle("אתגר האזנה");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("listening");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);

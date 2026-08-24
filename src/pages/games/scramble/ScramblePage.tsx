@@ -38,7 +38,7 @@ function scrambleWord(word: string): string {
 
 export default function ScramblePage() {
   useDocumentTitle("ערבוב מילים");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("scramble");
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>("basics");

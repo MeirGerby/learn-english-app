@@ -25,7 +25,7 @@ function buildOptions(current: WordEntry, pool: WordEntry[]): WordEntry[] {
 
 export default function FlashcardsPage() {
   useDocumentTitle("כרטיסיות וחידון");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("flashcards");
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>("basics");

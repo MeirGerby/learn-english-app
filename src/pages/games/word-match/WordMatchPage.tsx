@@ -21,7 +21,7 @@ const CATEGORIES = getCategoryKeysForBand(2);
 
 export default function WordMatchPage() {
   useDocumentTitle("התאמת מילים");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("wordMatch");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
