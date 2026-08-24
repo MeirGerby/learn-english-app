@@ -49,15 +49,22 @@ export default function TypeWordPage() {
   const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const answeringRef = useRef(false);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const usable = words.filter((w) => blankOutWord(w.example, w.word) !== w.example);
-      const pool = usable.length >= ROUND_SIZE ? usable : words;
-      const nextOrder = shuffle(pool).slice(0, Math.min(ROUND_SIZE, pool.length));
+      let nextOrder: WordEntry[];
+      if (pendingPracticeRef.current?.category === category) {
+        nextOrder = shuffle(pendingPracticeRef.current.words);
+      } else {
+        const usable = words.filter((w) => blankOutWord(w.example, w.word) !== w.example);
+        const pool = usable.length >= ROUND_SIZE ? usable : words;
+        nextOrder = shuffle(pool).slice(0, Math.min(ROUND_SIZE, pool.length));
+      }
+      pendingPracticeRef.current = null;
       setOrder(nextOrder);
       setIndex(0);
       setCorrectCount(0);
@@ -134,6 +141,11 @@ export default function TypeWordPage() {
     setTimeout(advance, 1400);
   }
 
+  function practiceMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
+  }
+
   const current = order[index];
 
   return (
@@ -189,8 +201,20 @@ export default function TypeWordPage() {
                   </ul>
                 </div>
               )}
-              <div className="flex gap-2.5 justify-center">
-                <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+              <div className="flex gap-2.5 justify-center flex-wrap">
+                <Button
+                  onClick={() => {
+                    pendingPracticeRef.current = null;
+                    setRoundKey((k) => k + 1);
+                  }}
+                >
+                  שחקו שוב
+                </Button>
+                {missedWords.length > 0 && (
+                  <Button variant="outline" onClick={practiceMissed}>
+                    תרגלו את המילים שטעיתם ({missedWords.length})
+                  </Button>
+                )}
                 <Link to="/games">
                   <Button variant="outline">לרשימת המשחקים</Button>
                 </Link>
