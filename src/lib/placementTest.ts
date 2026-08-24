@@ -1,4 +1,4 @@
-import { getCategoryKeysForBand, loadWords, shuffle } from "./wordsDb";
+import { getCategoryKeysForBand, loadWords, pickDistractors, shuffle } from "./wordsDb";
 import type { Band, WordEntry } from "@/types";
 
 export interface PlacementQuestion {
@@ -28,7 +28,7 @@ export async function generatePlacementTest(): Promise<PlacementQuestion[]> {
   for (const band of BANDS) {
     const picked = shuffle(wordsByBand[band]).slice(0, Math.min(QUESTIONS_PER_BAND, wordsByBand[band].length));
     for (const word of picked) {
-      const wrong = shuffle(globalPool.filter((w) => w.word !== word.word)).slice(0, 3);
+      const wrong = pickDistractors(globalPool, word, 3);
       questions.push({ word, band, options: shuffle([word, ...wrong]) });
     }
   }

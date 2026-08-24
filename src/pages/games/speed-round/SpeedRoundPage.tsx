@@ -7,7 +7,7 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
-import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
+import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -88,7 +88,7 @@ export default function SpeedRoundPage() {
   }, [category, roundKey]);
 
   function buildOptions(current: WordEntry, words: WordEntry[]) {
-    const wrong = shuffle(words.filter((w) => w.word !== current.word)).slice(0, 3);
+    const wrong = pickDistractors(words, current, 3);
     return shuffle([current, ...wrong]);
   }
 
