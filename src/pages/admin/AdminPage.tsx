@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import {
   addDoc,
   collection,
@@ -37,6 +37,7 @@ function slugify(text: string): string {
 export default function AdminPage() {
   useDocumentTitle("ניהול");
   const { user, admin, loading } = useAuth();
+  const location = useLocation();
   const [feedbackText, setFeedbackText] = useState("");
   const [items, setItems] = useState<FeedbackItem[]>([]);
   const [importStatus, setImportStatus] = useState("");
@@ -122,7 +123,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (!admin) {
     return (
       <div className="app mx-auto max-w-xl w-full px-4 py-6">
