@@ -48,6 +48,7 @@ export default function ListeningPage() {
   const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
   const [hintUsed, setHintUsed] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const answeringRef = useRef(false);
@@ -62,6 +63,7 @@ export default function ListeningPage() {
       setIndex(0);
       setCorrectCount(0);
       setShowResults(false);
+      setMissedWords([]);
       setLoading(false);
       if (nextOrder.length) startWord(nextOrder[0]);
     });
@@ -122,6 +124,7 @@ export default function ListeningPage() {
 
   function handleSkip() {
     if (answeringRef.current) return;
+    setMissedWords((m) => [...m, order[index]]);
     setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
@@ -179,6 +182,19 @@ export default function ListeningPage() {
           <p className="text-muted-foreground mb-6">
             שמעתם וכתבתם נכון {correctCount} מתוך {order.length} מילים.
           </p>
+          {missedWords.length > 0 && (
+            <div className="text-start bg-card border rounded-2xl p-4 mb-6 max-w-sm mx-auto">
+              <h3 className="font-semibold text-sm mb-2 text-center">מילים לתרגול נוסף</h3>
+              <ul className="space-y-1.5">
+                {missedWords.map((w, i) => (
+                  <li key={`${w.word}-${i}`} className="flex items-center justify-between text-sm gap-3">
+                    <span dir="ltr" lang="en" className="font-medium">{w.word}</span>
+                    <span className="text-muted-foreground">{w.translation}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="flex gap-2.5 justify-center">
             <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
             <Link to="/games">
