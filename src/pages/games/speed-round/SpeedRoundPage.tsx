@@ -27,7 +27,7 @@ const CATEGORIES = getCategoryKeys();
 
 export default function SpeedRoundPage() {
   useDocumentTitle("סבב מהיר");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("speedRound");
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);

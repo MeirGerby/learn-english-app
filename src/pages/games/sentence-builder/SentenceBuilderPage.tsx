@@ -23,7 +23,7 @@ const CATEGORIES = getCategoryKeysForBand(2);
 
 export default function SentenceBuilderPage() {
   useDocumentTitle("בניית משפטים");
-  const { score, streak, recordLocal } = useGameScore();
+  const { score, streak, recordLocal } = useGameScore("sentenceBuilder");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
