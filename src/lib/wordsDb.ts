@@ -136,3 +136,36 @@ export function pickDistractors(pool: WordEntry[], correct: WordEntry, count = 3
   }
   return picked;
 }
+
+// Picks `count` words from `pool` with mutually-distinct Hebrew
+// translations, for games (like Word Match) that render every picked
+// word's translation on screen at once rather than grading against one
+// "correct" answer - same many-to-one English/Hebrew risk as
+// pickDistractors above, but here two picked words sharing a
+// translation makes two on-screen cells visually identical with no
+// "correct" one to disambiguate against, not just a wrong-vs-right
+// distractor collision. Same greedy-then-fallback shape as
+// pickDistractors: falls back to allowing a duplicate translation only
+// if the pool doesn't have enough distinct-translation words to fill
+// `count` - never throws or loops forever.
+export function pickRoundWithDistinctTranslations(pool: WordEntry[], count: number): WordEntry[] {
+  const candidates = shuffle(pool);
+  const picked: WordEntry[] = [];
+  const usedTranslations = new Set<string>();
+  for (const w of candidates) {
+    if (picked.length >= count) break;
+    if (usedTranslations.has(w.translation)) continue;
+    picked.push(w);
+    usedTranslations.add(w.translation);
+  }
+  if (picked.length < count) {
+    const pickedWords = new Set(picked.map((w) => w.word));
+    for (const w of candidates) {
+      if (picked.length >= count) break;
+      if (pickedWords.has(w.word)) continue;
+      picked.push(w);
+      pickedWords.add(w.word);
+    }
+  }
+  return picked;
+}
