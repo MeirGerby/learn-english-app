@@ -52,13 +52,20 @@ export default function ListeningPage() {
   const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const answeringRef = useRef(false);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const nextOrder = shuffle(words).slice(0, Math.min(ROUND_SIZE, words.length));
+      let nextOrder: WordEntry[];
+      if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
+        nextOrder = shuffle(pendingPracticeRef.current.words);
+      } else {
+        nextOrder = shuffle(words).slice(0, Math.min(ROUND_SIZE, words.length));
+      }
+      pendingPracticeRef.current = null;
       setOrder(nextOrder);
       setIndex(0);
       setCorrectCount(0);
@@ -82,6 +89,11 @@ export default function ListeningPage() {
     setHintUsed(false);
     setTimeout(() => inputRef.current?.focus(), 0);
     speak(word.word);
+  }
+
+  function handlePracticeMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
   }
 
   function advance() {
@@ -195,8 +207,13 @@ export default function ListeningPage() {
               </ul>
             </div>
           )}
-          <div className="flex gap-2.5 justify-center">
-            <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+          <div className="flex gap-2.5 justify-center flex-wrap">
+            <Button onClick={() => { pendingPracticeRef.current = null; setRoundKey((k) => k + 1); }}>שחקו שוב</Button>
+            {missedWords.length > 0 && (
+              <Button variant="secondary" onClick={handlePracticeMissed}>
+                תרגלו את המילים שטעיתם ({missedWords.length})
+              </Button>
+            )}
             <Link to="/games">
               <Button variant="outline">לרשימת המשחקים</Button>
             </Link>
