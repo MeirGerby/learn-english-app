@@ -36,6 +36,7 @@ export default function SpeedRoundPage() {
   const [order, setOrder] = useState<WordEntry[]>([]);
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const [options, setOptions] = useState<WordEntry[]>([]);
   const [answered, setAnswered] = useState<WordEntry | null>(null);
   const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
@@ -74,6 +75,7 @@ export default function SpeedRoundPage() {
       setOrder(nextOrder);
       setIndex(0);
       setCorrectCount(0);
+      setMissedWords([]);
       setShowResults(false);
       setLoading(false);
       if (nextOrder.length) startQuestion(nextOrder[0], words);
@@ -126,10 +128,13 @@ export default function SpeedRoundPage() {
   });
 
   function handleTimeout(current: WordEntry) {
+    if (answeringRef.current) return;
+    answeringRef.current = true;
     setAnswered((prev) => prev ?? current); // marks answered without a chosen option
     setFeedback({ text: `הזמן נגמר! התשובה הנכונה: "${current.translation}"`, color: "text-red-600" });
     recordLocal(0, false);
     recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    setMissedWords((m) => [...m, current]);
     setTimeout(() => advanceRef.current(), 1200);
   }
 
@@ -141,7 +146,11 @@ export default function SpeedRoundPage() {
     const isCorrect = opt.word === current.word;
     setAnswered(opt);
     recordLocal(POINTS_PER_CORRECT, isCorrect);
-    if (isCorrect) setCorrectCount((c) => c + 1);
+    if (isCorrect) {
+      setCorrectCount((c) => c + 1);
+    } else {
+      setMissedWords((m) => [...m, current]);
+    }
     setFeedback(
       isCorrect
         ? { text: "נכון! ✓", color: "text-green-600" }
@@ -179,6 +188,19 @@ export default function SpeedRoundPage() {
           <p className="text-muted-foreground mb-6">
             ענית נכון על {correctCount} מתוך {order.length} שאלות.
           </p>
+          {missedWords.length > 0 && (
+            <div className="text-start bg-card border rounded-2xl p-4 mb-6 max-w-sm mx-auto">
+              <h3 className="font-semibold text-sm mb-2 text-center">מילים לתרגול נוסף</h3>
+              <ul className="space-y-1.5">
+                {missedWords.map((w, i) => (
+                  <li key={`${w.word}-${i}`} className="flex items-center justify-between text-sm gap-3">
+                    <span dir="ltr" lang="en" className="font-medium">{w.word}</span>
+                    <span className="text-muted-foreground">{w.translation}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="flex gap-2.5 justify-center">
             <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
             <Link to="/games">
