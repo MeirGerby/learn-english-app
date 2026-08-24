@@ -193,6 +193,14 @@ export default function GamesListPage() {
                   {isExpanded && (
                     <p id={descId} className="text-xs text-muted-foreground text-center">
                       {ach.descHe}
+                      {!unlocked && stats != null && ach.progress && (() => {
+                        const { current, target } = ach.progress(stats);
+                        return (
+                          <span className="block mt-0.5">
+                            התקדמות: {Math.min(current, target)} מתוך {target}
+                          </span>
+                        );
+                      })()}
                     </p>
                   )}
                 </div>

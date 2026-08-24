@@ -53,6 +53,10 @@ export interface Achievement {
   nameHe: string;
   descHe: string;
   check: (stats: UserStats) => boolean;
+  // Optional: how close the user is to unlocking this achievement, for
+  // display on the locked state. Omitted for binary/trivial achievements
+  // (e.g. "first correct answer") where a progress count adds no value.
+  progress?: (stats: UserStats) => { current: number; target: number };
 }
 
 export interface CourseItem {

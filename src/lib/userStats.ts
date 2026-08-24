@@ -19,6 +19,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     nameHe: "50 תשובות נכונות",
     descHe: "צברת 50 תשובות נכונות בסך הכל",
     check: (s) => s.totalCorrect >= 50,
+    progress: (s) => ({ current: s.totalCorrect ?? 0, target: 50 }),
   },
   {
     id: "correct_200",
@@ -26,6 +27,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     nameHe: "200 תשובות נכונות",
     descHe: "צברת 200 תשובות נכונות בסך הכל",
     check: (s) => s.totalCorrect >= 200,
+    progress: (s) => ({ current: s.totalCorrect ?? 0, target: 200 }),
   },
   {
     id: "streak_10",
@@ -33,6 +35,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     nameHe: "רצף של 10",
     descHe: "השגת רצף של 10 תשובות נכונות ברצף",
     check: (s) => (s.bestStreak || 0) >= 10,
+    progress: (s) => ({ current: s.bestStreak ?? 0, target: 10 }),
   },
   {
     id: "score_500",
@@ -40,6 +43,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     nameHe: "500 נקודות",
     descHe: "צברת 500 נקודות בסך הכל",
     check: (s) => (s.totalScore || 0) >= 500,
+    progress: (s) => ({ current: s.totalScore ?? 0, target: 500 }),
   },
   {
     id: "beginner_explorer",
@@ -50,6 +54,14 @@ export const ACHIEVEMENTS: Achievement[] = [
       (s.roundsCompleted?.quiz ?? 0) > 0 &&
       (s.roundsCompleted?.scramble ?? 0) > 0 &&
       (s.roundsCompleted?.speedRound ?? 0) > 0,
+    progress: (s) => ({
+      current: [
+        (s.roundsCompleted?.quiz ?? 0) > 0,
+        (s.roundsCompleted?.scramble ?? 0) > 0,
+        (s.roundsCompleted?.speedRound ?? 0) > 0,
+      ].filter(Boolean).length,
+      target: 3,
+    }),
   },
   {
     id: "advanced_explorer",
@@ -60,6 +72,14 @@ export const ACHIEVEMENTS: Achievement[] = [
       (s.roundsCompleted?.fillBlank ?? 0) > 0 &&
       (s.roundsCompleted?.listening ?? 0) > 0 &&
       (s.roundsCompleted?.speedRound ?? 0) > 0,
+    progress: (s) => ({
+      current: [
+        (s.roundsCompleted?.fillBlank ?? 0) > 0,
+        (s.roundsCompleted?.listening ?? 0) > 0,
+        (s.roundsCompleted?.speedRound ?? 0) > 0,
+      ].filter(Boolean).length,
+      target: 3,
+    }),
   },
   {
     id: "intermediate_explorer",
@@ -70,6 +90,14 @@ export const ACHIEVEMENTS: Achievement[] = [
       (s.roundsCompleted?.wordMatch ?? 0) > 0 &&
       (s.roundsCompleted?.typeWord ?? 0) > 0 &&
       (s.roundsCompleted?.sentenceBuilder ?? 0) > 0,
+    progress: (s) => ({
+      current: [
+        (s.roundsCompleted?.wordMatch ?? 0) > 0,
+        (s.roundsCompleted?.typeWord ?? 0) > 0,
+        (s.roundsCompleted?.sentenceBuilder ?? 0) > 0,
+      ].filter(Boolean).length,
+      target: 3,
+    }),
   },
 ];
 
