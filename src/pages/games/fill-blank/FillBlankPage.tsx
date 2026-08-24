@@ -41,6 +41,7 @@ export default function FillBlankPage() {
   const [answered, setAnswered] = useState<WordEntry | null>(null);
   const [showResults, setShowResults] = useState(false);
   const answeringRef = useRef(false);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   const [roundKey, setRoundKey] = useState(0);
 
@@ -50,7 +51,13 @@ export default function FillBlankPage() {
     loadWords(category).then((words) => {
       if (cancelled) return;
       const usable = words.filter((w) => blankOutWord(w.example, w.word) !== w.example);
-      const nextOrder = shuffle(usable).slice(0, Math.min(ROUND_SIZE, usable.length));
+      let nextOrder: WordEntry[];
+      if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
+        nextOrder = shuffle(pendingPracticeRef.current.words);
+      } else {
+        nextOrder = shuffle(usable).slice(0, Math.min(ROUND_SIZE, usable.length));
+      }
+      pendingPracticeRef.current = null;
       setPool(usable);
       setOrder(nextOrder);
       setIndex(0);
@@ -66,6 +73,11 @@ export default function FillBlankPage() {
       cancelled = true;
     };
   }, [category, roundKey]);
+
+  function handlePracticeMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
+  }
 
   function buildOptions(current: WordEntry, words: WordEntry[]) {
     const wrong = shuffle(words.filter((w) => w.word !== current.word)).slice(0, 3);
@@ -160,8 +172,13 @@ export default function FillBlankPage() {
               </ul>
             </div>
           )}
-          <div className="flex gap-2.5 justify-center">
-            <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+          <div className="flex gap-2.5 justify-center flex-wrap">
+            <Button onClick={() => { pendingPracticeRef.current = null; setRoundKey((k) => k + 1); }}>שחקו שוב</Button>
+            {missedWords.length > 0 && (
+              <Button variant="secondary" onClick={handlePracticeMissed}>
+                תרגלו את המילים שטעיתם ({missedWords.length})
+              </Button>
+            )}
             <Link to="/games">
               <Button variant="outline">לרשימת המשחקים</Button>
             </Link>
