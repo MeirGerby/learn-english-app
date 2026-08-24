@@ -8,7 +8,7 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
+import { loadWords, getCategoryKeysForBand, shuffle, pickRoundWithDistinctTranslations } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export default function WordMatchPage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const round = shuffle(words).slice(0, Math.min(PAIR_COUNT, words.length));
+      const round = pickRoundWithDistinctTranslations(words, Math.min(PAIR_COUNT, words.length));
       setPairs(round);
       setLeftOrder(shuffle(round));
       setRightOrder(shuffle(round));
