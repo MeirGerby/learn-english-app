@@ -96,7 +96,7 @@ export default function GamesListPage() {
       )}
       {!user && (
         <p className="text-center text-sm text-muted-foreground mb-3">
-          <Link to="/login" className="text-primary hover:underline">
+          <Link to="/login" state={{ from: "/games" }} className="text-primary hover:underline">
             התחברו
           </Link>{" "}
           ועברו מבחן רמה כדי לפתוח את כל התכנים המתאימים לכם

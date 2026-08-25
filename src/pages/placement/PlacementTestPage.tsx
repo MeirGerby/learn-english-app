@@ -19,6 +19,9 @@ export default function PlacementTestPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as { from?: string } | null;
+  // Serves two callers: the results-screen "למשחקים" button (destination after
+  // finishing the test) and the not-logged-in banner's login link below
+  // (destination after logging in) - both fall back to /games when unset.
   const from =
     typeof locationState?.from === "string" && locationState.from.startsWith("/") ? locationState.from : "/games";
   const [loading, setLoading] = useState(true);
@@ -92,7 +95,7 @@ export default function PlacementTestPage() {
       {!authLoading && !user && !done && (
         <p className="text-center text-muted-foreground text-sm mb-6">
           אתם לא מחוברים - התוצאה לא תישמר.{" "}
-          <Link to="/login" className="text-primary hover:underline">
+          <Link to="/login" state={{ from }} className="text-primary hover:underline">
             מומלץ להתחבר
           </Link>{" "}
           לפני שמתחילים.
