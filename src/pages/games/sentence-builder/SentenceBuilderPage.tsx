@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
@@ -23,6 +23,7 @@ const CATEGORIES = getCategoryKeysForBand(2);
 
 export default function SentenceBuilderPage() {
   useDocumentTitle("בניית משפטים");
+  const location = useLocation();
   const { score, streak, recordLocal } = useGameScore("sentenceBuilder");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 2;
@@ -183,7 +184,7 @@ export default function SentenceBuilderPage() {
             עברו את מבחן הרמה בהצלחה גבוהה יותר, או תרגלו במשחקים אחרים כדי להתקדם לרמה הבינונית.
           </p>
           <div className="flex gap-2.5 justify-center">
-            <Link to="/placement-test">
+            <Link to="/placement-test" state={{ from: location.pathname }}>
               <Button>מבחן רמה</Button>
             </Link>
             <Link to="/games">
