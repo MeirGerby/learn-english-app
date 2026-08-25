@@ -185,10 +185,10 @@ export default function SentenceBuilderPage() {
           </p>
           <div className="flex gap-2.5 justify-center">
             <Link to="/placement-test" state={{ from: location.pathname }}>
-              <Button>מבחן רמה</Button>
+              <Button className="h-11">מבחן רמה</Button>
             </Link>
             <Link to="/games">
-              <Button variant="outline">חזרה למשחקים</Button>
+              <Button variant="outline" className="h-11">חזרה למשחקים</Button>
             </Link>
           </div>
         </section>
