@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { GameHeader } from "@/components/GameHeader";
 import { CategorySelect } from "@/components/CategorySelect";
@@ -35,6 +35,7 @@ function normalize(text: string): string {
 
 export default function ListeningPage() {
   useDocumentTitle("אתגר האזנה");
+  const location = useLocation();
   const { score, streak, recordLocal } = useGameScore("listening");
   const { unlockedBand, loading: placementLoading } = usePlacement();
   const gameLocked = placementLoading || unlockedBand < 3;
@@ -168,7 +169,7 @@ export default function ListeningPage() {
             עברו את מבחן הרמה בהצלחה גבוהה יותר, או תרגלו במשחקים אחרים כדי להתקדם לרמה המתקדמת.
           </p>
           <div className="flex gap-2.5 justify-center">
-            <Link to="/placement-test">
+            <Link to="/placement-test" state={{ from: location.pathname }}>
               <Button>מבחן רמה</Button>
             </Link>
             <Link to="/games">
