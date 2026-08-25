@@ -40,6 +40,7 @@ export default function WordMatchPage() {
   const [wrongCounts, setWrongCounts] = useState<Map<string, number>>(new Map());
   const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const busyRef = useRef(false);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
 
   useEffect(() => {
     busyRef.current = false;
@@ -50,7 +51,13 @@ export default function WordMatchPage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      const round = pickRoundWithDistinctTranslations(words, Math.min(PAIR_COUNT, words.length));
+      let round: WordEntry[];
+      if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
+        round = pendingPracticeRef.current.words;
+      } else {
+        round = pickRoundWithDistinctTranslations(words, Math.min(PAIR_COUNT, words.length));
+      }
+      pendingPracticeRef.current = null;
       setPairs(round);
       setLeftOrder(shuffle(round));
       setRightOrder(shuffle(round));
@@ -113,6 +120,11 @@ export default function WordMatchPage() {
         setStatusMessage(null);
       }, 600);
     }
+  }
+
+  function practiceMissed() {
+    pendingPracticeRef.current = { category, words: missedWords };
+    setRoundKey((k) => k + 1);
   }
 
   function clickLeft(word: string) {
@@ -205,8 +217,20 @@ export default function WordMatchPage() {
                   </ul>
                 </div>
               )}
-              <div className="flex gap-2.5 justify-center">
-                <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
+              <div className="flex gap-2.5 justify-center flex-wrap">
+                <Button
+                  onClick={() => {
+                    pendingPracticeRef.current = null;
+                    setRoundKey((k) => k + 1);
+                  }}
+                >
+                  שחקו שוב
+                </Button>
+                {missedWords.length >= 2 && (
+                  <Button variant="outline" onClick={practiceMissed}>
+                    תרגלו את המילים שטעיתם ({missedWords.length})
+                  </Button>
+                )}
                 <Link to="/games">
                   <Button variant="outline">לרשימת המשחקים</Button>
                 </Link>
