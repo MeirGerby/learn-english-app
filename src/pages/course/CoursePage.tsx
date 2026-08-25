@@ -27,6 +27,7 @@ export default function CoursePage() {
   const [items, setItems] = useState<CourseItem[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [contentError, setContentError] = useState(false);
+  const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set());
   const [type, setType] = useState<"video" | "image">("video");
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
@@ -49,6 +50,14 @@ export default function CoursePage() {
     // Keyed on user?.uid, not the user object - see usePlacement.tsx for why.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
+
+  function markBroken(id: string) {
+    setBrokenIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
@@ -130,7 +139,18 @@ export default function CoursePage() {
             return (
               <div key={item.id} className="bg-card border rounded-xl overflow-hidden shadow-sm">
                 {item.type === "image" ? (
-                  <img src={item.url} alt={item.caption || ""} className="w-full h-auto" />
+                  brokenIds.has(item.id) ? (
+                    <p className="text-center text-muted-foreground text-sm py-12">
+                      ⚠️ לא ניתן לטעון את התמונה
+                    </p>
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt={item.caption || ""}
+                      className="w-full h-auto"
+                      onError={() => markBroken(item.id)}
+                    />
+                  )
                 ) : embedUrl ? (
                   <div className="aspect-video">
                     <iframe
@@ -141,9 +161,18 @@ export default function CoursePage() {
                       allowFullScreen
                     />
                   </div>
+                ) : brokenIds.has(item.id) ? (
+                  <p className="text-center text-muted-foreground text-sm py-12">
+                    ⚠️ לא ניתן לטעון את הסרטון
+                  </p>
                 ) : (
                   // eslint-disable-next-line jsx-a11y/media-has-caption
-                  <video src={item.url} controls className="w-full h-auto" />
+                  <video
+                    src={item.url}
+                    controls
+                    className="w-full h-auto"
+                    onError={() => markBroken(item.id)}
+                  />
                 )}
                 <div className="p-3 flex items-center justify-between gap-2">
                   <p className="text-sm text-muted-foreground m-0">{item.caption}</p>
