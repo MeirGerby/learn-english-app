@@ -47,19 +47,23 @@ export default function AdminPage() {
   useEffect(() => {
     if (!admin) return;
     const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setItems(
-        snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return {
-            id: docSnap.id,
-            text: data.text,
-            authorEmail: data.authorEmail,
-            createdAt: data.createdAt ?? null,
-          };
-        })
-      );
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setItems(
+          snapshot.docs.map((docSnap) => {
+            const data = docSnap.data();
+            return {
+              id: docSnap.id,
+              text: data.text,
+              authorEmail: data.authorEmail,
+              createdAt: data.createdAt ?? null,
+            };
+          })
+        );
+      },
+      (error) => console.warn("Feedback listener failed:", error)
+    );
     return unsubscribe;
   }, [admin]);
 
