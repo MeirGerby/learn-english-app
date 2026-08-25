@@ -114,7 +114,7 @@ export default function RegisterPage() {
             {error}
           </p>
 
-          <Button type="submit" className="mt-4" disabled={isSubmitting}>
+          <Button type="submit" className="mt-4 h-11" disabled={isSubmitting}>
             {isSubmitting ? "נרשמים..." : "הרשמה"}
           </Button>
         </form>

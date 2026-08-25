@@ -110,7 +110,7 @@ export default function LoginPage() {
               {resetMessage}
             </p>
 
-            <Button type="submit" className="mt-4" disabled={resetSubmitting}>
+            <Button type="submit" className="mt-4 h-11" disabled={resetSubmitting}>
               {resetSubmitting ? "שולחים..." : "שליחת קישור לאיפוס"}
             </Button>
           </form>
@@ -170,7 +170,7 @@ export default function LoginPage() {
             שכחתי סיסמה
           </button>
 
-          <Button type="submit" className="mt-4" disabled={isSubmitting}>
+          <Button type="submit" className="mt-4 h-11" disabled={isSubmitting}>
             {isSubmitting ? "מתחברים..." : "התחברות"}
           </Button>
         </form>
