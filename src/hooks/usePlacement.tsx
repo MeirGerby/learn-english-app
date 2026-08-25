@@ -11,6 +11,14 @@ interface PlacementContextValue {
   mustTakeTest: boolean;
   completedPlacement: boolean;
   unlockedBand: Band;
+  // The raw userStats/{uid} doc this provider already fetches once per
+  // session (see below) - exposed so consumers that need more than the
+  // derived placement fields (e.g. GamesListPage's achievements section)
+  // don't have to run their own independent getStats() fetch. A one-time
+  // snapshot per session, not a live listener - it won't reflect an
+  // achievement unlocked mid-session (that's the separate, event-based
+  // AchievementToast mechanism from rule 19, not this).
+  stats: UserStats | null;
   // Called right after PlacementTestPage saves a fresh result, so every
   // already-mounted consumer (RequirePlacement, GamesListPage, every game
   // page) sees the new band immediately - without waiting on a fresh
@@ -86,6 +94,7 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
     mustTakeTest,
     completedPlacement,
     unlockedBand,
+    stats,
     applyPlacementResult: (band) => setOverrideBand(band),
   };
 
