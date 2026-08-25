@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { usePlacement } from "@/hooks/usePlacement";
 import { TopBar } from "@/components/TopBar";
 
@@ -9,6 +9,7 @@ import { TopBar } from "@/components/TopBar";
 // account, per the "test on first login" requirement.
 export function RequirePlacement({ children }: { children: ReactNode }) {
   const { loading, mustTakeTest } = usePlacement();
+  const location = useLocation();
   if (loading) {
     return (
       <div className="app mx-auto max-w-xl w-full px-4 py-6">
@@ -17,6 +18,6 @@ export function RequirePlacement({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  if (mustTakeTest) return <Navigate to="/placement-test" replace />;
+  if (mustTakeTest) return <Navigate to="/placement-test" replace state={{ from: location.pathname }} />;
   return <>{children}</>;
 }

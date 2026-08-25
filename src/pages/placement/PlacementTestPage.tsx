@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -17,6 +17,10 @@ export default function PlacementTestPage() {
   const { user, loading: authLoading } = useAuth();
   const { applyPlacementResult, unlockedBand } = usePlacement();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as { from?: string } | null;
+  const from =
+    typeof locationState?.from === "string" && locationState.from.startsWith("/") ? locationState.from : "/games";
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
   const [index, setIndex] = useState(0);
@@ -116,7 +120,7 @@ export default function PlacementTestPage() {
               שימו לב: כדי שהרמה תישמר ותפתח לכם גישה קבועה, יש להתחבר לפני ביצוע המבחן.
             </p>
           )}
-          <Button onClick={() => navigate("/games")}>למשחקים</Button>
+          <Button onClick={() => navigate(from)}>למשחקים</Button>
         </section>
       ) : (
         current && (
