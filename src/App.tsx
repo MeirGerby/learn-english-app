@@ -3,6 +3,7 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import AdminPage from "@/pages/admin/AdminPage";
+import AccountPage from "@/pages/account/AccountPage";
 import CoursePage from "@/pages/course/CoursePage";
 import PlacementTestPage from "@/pages/placement/PlacementTestPage";
 import GamesListPage from "@/pages/games/GamesListPage";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/course" element={<CoursePage />} />
         <Route path="/placement-test" element={<PlacementTestPage />} />
         <Route

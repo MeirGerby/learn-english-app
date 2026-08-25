@@ -32,6 +32,9 @@ export function TopBar({ backTo }: TopBarProps) {
                 ⚙️ ניהול
               </Link>
             )}
+            <Link to="/account" className="text-primary font-semibold text-sm hover:underline">
+              🔑 שינוי סיסמה
+            </Link>
             <Button variant="link" className="text-destructive p-0 h-auto text-sm" onClick={() => signOut(auth)}>
               התנתקות
             </Button>
