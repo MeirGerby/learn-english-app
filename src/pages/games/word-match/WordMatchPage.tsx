@@ -37,6 +37,8 @@ export default function WordMatchPage() {
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
   const [statusMessage, setStatusMessage] = useState<{ text: string; color: string } | null>(null);
+  const [wrongCounts, setWrongCounts] = useState<Map<string, number>>(new Map());
+  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
   const busyRef = useRef(false);
 
   useEffect(() => {
@@ -59,6 +61,8 @@ export default function WordMatchPage() {
       setWrongAttempts(0);
       setShowResults(false);
       setStatusMessage(null);
+      setWrongCounts(new Map());
+      setMissedWords([]);
       busyRef.current = false;
       setLoading(false);
     });
@@ -88,6 +92,20 @@ export default function WordMatchPage() {
       setStatusMessage({ text: "לא נכון, נסו שוב", color: "text-red-600" });
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      const nextCounts = new Map(wrongCounts);
+      const newlyMissed: WordEntry[] = [];
+      for (const w of [leftWord, rightWord]) {
+        const count = (nextCounts.get(w) ?? 0) + 1;
+        nextCounts.set(w, count);
+        if (count === 2) {
+          const entry = pairs.find((p) => p.word === w);
+          if (entry) newlyMissed.push(entry);
+        }
+      }
+      setWrongCounts(nextCounts);
+      if (newlyMissed.length > 0) {
+        setMissedWords((m) => [...m, ...newlyMissed.filter((e) => !m.some((x) => x.word === e.word))]);
+      }
       setTimeout(() => {
         setWrongFlash(null);
         setSelectedLeft(null);
@@ -174,6 +192,19 @@ export default function WordMatchPage() {
               <p className="text-muted-foreground mb-6">
                 התאמתם את כל {pairs.length} הזוגות{wrongAttempts > 0 && ` (עם ${wrongAttempts} ניסיונות שגויים)`}.
               </p>
+              {missedWords.length > 0 && (
+                <div className="text-start bg-card border rounded-2xl p-4 mb-6 max-w-sm mx-auto">
+                  <h3 className="font-semibold text-sm mb-2 text-center">מילים לתרגול נוסף</h3>
+                  <ul className="space-y-1.5">
+                    {missedWords.map((w, i) => (
+                      <li key={`${w.word}-${i}`} className="flex items-center justify-between text-sm gap-3">
+                        <span dir="ltr" lang="en" className="font-medium">{w.word}</span>
+                        <span className="text-muted-foreground">{w.translation}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="flex gap-2.5 justify-center">
                 <Button onClick={() => setRoundKey((k) => k + 1)}>שחקו שוב</Button>
                 <Link to="/games">
