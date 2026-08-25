@@ -152,7 +152,7 @@ export default function ScramblePage() {
 
   return (
     <div className="app mx-auto max-w-xl w-full px-4 py-6">
-      <TopBar backTo={{ href: "/", label: "🏠 חזרה לדף הבית" }} />
+      <TopBar backTo={{ href: "/games", label: "🏠 חזרה למשחקים" }} />
       <GameHeader
         title={
           <>
