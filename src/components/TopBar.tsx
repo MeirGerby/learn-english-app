@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -10,6 +11,19 @@ interface TopBarProps {
 
 export function TopBar({ backTo }: TopBarProps) {
   const { user, admin } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return;
+    setIsSigningOut(true);
+    try {
+      await signOut(auth);
+    } catch {
+      alert("שגיאה בהתנתקות. נסו שוב.");
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between flex-wrap gap-2.5 mb-6">
@@ -35,7 +49,12 @@ export function TopBar({ backTo }: TopBarProps) {
             <Link to="/account" className="text-primary font-semibold text-sm hover:underline">
               🔑 שינוי סיסמה
             </Link>
-            <Button variant="link" className="text-destructive p-0 h-auto text-sm" onClick={() => signOut(auth)}>
+            <Button
+              variant="link"
+              className="text-destructive p-0 h-auto text-sm"
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+            >
               התנתקות
             </Button>
           </>
