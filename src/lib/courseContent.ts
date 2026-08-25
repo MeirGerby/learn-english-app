@@ -13,17 +13,22 @@ import { db } from "./firebase";
 const courseCollection = collection(db, "courseContent");
 
 export function subscribeToCourseContent(
-  onChange: (items: { id: string; type: "video" | "image"; url: string; caption: string }[]) => void
+  onChange: (items: { id: string; type: "video" | "image"; url: string; caption: string }[]) => void,
+  onError?: (error: Error) => void
 ) {
   const q = query(courseCollection, orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    onChange(
-      snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
-        return { id: docSnap.id, type: data.type, url: data.url, caption: data.caption };
-      })
-    );
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return { id: docSnap.id, type: data.type, url: data.url, caption: data.caption };
+        })
+      );
+    },
+    onError
+  );
 }
 
 export async function addCourseItem(item: { type: "video" | "image"; url: string; caption: string }) {
