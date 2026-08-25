@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { BandBadge } from "@/components/BandBadge";
-import { useAchievements } from "@/hooks/useAchievements";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { ACHIEVEMENTS } from "@/lib/userStats";
@@ -74,8 +73,8 @@ const GAMES: { href: string; icon: string; title: string; desc: string; minBand:
 
 export default function GamesListPage() {
   useDocumentTitle("משחקים");
-  const { stats, loading, loggedIn } = useAchievements();
-  const { user, admin, unlockedBand, loading: placementLoading } = usePlacement();
+  const { user, admin, unlockedBand, stats, loading: placementLoading } = usePlacement();
+  const loggedIn = !!user;
   const [expandedAchievementId, setExpandedAchievementId] = useState<string | null>(null);
   const [expandedGameHref, setExpandedGameHref] = useState<string | null>(null);
 
@@ -161,9 +160,9 @@ export default function GamesListPage() {
         <section className="mt-5">
           <div className="mb-2.5">
             <p className="text-center text-muted-foreground font-semibold text-sm">
-              {loading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0} · ההישגים שלי`}
+              {placementLoading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0} · ההישגים שלי`}
             </p>
-            {!loading && (stats?.bestStreak ?? 0) > 0 && (
+            {!placementLoading && (stats?.bestStreak ?? 0) > 0 && (
               <p className="text-center text-muted-foreground text-xs mt-0.5">
                 השיא שלך: {stats?.bestStreak} תשובות נכונות ברצף
               </p>
