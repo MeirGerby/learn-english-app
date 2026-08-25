@@ -228,7 +228,7 @@ export default function WordMatchPage() {
                   שחקו שוב
                 </Button>
                 {missedWords.length >= 2 && (
-                  <Button variant="outline" onClick={practiceMissed}>
+                  <Button variant="secondary" onClick={practiceMissed}>
                     תרגלו את המילים שטעיתם ({missedWords.length})
                   </Button>
                 )}
