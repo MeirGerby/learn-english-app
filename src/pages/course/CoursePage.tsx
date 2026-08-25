@@ -26,6 +26,7 @@ export default function CoursePage() {
   const location = useLocation();
   const [items, setItems] = useState<CourseItem[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
+  const [contentError, setContentError] = useState(false);
   const [type, setType] = useState<"video" | "image">("video");
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
@@ -33,10 +34,18 @@ export default function CoursePage() {
 
   useEffect(() => {
     if (!user) return;
-    return subscribeToCourseContent((newItems) => {
-      setItems(newItems);
-      setContentLoading(false);
-    });
+    setContentLoading(true);
+    setContentError(false);
+    return subscribeToCourseContent(
+      (newItems) => {
+        setItems(newItems);
+        setContentLoading(false);
+      },
+      () => {
+        setContentLoading(false);
+        setContentError(true);
+      }
+    );
     // Keyed on user?.uid, not the user object - see usePlacement.tsx for why.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
@@ -110,6 +119,8 @@ export default function CoursePage() {
 
       {contentLoading ? (
         <p className="text-center text-muted-foreground py-12">טוען תוכן...</p>
+      ) : contentError ? (
+        <p className="text-center text-destructive py-12">אירעה שגיאה בטעינת התוכן. נסו לרענן את הדף.</p>
       ) : items.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">עדיין אין תוכן בקורס. חזרו לבדוק בקרוב!</p>
       ) : (
