@@ -100,10 +100,10 @@ export default function CoursePage() {
           <h2 className="font-semibold mb-3">הוספת תוכן</h2>
           <form onSubmit={handleAdd} className="flex flex-col gap-3">
             <div className="flex gap-2">
-              <Button type="button" variant={type === "video" ? "default" : "outline"} className="flex-1" onClick={() => setType("video")}>
+              <Button type="button" variant={type === "video" ? "default" : "outline"} className="flex-1 h-11" onClick={() => setType("video")}>
                 🎬 סרטון
               </Button>
-              <Button type="button" variant={type === "image" ? "default" : "outline"} className="flex-1" onClick={() => setType("image")}>
+              <Button type="button" variant={type === "image" ? "default" : "outline"} className="flex-1 h-11" onClick={() => setType("image")}>
                 🖼️ תמונה
               </Button>
             </div>
@@ -111,15 +111,15 @@ export default function CoursePage() {
               <Label htmlFor="course-url" className="text-muted-foreground text-sm">
                 {type === "video" ? "קישור לסרטון (YouTube או קישור ישיר ל-mp4)" : "קישור לתמונה"}
               </Label>
-              <Input id="course-url" dir="ltr" required value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1" />
+              <Input id="course-url" dir="ltr" required value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1 h-11" />
             </div>
             <div>
               <Label htmlFor="course-caption" className="text-muted-foreground text-sm">
                 כיתוב (רשות)
               </Label>
-              <Input id="course-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1" />
+              <Input id="course-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1 h-11" />
             </div>
-            <Button type="submit" className="self-start" disabled={isSubmitting}>
+            <Button type="submit" className="self-start h-11" disabled={isSubmitting}>
               {isSubmitting ? "מוסיפה..." : "הוספה"}
             </Button>
           </form>
