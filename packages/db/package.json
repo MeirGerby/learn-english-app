@@ -1,0 +1,37 @@
+{
+  "name": "@learn-english/db",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check-types": "tsc --noEmit",
+    "predb:generate": "npm run build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migrate.ts",
+    "predb:push": "npm run build",
+    "db:push": "drizzle-kit push",
+    "predb:studio": "npm run build",
+    "db:studio": "drizzle-kit studio",
+    "predb:seed": "npm run build",
+    "db:seed": "tsx src/seed/index.ts"
+  },
+  "dependencies": {
+    "@learn-english/shared": "*",
+    "@neondatabase/serverless": "^1.1.0",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.38.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.0",
+    "tsx": "^4.23.12",
+    "typescript": "5.9.2"
+  }
+}
