@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import { getStats } from "@/lib/userStats";
-import type { UserStats } from "@/types";
+import type { UserStats } from "@learn-english/shared";
 
 export function useAchievements() {
   const { user } = useAuth();

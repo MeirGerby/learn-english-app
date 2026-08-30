@@ -1,5 +1,6 @@
-import { getCategoryKeysForBand, loadWords, shuffle } from "./wordsDb";
-import type { Band, WordEntry } from "@/types";
+import { loadWords } from "./wordsDb";
+import { getCategoryKeysForBand, shuffle } from "@learn-english/shared";
+import type { Band, WordEntry } from "@learn-english/shared";
 
 export interface PlacementQuestion {
   word: WordEntry;
@@ -34,15 +35,4 @@ export async function generatePlacementTest(): Promise<PlacementQuestion[]> {
   }
 
   return shuffle(questions);
-}
-
-// Global accuracy across the mixed-difficulty test determines the band:
-// consistently getting Band 3 questions right requires broad mastery, so
-// a high overall score is what unlocks it.
-export function scoreToBand(correctCount: number, totalQuestions: number): Band {
-  if (totalQuestions === 0) return 1;
-  const ratio = correctCount / totalQuestions;
-  if (ratio >= 0.75) return 3;
-  if (ratio >= 0.4) return 2;
-  return 1;
 }

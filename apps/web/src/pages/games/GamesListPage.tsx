@@ -4,10 +4,9 @@ import { TopBar } from "@/components/TopBar";
 import { BandBadge } from "@/components/BandBadge";
 import { useAchievements } from "@/hooks/useAchievements";
 import { usePlacement } from "@/hooks/usePlacement";
-import { ACHIEVEMENTS } from "@/lib/userStats";
-import { getBandLabel } from "@/lib/wordsDb";
+import { ACHIEVEMENTS, getBandLabel } from "@learn-english/shared";
 import { cn } from "@/lib/utils";
-import type { Band } from "@/types";
+import type { Band } from "@learn-english/shared";
 
 const GAMES: { href: string; icon: string; title: string; desc: string; minBand: Band }[] = [
   // Band 1

@@ -1,6 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getBandLabel, getCategoryBand, getCategoryLabel } from "@/lib/wordsDb";
-import type { CategoryKey } from "@/types";
+import { getBandLabel, getCategoryBand, getCategoryLabel } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 interface CategorySelectProps {
   categories: CategoryKey[];

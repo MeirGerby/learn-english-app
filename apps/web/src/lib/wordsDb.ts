@@ -1,13 +1,7 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
-import { WORD_DATA, CATEGORY_LABELS, CATEGORY_BANDS } from "@/data/wordData";
-import type { Band, CategoryKey, WordEntry } from "@/types";
-
-const BAND_LABELS: Record<Band, string> = {
-  1: "רמה 1 - בסיס",
-  2: "רמה 2 - בינוני",
-  3: "רמה 3 - מתקדם",
-};
+import { WORD_DATA } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const FETCH_TIMEOUT_MS = 5000;
 
@@ -39,39 +33,4 @@ export async function loadWords(category: CategoryKey): Promise<WordEntry[]> {
     console.warn(`Firestore word fetch failed for "${category}", using local fallback.`, err);
   }
   return WORD_DATA[category] ?? [];
-}
-
-export function getCategoryKeys(): CategoryKey[] {
-  return Object.keys(WORD_DATA) as CategoryKey[];
-}
-
-export function getCategoryLabel(key: CategoryKey): string {
-  return CATEGORY_LABELS[key] ?? key;
-}
-
-export function getCategoryBand(key: CategoryKey): Band {
-  return CATEGORY_BANDS[key] ?? 1;
-}
-
-export function getBandLabel(band: Band): string {
-  return BAND_LABELS[band];
-}
-
-export function getCategoryKeysForBand(band: Band): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryBand(key) === band);
-}
-
-// Every category at or below the given band - what a user placed into
-// that band has unlocked.
-export function getCategoryKeysUpToBand(maxBand: Band): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryBand(key) <= maxBand);
-}
-
-export function shuffle<T>(arr: T[]): T[] {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
 }

@@ -21,6 +21,16 @@ export type CategoryKey =
 // Band 3 (advanced). Every category is tagged with exactly one band.
 export type Band = 1 | 2 | 3;
 
+export type GameKey =
+  | "quiz"
+  | "scramble"
+  | "fillBlank"
+  | "listening"
+  | "speedRound"
+  | "wordMatch"
+  | "typeWord"
+  | "sentenceBuilder";
+
 export interface RoundsCompleted {
   quiz?: number;
   scramble?: number;
@@ -61,4 +71,12 @@ export interface CourseItem {
   url: string;
   caption: string;
   createdAt: number;
+}
+
+// The shape returned by the API for the signed-in user - used by both the
+// web app (auth state) and the api itself (tRPC context/output types).
+export interface AuthUser {
+  id: string;
+  email: string;
+  isAdmin: boolean;
 }

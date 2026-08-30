@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ACHIEVEMENTS } from "@/lib/userStats";
+import { ACHIEVEMENTS } from "@learn-english/shared";
 
 interface ToastItem {
   key: number;

@@ -4,12 +4,12 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { generatePlacementTest, scoreToBand, type PlacementQuestion } from "@/lib/placementTest";
+import { generatePlacementTest, type PlacementQuestion } from "@/lib/placementTest";
 import { savePlacementResult } from "@/lib/userStats";
-import { getBandLabel } from "@/lib/wordsDb";
+import { scoreToBand, getBandLabel } from "@learn-english/shared";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlacement } from "@/hooks/usePlacement";
-import type { Band, WordEntry } from "@/types";
+import type { Band, WordEntry } from "@learn-english/shared";
 
 export default function PlacementTestPage() {
   const { user, loading: authLoading } = useAuth();

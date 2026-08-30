@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { User } from "firebase/auth";
 import { useAuth } from "./useAuth";
 import { getStats } from "@/lib/userStats";
-import type { Band, UserStats } from "@/types";
+import type { Band, UserStats } from "@learn-english/shared";
 
 interface PlacementContextValue {
   loading: boolean;
