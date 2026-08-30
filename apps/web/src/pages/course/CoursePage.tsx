@@ -1,42 +1,45 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
   addCourseItem,
   deleteCourseItem,
   getYouTubeEmbedUrl,
-  subscribeToCourseContent,
+  listCourseContent,
+  type CourseContentItem,
 } from "@/lib/courseContent";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface CourseItem {
-  id: string;
-  type: "video" | "image";
-  url: string;
-  caption: string;
-}
-
 export default function CoursePage() {
   const { user, admin, loading } = useAuth();
-  const [items, setItems] = useState<CourseItem[]>([]);
+  const [items, setItems] = useState<CourseContentItem[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [type, setType] = useState<"video" | "image">("video");
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const refetch = useCallback(async () => {
+    try {
+      setItems(await listCourseContent());
+    } catch {
+      // Leave whatever was already shown - a transient fetch failure
+      // shouldn't blank out content that was just visible.
+    } finally {
+      setContentLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!user) return;
-    return subscribeToCourseContent((newItems) => {
-      setItems(newItems);
-      setContentLoading(false);
-    });
-    // Keyed on user?.uid, not the user object - see usePlacement.tsx for why.
+    setContentLoading(true);
+    void refetch();
+    // Keyed on user?.id, not the user object - see usePlacement.tsx for why.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid]);
+  }, [user?.id]);
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
@@ -47,6 +50,7 @@ export default function CoursePage() {
       await addCourseItem({ type, url: url.trim(), caption: caption.trim() });
       setUrl("");
       setCaption("");
+      await refetch();
     } catch {
       alert("הוספת התוכן נכשלה. נסי שוב.");
     } finally {
@@ -140,6 +144,7 @@ export default function CoursePage() {
                         if (!window.confirm(`למחוק את "${item.caption || "הפריט"}"? לא ניתן לבטל פעולה זו.`)) return;
                         try {
                           await deleteCourseItem(item.id);
+                          await refetch();
                         } catch {
                           alert("מחיקת הפריט נכשלה. נסי שוב.");
                         }

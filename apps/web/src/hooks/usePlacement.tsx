@@ -1,12 +1,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { User } from "firebase/auth";
 import { useAuth } from "./useAuth";
 import { getStats } from "@/lib/userStats";
-import type { Band, UserStats } from "@learn-english/shared";
+import type { AuthUser, Band, UserStats } from "@learn-english/shared";
 
 interface PlacementContextValue {
   loading: boolean;
-  user: User | null;
+  user: AuthUser | null;
   admin: boolean;
   mustTakeTest: boolean;
   completedPlacement: boolean;
@@ -36,6 +35,21 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     setOverrideBand(null); // never carry a stale override across a login/logout
+
+    // Wait for auth itself to settle before deciding anything. useAuth()'s
+    // `user` starts null and flips to the real value asynchronously - since
+    // this effect and useAuth()'s own effect belong to the same component,
+    // this effect's first run (registered right after useAuth()'s) can fire
+    // while `user` is still the stale pre-resolution null, even though the
+    // real value is about to land a tick later. Without this guard, that
+    // transient null made statsLoading drop to false immediately, and once
+    // `user` then resolved to non-null on the next render (with `stats`
+    // still unset from that stale run), mustTakeTest briefly computed true
+    // and RequirePlacement redirected to /placement-test before this
+    // effect got a chance to re-run and start the real stats fetch -
+    // stranding an already-placed user back on the test.
+    if (authLoading) return;
+
     if (!user) {
       setStats(null);
       setStatsLoading(false);
@@ -63,15 +77,10 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-    // Deliberately keyed on user?.uid (a stable primitive), not the user
-    // object itself: Firebase's onAuthStateChanged can fire more than once
-    // for the same signed-in session with a new User object reference each
-    // time. Depending on the object caused this effect to re-run on every
-    // such firing, resetting statsLoading back to true before the previous
-    // fetch resolved - if firings kept coming, loading never settled and
-    // RequirePlacement's "בודק הרשאות..." screen never went away.
+    // Deliberately keyed on user?.id (a stable primitive), not the user
+    // object itself - useAuth() constructs a new object on every refresh.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid]);
+  }, [user?.id, authLoading]);
 
   const loading = authLoading || (!!user && statsLoading);
   const effectiveBand = overrideBand ?? (stats?.placementBand as Band | undefined);

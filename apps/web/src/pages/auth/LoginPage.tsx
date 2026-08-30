@@ -1,19 +1,15 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, type AuthError } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { trpc, getTRPCErrorCode } from "@/lib/trpc";
+import { setAuthToken } from "@/lib/authToken";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  "auth/invalid-email": "כתובת אימייל לא תקינה.",
-  "auth/user-disabled": "המשתמש הזה חסום.",
-  "auth/user-not-found": "לא נמצא משתמש עם אימייל זה.",
-  "auth/wrong-password": "סיסמה שגויה.",
-  "auth/invalid-credential": "אימייל או סיסמה שגויים.",
-  "auth/too-many-requests": "יותר מדי ניסיונות. נסו שוב מאוחר יותר.",
+  UNAUTHORIZED: "אימייל או סיסמה שגויים.",
+  BAD_REQUEST: "כתובת אימייל לא תקינה.",
 };
 
 export default function LoginPage() {
@@ -29,11 +25,12 @@ export default function LoginPage() {
     setError("");
     setIsSubmitting(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { token } = await trpc.auth.login.mutate({ email, password });
+      setAuthToken(token);
       navigate("/");
     } catch (err) {
-      const code = (err as AuthError).code;
-      setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+      const code = getTRPCErrorCode(err);
+      setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
     } finally {
       setIsSubmitting(false);
     }

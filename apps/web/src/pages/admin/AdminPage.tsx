@@ -1,20 +1,7 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  writeBatch,
-  Timestamp,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/hooks/useAuth";
-import { WORD_DATA } from "@learn-english/shared";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,91 +10,44 @@ interface FeedbackItem {
   id: string;
   text: string;
   authorEmail: string;
-  createdAt: Timestamp | null;
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  createdAt: number;
 }
 
 export default function AdminPage() {
   const { user, admin, loading } = useAuth();
   const [feedbackText, setFeedbackText] = useState("");
   const [items, setItems] = useState<FeedbackItem[]>([]);
-  const [importStatus, setImportStatus] = useState("");
-  const [importing, setImporting] = useState(false);
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+  const refetch = useCallback(async () => {
+    try {
+      setItems(await trpc.feedback.list.query());
+    } catch {
+      // Leave whatever was already shown on a transient fetch failure.
+    }
+  }, []);
 
   useEffect(() => {
     if (!admin) return;
-    const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setItems(
-        snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return {
-            id: docSnap.id,
-            text: data.text,
-            authorEmail: data.authorEmail,
-            createdAt: data.createdAt ?? null,
-          };
-        })
-      );
-    });
-    return unsubscribe;
-  }, [admin]);
+    void refetch();
+    // Keyed on user?.id, not the user object - see usePlacement.tsx for why.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin, user?.id]);
 
   async function handleSubmitFeedback(e: FormEvent) {
     e.preventDefault();
     if (isSubmittingFeedback) return;
     const text = feedbackText.trim();
-    if (!text || !user) return;
+    if (!text) return;
     setIsSubmittingFeedback(true);
     try {
-      await addDoc(collection(db, "feedback"), {
-        text,
-        authorEmail: user.email,
-        createdAt: serverTimestamp(),
-      });
+      await trpc.feedback.create.mutate({ text });
       setFeedbackText("");
+      await refetch();
     } catch {
       alert("שמירת המשוב נכשלה. נסו שוב.");
     } finally {
       setIsSubmittingFeedback(false);
-    }
-  }
-
-  async function handleImportWords() {
-    setImporting(true);
-    setImportStatus("מתחיל ייבוא...");
-
-    const entries: { word: string; translation: string; example: string; category: string }[] = [];
-    Object.entries(WORD_DATA).forEach(([category, words]) => {
-      words.forEach((w) => entries.push({ ...w, category }));
-    });
-
-    const BATCH_LIMIT = 450;
-    let written = 0;
-    try {
-      for (let i = 0; i < entries.length; i += BATCH_LIMIT) {
-        const chunk = entries.slice(i, i + BATCH_LIMIT);
-        const batch = writeBatch(db);
-        chunk.forEach((entry) => {
-          const id = `${entry.category}__${slugify(entry.word)}`;
-          batch.set(doc(db, "words", id), entry);
-        });
-        await batch.commit();
-        written += chunk.length;
-        setImportStatus(`מייבא... ${written} / ${entries.length}`);
-      }
-      setImportStatus(`✓ הייבוא הושלם! ${written} מילים יובאו בהצלחה.`);
-    } catch (err) {
-      setImportStatus(`שגיאה בייבוא: ${(err as Error).message}`);
-    } finally {
-      setImporting(false);
     }
   }
 
@@ -166,7 +106,7 @@ export default function AdminPage() {
                 <p className="text-sm whitespace-pre-wrap m-0">{item.text}</p>
                 <div className="flex items-center justify-between border-t pt-2.5 text-xs text-muted-foreground flex-wrap gap-2">
                   <span>
-                    {item.authorEmail} · {item.createdAt ? item.createdAt.toDate().toLocaleString("he-IL") : ""}
+                    {item.authorEmail} · {new Date(item.createdAt).toLocaleString("he-IL")}
                   </span>
                   <Button
                     variant="outline"
@@ -175,7 +115,8 @@ export default function AdminPage() {
                       const snippet = item.text.length > 40 ? `${item.text.slice(0, 40)}...` : item.text;
                       if (!window.confirm(`למחוק את המשוב "${snippet}"? לא ניתן לבטל פעולה זו.`)) return;
                       try {
-                        await deleteDoc(doc(db, "feedback", item.id));
+                        await trpc.feedback.remove.mutate({ id: item.id });
+                        await refetch();
                       } catch {
                         alert("מחיקת המשוב נכשלה. נסו שוב.");
                       }
@@ -187,18 +128,6 @@ export default function AdminPage() {
               </li>
             ))}
           </ul>
-        </section>
-
-        <section className="bg-card border rounded-xl p-5 shadow-sm">
-          <h2 className="font-semibold text-lg mb-2">ייבוא מילים למאגר הנתונים</h2>
-          <p className="text-muted-foreground text-sm mb-3">
-            מעביר את כל רשימות המילים לבסיס הנתונים (Firestore), כדי שהמשחקים ישתמשו בו במקום ברשימה המקומית. אפשר להריץ
-            שוב בבטחה - מילים קיימות יתעדכנו ולא ישוכפלו.
-          </p>
-          <Button onClick={handleImportWords} disabled={importing}>
-            📥 ייבוא מילים
-          </Button>
-          <p className="text-muted-foreground text-sm mt-3">{importStatus}</p>
         </section>
       </main>
     </div>

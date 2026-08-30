@@ -1,17 +1,18 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, type AuthError } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { trpc, getTRPCErrorCode } from "@/lib/trpc";
+import { setAuthToken } from "@/lib/authToken";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  "auth/email-already-in-use": "כתובת האימייל כבר רשומה במערכת.",
-  "auth/invalid-email": "כתובת אימייל לא תקינה.",
-  "auth/weak-password": "הסיסמה חלשה מדי.",
+  CONFLICT: "כתובת האימייל כבר רשומה במערכת.",
+  BAD_REQUEST: "בדקו שהאימייל תקין וכי הסיסמה באורך 8 תווים לפחות.",
 };
+
+const MIN_PASSWORD_LENGTH = 8;
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -30,14 +31,19 @@ export default function RegisterPage() {
       setError("הסיסמאות אינן תואמות.");
       return;
     }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`הסיסמה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const { token } = await trpc.auth.register.mutate({ email, password });
+      setAuthToken(token);
       navigate("/");
     } catch (err) {
-      const code = (err as AuthError).code;
-      setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+      const code = getTRPCErrorCode(err);
+      setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
     } finally {
       setIsSubmitting(false);
     }
@@ -61,7 +67,7 @@ export default function RegisterPage() {
             id="reg-password"
             type="password"
             required
-            minLength={6}
+            minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -74,7 +80,7 @@ export default function RegisterPage() {
             id="reg-confirm"
             type="password"
             required
-            minLength={6}
+            minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}

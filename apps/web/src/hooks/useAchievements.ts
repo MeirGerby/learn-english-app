@@ -4,12 +4,15 @@ import { getStats } from "@/lib/userStats";
 import type { UserStats } from "@learn-english/shared";
 
 export function useAchievements() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    // Wait for auth to settle first - see usePlacement.tsx's PlacementProvider
+    // effect for why acting on a transient pre-resolution `user` is wrong.
+    if (authLoading) return;
     if (!user) {
       setStats(null);
       setLoading(false);
@@ -33,9 +36,9 @@ export function useAchievements() {
     return () => {
       cancelled = true;
     };
-    // Keyed on user?.uid, not the user object - see usePlacement.tsx for why.
+    // Keyed on user?.id, not the user object - see usePlacement.tsx for why.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid]);
+  }, [user?.id, authLoading]);
 
   return { stats, loading, loggedIn: !!user };
 }

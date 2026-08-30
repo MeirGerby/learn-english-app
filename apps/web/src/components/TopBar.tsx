@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
+import { clearAuthToken } from "@/lib/authToken";
 import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
@@ -32,7 +31,7 @@ export function TopBar({ backTo }: TopBarProps) {
                 ⚙️ ניהול
               </Link>
             )}
-            <Button variant="link" className="text-destructive p-0 h-auto text-sm" onClick={() => signOut(auth)}>
+            <Button variant="link" className="text-destructive p-0 h-auto text-sm" onClick={() => clearAuthToken()}>
               התנתקות
             </Button>
           </>
