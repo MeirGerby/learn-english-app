@@ -35,7 +35,7 @@
     "@vitejs/plugin-react": "^6.0.4",
     "api": "*",
     "oxlint": "^1.75.0",
-    "typescript": "~6.0.2",
+    "typescript": "5.9.2",
     "vite": "^8.2.0"
   }
 }
