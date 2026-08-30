@@ -6,4 +6,6 @@ dist/
 *.tsbuildinfo
 .env
 .env.local
+.env.*.local
 scripts/generated/
+.turbo/
