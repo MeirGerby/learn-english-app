@@ -1,15 +1,15 @@
-import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
-import { increment } from "firebase/firestore";
-import { auth, db } from "./firebase";
-import { ACHIEVEMENTS } from "@learn-english/shared";
+import { trpc } from "./trpc";
+import { getAuthToken } from "./authToken";
 import type { Band, GameKey, UserStats } from "@learn-english/shared";
 
-function statsDocRef(uid: string) {
-  return doc(db, "userStats", uid);
+function isSignedIn(): boolean {
+  return !!getAuthToken();
 }
 
-function timeout(ms: number): Promise<"TIMEOUT"> {
-  return new Promise((resolve) => setTimeout(() => resolve("TIMEOUT"), ms));
+function dispatchUnlocks(newlyUnlocked: string[]) {
+  if (newlyUnlocked.length) {
+    window.dispatchEvent(new CustomEvent("achievement-unlocked", { detail: { ids: newlyUnlocked } }));
+  }
 }
 
 interface RecordAnswerArgs {
@@ -21,138 +21,52 @@ interface RecordAnswerArgs {
 // Records one answer's outcome for the signed-in user. No-op for anonymous
 // visitors - their score stays localStorage-only.
 export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: RecordAnswerArgs) {
-  const user = auth.currentUser;
-  if (!user) return;
-  const ref = statsDocRef(user.uid);
-
+  if (!isSignedIn()) return;
   try {
-    await setDoc(
-      ref,
-      {
-        totalScore: increment(points),
-        totalCorrect: increment(correct ? 1 : 0),
-        totalIncorrect: increment(correct ? 0 : 1),
-      },
-      { merge: true }
-    );
+    const { newlyUnlocked } = await trpc.userStats.recordAnswer.mutate({
+      points,
+      correct,
+      currentStreak,
+    });
+    dispatchUnlocks(newlyUnlocked);
   } catch (err) {
-    // If the write itself failed, the answer genuinely wasn't recorded -
-    // the streak/achievement steps below would only run against data that
-    // doesn't reflect it, so there's no value in attempting them too.
-    console.warn("Firestore answer-record write failed.", err);
-    return;
+    console.warn("recordAnswer failed.", err);
   }
-
-  if (currentStreak > 0) {
-    try {
-      const snap = await getDoc(ref);
-      const existingBest = snap.exists() ? (snap.data().bestStreak ?? 0) : 0;
-      if (currentStreak > existingBest) {
-        await setDoc(ref, { bestStreak: currentStreak }, { merge: true });
-      }
-    } catch (err) {
-      // Don't let a failed bestStreak read/write skip the achievement
-      // check below - it's an independent step on the same call path.
-      console.warn("Firestore bestStreak update failed.", err);
-    }
-  }
-
-  await checkAchievements();
 }
 
 // Saves the result of the placement test, which determines the bands
 // unlocked across every game. No-op for anonymous visitors - they can
 // take the test but the result only persists once they're signed in.
 export async function savePlacementResult(band: Band, score: number, totalQuestions: number) {
-  const user = auth.currentUser;
-  if (!user) return;
+  if (!isSignedIn()) return;
   try {
-    await setDoc(
-      statsDocRef(user.uid),
-      {
-        placementBand: band,
-        placementScore: score,
-        placementTotalQuestions: totalQuestions,
-        placementCompletedAt: Date.now(),
-      },
-      { merge: true }
-    );
+    await trpc.userStats.savePlacementResult.mutate({ band, score, totalQuestions });
   } catch (err) {
-    console.warn("Firestore placement-result write failed.", err);
+    console.warn("savePlacementResult failed.", err);
   }
 }
 
 // Records that the user finished one round of a game (used for the
-// "played all advanced games" achievement).
+// "played all advanced/intermediate games" achievements).
 export async function recordGameCompleted(gameKey: GameKey) {
-  const user = auth.currentUser;
-  if (!user) return;
-  const ref = statsDocRef(user.uid);
+  if (!isSignedIn()) return;
   try {
-    await setDoc(ref, { roundsCompleted: { [gameKey]: increment(1) } }, { merge: true });
+    const { newlyUnlocked } = await trpc.userStats.recordGameCompleted.mutate({ gameKey });
+    dispatchUnlocks(newlyUnlocked);
   } catch (err) {
-    // If the write itself failed, the round genuinely wasn't recorded -
-    // checking achievements against stale data afterward has no value.
-    console.warn("Firestore recordGameCompleted write failed.", err);
-    return;
-  }
-  await checkAchievements();
-}
-
-// Guards against getDoc()/setDoc() rejecting (e.g. a transient network
-// error on real wifi, per rule 12) - previously unguarded, so a rejection
-// here silently killed the promise chain and the achievement check for
-// that answer never ran, with no visible symptom. Same pattern as
-// getStats()'s catch below, minus the timeout race: unlike getStats(),
-// this is only ever awaited from recordAnswer/recordGameCompleted, which
-// are themselves fire-and-forget (rule 13), so a hang has no user-visible
-// symptom to guard against - only rejection does.
-async function checkAchievements(): Promise<string[]> {
-  const user = auth.currentUser;
-  if (!user) return [];
-  const ref = statsDocRef(user.uid);
-  try {
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return [];
-    const stats = snap.data() as UserStats;
-    const unlocked = stats.achievements || [];
-    const newlyUnlocked = ACHIEVEMENTS.filter(
-      (ach) => !unlocked.includes(ach.id) && ach.check(stats)
-    ).map((ach) => ach.id);
-
-    if (newlyUnlocked.length) {
-      await setDoc(ref, { achievements: arrayUnion(...newlyUnlocked) }, { merge: true });
-      window.dispatchEvent(
-        new CustomEvent("achievement-unlocked", { detail: { ids: newlyUnlocked } })
-      );
-    }
-    return newlyUnlocked;
-  } catch (err) {
-    console.warn("Firestore achievement check failed.", err);
-    return [];
+    console.warn("recordGameCompleted failed.", err);
   }
 }
 
-// Returns the signed-in user's cumulative stats, or null if signed out,
-// they haven't played anything with an account yet, or Firestore doesn't
-// respond in time or errors out (races against a timeout AND catches
-// rejections - see wordsDb.ts's loadWords() for the same pattern. This
-// function used to only guard against getDoc() hanging, not against it
-// rejecting - e.g. a transient network error on real wifi - which left
-// the caller's loading state stuck forever, since an uncaught rejection
-// here silently skips the .then() that would have cleared it).
+// Returns the signed-in user's cumulative stats, or null if signed out or
+// the API call fails for any reason (network error, cold start, etc.) -
+// callers already treat null as "nothing to show yet".
 export async function getStats(): Promise<UserStats | null> {
-  const user = auth.currentUser;
-  if (!user) return null;
+  if (!isSignedIn()) return null;
   try {
-    const result = await Promise.race([getDoc(statsDocRef(user.uid)), timeout(5000)]);
-    if (result === "TIMEOUT") {
-      console.warn("Firestore stats fetch timed out.");
-      return null;
-    }
-    return result.exists() ? (result.data() as UserStats) : null;
+    return await trpc.userStats.getStats.query();
   } catch (err) {
-    console.warn("Firestore stats fetch failed.", err);
+    console.warn("getStats failed.", err);
     return null;
   }
 }

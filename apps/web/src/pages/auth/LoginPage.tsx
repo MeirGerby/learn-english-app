@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, type AuthError } from "firebase/auth";
 import { Eye, EyeOff } from "lucide-react";
-import { auth } from "@/lib/firebase";
+import { trpc, getTRPCErrorCode } from "@/lib/trpc";
+import { setAuthToken } from "@/lib/authToken";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,8 @@ import { Label } from "@/components/ui/label";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  "auth/invalid-email": "כתובת אימייל לא תקינה.",
-  "auth/user-disabled": "המשתמש הזה חסום.",
-  "auth/user-not-found": "לא נמצא משתמש עם אימייל זה.",
-  "auth/wrong-password": "סיסמה שגויה.",
-  "auth/invalid-credential": "אימייל או סיסמה שגויים.",
-  "auth/too-many-requests": "יותר מדי ניסיונות. נסו שוב מאוחר יותר.",
+  UNAUTHORIZED: "אימייל או סיסמה שגויים.",
+  BAD_REQUEST: "כתובת אימייל לא תקינה.",
 };
 
 const RESET_SENT_MESSAGE = "אם קיים חשבון עם אימייל זה, נשלח אליו קישור לאיפוס סיסמה.";
@@ -43,11 +39,12 @@ export default function LoginPage() {
     setError("");
     setIsSubmitting(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { token } = await trpc.auth.login.mutate({ email, password });
+      setAuthToken(token);
       navigate(from, { replace: true });
     } catch (err) {
-      const code = (err as AuthError).code;
-      setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+      const code = getTRPCErrorCode(err);
+      setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
     } finally {
       setIsSubmitting(false);
     }
@@ -67,15 +64,12 @@ export default function LoginPage() {
     setResetMessage("");
     setResetSubmitting(true);
     try {
-      await sendPasswordResetEmail(auth, resetEmail);
+      // Always shows the same generic message regardless of whether the
+      // email exists - the API itself never reveals that (no enumeration).
+      await trpc.auth.requestPasswordReset.mutate({ email: resetEmail });
       setResetMessage(RESET_SENT_MESSAGE);
-    } catch (err) {
-      const code = (err as AuthError).code;
-      if (code === "auth/user-not-found") {
-        setResetMessage(RESET_SENT_MESSAGE);
-      } else {
-        setResetError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
-      }
+    } catch {
+      setResetError("אירעה שגיאה. נסו שוב.");
     } finally {
       setResetSubmitting(false);
     }

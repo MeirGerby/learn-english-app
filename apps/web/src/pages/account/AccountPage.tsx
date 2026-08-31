@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, type AuthError } from "firebase/auth";
 import { Eye, EyeOff } from "lucide-react";
+import { trpc, getTRPCErrorCode } from "@/lib/trpc";
 import { useAuth } from "@/hooks/useAuth";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
+const MIN_PASSWORD_LENGTH = 8;
+
 const ERROR_MESSAGES: Record<string, string> = {
-  "auth/wrong-password": "הסיסמה הנוכחית שגויה.",
-  "auth/invalid-credential": "הסיסמה הנוכחית שגויה.",
-  "auth/weak-password": "הסיסמה החדשה חלשה מדי.",
-  "auth/requires-recent-login": "יש להתחבר מחדש כדי לשנות סיסמה. התנתקו והתחברו שוב ונסו שוב.",
-  "auth/too-many-requests": "יותר מדי ניסיונות. נסו שוב מאוחר יותר.",
+  UNAUTHORIZED: "הסיסמה הנוכחית שגויה.",
+  BAD_REQUEST: `הסיסמה החדשה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`,
 };
 
 export default function AccountPage() {
@@ -44,19 +43,22 @@ export default function AccountPage() {
       submittingRef.current = false;
       return;
     }
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      setError(`הסיסמה החדשה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`);
+      submittingRef.current = false;
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      const credential = EmailAuthProvider.credential(user!.email!, currentPassword);
-      await reauthenticateWithCredential(user!, credential);
-      await updatePassword(user!, newPassword);
+      await trpc.auth.changePassword.mutate({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
       setConfirm("");
       setSuccess("הסיסמה עודכנה בהצלחה.");
     } catch (err) {
-      const code = (err as AuthError).code;
-      setError(ERROR_MESSAGES[code] || "אירעה שגיאה. נסו שוב.");
+      const code = getTRPCErrorCode(err);
+      setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
     } finally {
       setIsSubmitting(false);
       submittingRef.current = false;
@@ -111,7 +113,7 @@ export default function AccountPage() {
               id="acc-new"
               type={showNew ? "text" : "password"}
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               className="h-11 pe-9"
               value={newPassword}
@@ -135,7 +137,7 @@ export default function AccountPage() {
               id="acc-confirm"
               type={showConfirm ? "text" : "password"}
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               className="h-11 pe-9"
               value={confirm}

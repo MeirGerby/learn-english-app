@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
+import { clearAuthToken } from "@/lib/authToken";
 import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
@@ -11,18 +9,14 @@ interface TopBarProps {
 
 export function TopBar({ backTo }: TopBarProps) {
   const { user, admin } = useAuth();
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const handleSignOut = async () => {
-    if (isSigningOut) return;
-    setIsSigningOut(true);
-    try {
-      await signOut(auth);
-    } catch {
-      alert("שגיאה בהתנתקות. נסו שוב.");
-    } finally {
-      setIsSigningOut(false);
-    }
+  // Signing out is now a purely local, synchronous operation (clear the
+  // stored JWT) with no network call - the async isSigningOut guard this
+  // used to need was specifically for Firebase's signOut() call rejecting
+  // on flaky wifi, a failure mode that no longer exists once there's
+  // nothing to await.
+  const handleSignOut = () => {
+    clearAuthToken();
   };
 
   return (
@@ -53,7 +47,6 @@ export function TopBar({ backTo }: TopBarProps) {
               variant="link"
               className="text-destructive p-0 h-auto text-sm"
               onClick={handleSignOut}
-              disabled={isSigningOut}
             >
               התנתקות
             </Button>

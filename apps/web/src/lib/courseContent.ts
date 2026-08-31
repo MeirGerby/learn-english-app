@@ -1,42 +1,25 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-} from "firebase/firestore";
-import { db } from "./firebase";
+import { trpc } from "./trpc";
 
-const courseCollection = collection(db, "courseContent");
+export interface CourseContentItem {
+  id: string;
+  type: "video" | "image";
+  url: string;
+  caption: string;
+}
 
-export function subscribeToCourseContent(
-  onChange: (items: { id: string; type: "video" | "image"; url: string; caption: string }[]) => void,
-  onError?: (error: Error) => void
-) {
-  const q = query(courseCollection, orderBy("createdAt", "desc"));
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      onChange(
-        snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return { id: docSnap.id, type: data.type, url: data.url, caption: data.caption };
-        })
-      );
-    },
-    onError
-  );
+// Plain request-response, not a realtime subscription like the old
+// Firestore onSnapshot listener - callers (CoursePage) refetch after a
+// successful add/remove instead of waiting on a push update.
+export async function listCourseContent(): Promise<CourseContentItem[]> {
+  return trpc.courseContent.list.query();
 }
 
 export async function addCourseItem(item: { type: "video" | "image"; url: string; caption: string }) {
-  await addDoc(courseCollection, { ...item, createdAt: serverTimestamp() });
+  await trpc.courseContent.add.mutate(item);
 }
 
 export async function deleteCourseItem(id: string) {
-  await deleteDoc(doc(db, "courseContent", id));
+  await trpc.courseContent.remove.mutate({ id });
 }
 
 // Converts common YouTube URL formats into an embeddable iframe src.

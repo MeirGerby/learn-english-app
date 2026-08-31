@@ -22,6 +22,12 @@
   ],
   "allowScripts": {
     "@firebase/util@1.12.1": true,
-    "protobufjs@7.6.5": true
+    "protobufjs@7.6.5": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.19.12": true,
+    "argon2@0.45.1": true,
+    "@parcel/watcher@2.6.0": true,
+    "unrs-resolver@1.12.2": true
   }
 }
