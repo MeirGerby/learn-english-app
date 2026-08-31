@@ -4,3 +4,4 @@ export * from "./user-stats.js";
 export * from "./course-items.js";
 export * from "./feedback.js";
 export * from "./password-reset-tokens.js";
+export * from "./materials.js";

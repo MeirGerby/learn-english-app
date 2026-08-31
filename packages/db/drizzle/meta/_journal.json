@@ -15,6 +15,13 @@
       "when": 1788162286049,
       "tag": "0001_right_phalanx",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788169920039,
+      "tag": "0002_foamy_spiral",
+      "breakpoints": true
     }
   ]
 }

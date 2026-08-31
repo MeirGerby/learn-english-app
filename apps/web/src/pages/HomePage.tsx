@@ -38,6 +38,11 @@ export default function HomePage() {
             🎓 לקורס של הודיה
           </Button>
         </Link>
+        <Link to="/materials">
+          <Button size="lg" variant="outline" className="w-full text-base h-14">
+            📄 חומרים של הודיה
+          </Button>
+        </Link>
       </div>
     </div>
   );

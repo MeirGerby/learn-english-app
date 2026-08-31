@@ -16,11 +16,13 @@ const publicProcedure = t.procedure;
 import { registerInputSchema, authOutputSchema, loginInputSchema, authUserOutputSchema, requestPasswordResetInputSchema, resetPasswordInputSchema, changePasswordInputSchema } from "../auth/dto/auth.dto.js";
 import { courseItemListOutputSchema, addCourseItemInputSchema, courseItemOutputSchema, removeCourseItemInputSchema } from "../course-content/dto/course-content.dto.js";
 import { feedbackListOutputSchema, createFeedbackInputSchema, removeFeedbackInputSchema } from "../feedback/dto/feedback.dto.js";
+import { materialListOutputSchema, uploadMaterialInputSchema, materialOutputSchema, removeMaterialInputSchema } from "../materials/dto/materials.dto.js";
 import { userStatsOutputSchema, recordAnswerInputSchema, statsWithUnlocksOutputSchema, recordGameCompletedInputSchema, savePlacementResultInputSchema } from "../user-stats/dto/user-stats.dto.js";
 import { listWordsByCategoryInputSchema, wordListOutputSchema } from "../words/dto/word.dto.js";
 import type { AuthRouter } from "../auth/auth.router.js";
 import type { CourseContentRouter } from "../course-content/course-content.router.js";
 import type { FeedbackRouter } from "../feedback/feedback.router.js";
+import type { MaterialsRouter } from "../materials/materials.router.js";
 
 const appRouter = t.router({
   auth: t.router({
@@ -67,6 +69,18 @@ const appRouter = t.router({
     remove: publicProcedure
       .input(removeFeedbackInputSchema)
       .mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as unknown as Awaited<ReturnType<FeedbackRouter["remove"]>>)
+    }),
+  materials: t.router({
+    list: publicProcedure
+      .output(materialListOutputSchema)
+      .query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    upload: publicProcedure
+      .input(uploadMaterialInputSchema)
+      .output(materialOutputSchema)
+      .mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    remove: publicProcedure
+      .input(removeMaterialInputSchema)
+      .mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as unknown as Awaited<ReturnType<MaterialsRouter["remove"]>>)
     }),
   userStats: t.router({
     getStats: publicProcedure
