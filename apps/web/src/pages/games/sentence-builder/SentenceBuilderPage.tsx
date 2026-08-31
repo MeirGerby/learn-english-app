@@ -8,12 +8,13 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
+import { loadWords } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
-import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { getCategoryKeysForBand, shuffle } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const ROUND_SIZE = 8;
 const POINTS_PER_CORRECT = 15;

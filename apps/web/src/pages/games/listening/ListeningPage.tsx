@@ -6,15 +6,16 @@ import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
-import { loadWords, getCategoryKeysForBand, shuffle } from "@/lib/wordsDb";
+import { loadWords } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
-import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { EmptyGameState } from "@/components/EmptyGameState";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { getCategoryKeysForBand, shuffle } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const ROUND_SIZE = 10;
 const CATEGORIES = getCategoryKeysForBand(3);

@@ -4,13 +4,13 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { generatePlacementTest, scoreToBand, type PlacementQuestion } from "@/lib/placementTest";
+import { generatePlacementTest, type PlacementQuestion } from "@/lib/placementTest";
 import { savePlacementResult } from "@/lib/userStats";
-import { getBandLabel } from "@/lib/wordsDb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import type { Band, WordEntry } from "@/types";
+import { getBandLabel, scoreToBand } from "@learn-english/shared";
+import type { Band, WordEntry } from "@learn-english/shared";
 
 export default function PlacementTestPage() {
   useDocumentTitle("מבחן מיון רמה");

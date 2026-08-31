@@ -14,11 +14,11 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { WORD_DATA } from "@/data/wordData";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { WORD_DATA } from "@learn-english/shared";
 
 interface FeedbackItem {
   id: string;

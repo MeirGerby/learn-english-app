@@ -1,13 +1,7 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
-import { WORD_DATA, CATEGORY_LABELS, CATEGORY_BANDS } from "@/data/wordData";
-import type { Band, CategoryKey, WordEntry } from "@/types";
-
-const BAND_LABELS: Record<Band, string> = {
-  1: "רמה 1 - בסיס",
-  2: "רמה 2 - בינוני",
-  3: "רמה 3 - מתקדם",
-};
+import { WORD_DATA } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const FETCH_TIMEOUT_MS = 5000;
 
@@ -67,105 +61,4 @@ export function loadWords(category: CategoryKey): Promise<WordEntry[]> {
   });
   wordCache.set(category, promise);
   return promise;
-}
-
-export function getCategoryKeys(): CategoryKey[] {
-  return Object.keys(WORD_DATA) as CategoryKey[];
-}
-
-export function getCategoryLabel(key: CategoryKey): string {
-  return CATEGORY_LABELS[key] ?? key;
-}
-
-export function getCategoryBand(key: CategoryKey): Band {
-  return CATEGORY_BANDS[key] ?? 1;
-}
-
-export function getBandLabel(band: Band): string {
-  return BAND_LABELS[band];
-}
-
-export function getCategoryKeysForBand(band: Band): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryBand(key) === band);
-}
-
-// Every category at or below the given band - what a user placed into
-// that band has unlocked.
-export function getCategoryKeysUpToBand(maxBand: Band): CategoryKey[] {
-  return getCategoryKeys().filter((key) => getCategoryBand(key) <= maxBand);
-}
-
-export function shuffle<T>(arr: T[]): T[] {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-// Picks `count` multiple-choice distractors from `pool` for `correct`,
-// preferring candidates whose Hebrew translation doesn't already appear
-// among the options. English is many-to-one with Hebrew in this word
-// bank (several distinct English words can share one translation), so
-// filtering distractors only by English word - as every call site here
-// used to do - can put two visibly-identical answer buttons in front of
-// a student, one graded correct and one wrong, with no way to tell them
-// apart. Falls back to allowing a duplicate translation only if the pool
-// genuinely doesn't have enough distinct-translation candidates (a thin
-// category) - never throws or loops forever, just does its best with
-// what's actually available.
-export function pickDistractors(pool: WordEntry[], correct: WordEntry, count = 3): WordEntry[] {
-  const candidates = shuffle(pool.filter((w) => w.word !== correct.word));
-  const picked: WordEntry[] = [];
-  const usedTranslations = new Set([correct.translation]);
-  for (const w of candidates) {
-    if (picked.length >= count) break;
-    if (usedTranslations.has(w.translation)) continue;
-    picked.push(w);
-    usedTranslations.add(w.translation);
-  }
-  if (picked.length < count) {
-    const pickedWords = new Set(picked.map((w) => w.word));
-    for (const w of candidates) {
-      if (picked.length >= count) break;
-      if (pickedWords.has(w.word)) continue;
-      picked.push(w);
-      pickedWords.add(w.word);
-    }
-  }
-  return picked;
-}
-
-// Picks `count` words from `pool` with mutually-distinct Hebrew
-// translations, for games (like Word Match) that render every picked
-// word's translation on screen at once rather than grading against one
-// "correct" answer - same many-to-one English/Hebrew risk as
-// pickDistractors above, but here two picked words sharing a
-// translation makes two on-screen cells visually identical with no
-// "correct" one to disambiguate against, not just a wrong-vs-right
-// distractor collision. Same greedy-then-fallback shape as
-// pickDistractors: falls back to allowing a duplicate translation only
-// if the pool doesn't have enough distinct-translation words to fill
-// `count` - never throws or loops forever.
-export function pickRoundWithDistinctTranslations(pool: WordEntry[], count: number): WordEntry[] {
-  const candidates = shuffle(pool);
-  const picked: WordEntry[] = [];
-  const usedTranslations = new Set<string>();
-  for (const w of candidates) {
-    if (picked.length >= count) break;
-    if (usedTranslations.has(w.translation)) continue;
-    picked.push(w);
-    usedTranslations.add(w.translation);
-  }
-  if (picked.length < count) {
-    const pickedWords = new Set(picked.map((w) => w.word));
-    for (const w of candidates) {
-      if (picked.length >= count) break;
-      if (pickedWords.has(w.word)) continue;
-      picked.push(w);
-      pickedWords.add(w.word);
-    }
-  }
-  return picked;
 }

@@ -8,13 +8,14 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@/lib/wordsDb";
+import { loadWords } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
-import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const SESSION_SIZE = 10;
 const CATEGORIES = getCategoryKeys();

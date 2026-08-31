@@ -7,13 +7,14 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
-import { loadWords, getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@/lib/wordsDb";
+import { loadWords } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
-import type { CategoryKey, WordEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@learn-english/shared";
+import type { CategoryKey, WordEntry } from "@learn-english/shared";
 
 const ROUND_SIZE = 12;
 const TIME_PER_QUESTION_MS = 6000;

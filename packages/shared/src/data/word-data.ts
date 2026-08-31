@@ -1,4 +1,4 @@
-import type { Band, CategoryKey, WordEntry } from "../types";
+import type { CategoryKey, WordEntry } from "../types.js";
 
 export const WORD_DATA: Record<CategoryKey, WordEntry[]> = {
   basics: [
@@ -3047,35 +3047,3 @@ export const WORD_DATA: Record<CategoryKey, WordEntry[]> = {
   ]
 };
 
-export const CATEGORY_LABELS: Record<CategoryKey, string> = {
-  basics: "בסיס",
-  food: "אוכל",
-  travel: "טיולים",
-  business: "עסקים",
-  technology: "טכנולוגיה",
-  society: "חברה וסביבה",
-  foundation: "אוצר מילים - Band I",
-  idioms: "ניבים",
-  phrasalVerbs: "פעלים דו-מיליים",
-  advancedVocab: "אוצר מילים מתקדם"
-};
-
-// Band 1 = beginner (everyday basics + the Cambridge Foundation Band I
-// list), Band 2 = intermediate, Band 3 = advanced (idioms/phrasal verbs/
-// abstract vocabulary). Band 2 currently only has the "business" category
-// (10 words) - it's the thinnest tier and the first target for the
-// planned content expansion, since basics/food/travel/foundation were
-// already beginner-level and idioms/phrasalVerbs/advancedVocab were
-// already advanced-level under the old 2-tier system.
-export const CATEGORY_BANDS: Record<CategoryKey, Band> = {
-  basics: 1,
-  food: 1,
-  travel: 1,
-  foundation: 1,
-  business: 2,
-  technology: 2,
-  society: 2,
-  idioms: 3,
-  phrasalVerbs: 3,
-  advancedVocab: 3
-};

@@ -1,105 +1,8 @@
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { increment } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import type { Achievement, Band, UserStats } from "@/types";
-
-// Achievements are computed from cumulative userStats fields. Add new ones
-// here; existing users automatically unlock them next time they play.
-export const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: "first_correct",
-    icon: "🌱",
-    nameHe: "צעד ראשון",
-    descHe: "ענית נכון בפעם הראשונה",
-    check: (s) => s.totalCorrect >= 1,
-  },
-  {
-    id: "correct_50",
-    icon: "📚",
-    nameHe: "50 תשובות נכונות",
-    descHe: "צברת 50 תשובות נכונות בסך הכל",
-    check: (s) => s.totalCorrect >= 50,
-    progress: (s) => ({ current: s.totalCorrect ?? 0, target: 50 }),
-  },
-  {
-    id: "correct_200",
-    icon: "🏆",
-    nameHe: "200 תשובות נכונות",
-    descHe: "צברת 200 תשובות נכונות בסך הכל",
-    check: (s) => s.totalCorrect >= 200,
-    progress: (s) => ({ current: s.totalCorrect ?? 0, target: 200 }),
-  },
-  {
-    id: "streak_10",
-    icon: "🔥",
-    nameHe: "רצף של 10",
-    descHe: "השגת רצף של 10 תשובות נכונות ברצף",
-    check: (s) => (s.bestStreak || 0) >= 10,
-    progress: (s) => ({ current: s.bestStreak ?? 0, target: 10 }),
-  },
-  {
-    id: "score_500",
-    icon: "⭐",
-    nameHe: "500 נקודות",
-    descHe: "צברת 500 נקודות בסך הכל",
-    check: (s) => (s.totalScore || 0) >= 500,
-    progress: (s) => ({ current: s.totalScore ?? 0, target: 500 }),
-  },
-  {
-    id: "beginner_explorer",
-    icon: "🔰",
-    nameHe: "חוקר/ת מתחיל/ה",
-    descHe: "שיחקת בכל שלושת המשחקים ברמה הבסיסית",
-    check: (s) =>
-      (s.roundsCompleted?.quiz ?? 0) > 0 &&
-      (s.roundsCompleted?.scramble ?? 0) > 0 &&
-      (s.roundsCompleted?.speedRound ?? 0) > 0,
-    progress: (s) => ({
-      current: [
-        (s.roundsCompleted?.quiz ?? 0) > 0,
-        (s.roundsCompleted?.scramble ?? 0) > 0,
-        (s.roundsCompleted?.speedRound ?? 0) > 0,
-      ].filter(Boolean).length,
-      target: 3,
-    }),
-  },
-  {
-    id: "advanced_explorer",
-    icon: "🚀",
-    nameHe: "חוקר/ת מתקדם/ת",
-    descHe: "שיחקת בכל שלושת המשחקים ברמה המתקדמת",
-    check: (s) =>
-      (s.roundsCompleted?.fillBlank ?? 0) > 0 &&
-      (s.roundsCompleted?.listening ?? 0) > 0 &&
-      (s.roundsCompleted?.speedRound ?? 0) > 0,
-    progress: (s) => ({
-      current: [
-        (s.roundsCompleted?.fillBlank ?? 0) > 0,
-        (s.roundsCompleted?.listening ?? 0) > 0,
-        (s.roundsCompleted?.speedRound ?? 0) > 0,
-      ].filter(Boolean).length,
-      target: 3,
-    }),
-  },
-  {
-    id: "intermediate_explorer",
-    icon: "🧭",
-    nameHe: "חוקר/ת בינוני/ת",
-    descHe: "שיחקת בכל שלושת המשחקים ברמה הבינונית",
-    check: (s) =>
-      (s.roundsCompleted?.wordMatch ?? 0) > 0 &&
-      (s.roundsCompleted?.typeWord ?? 0) > 0 &&
-      (s.roundsCompleted?.sentenceBuilder ?? 0) > 0,
-    progress: (s) => ({
-      current: [
-        (s.roundsCompleted?.wordMatch ?? 0) > 0,
-        (s.roundsCompleted?.typeWord ?? 0) > 0,
-        (s.roundsCompleted?.sentenceBuilder ?? 0) > 0,
-      ].filter(Boolean).length,
-      target: 3,
-    }),
-  },
-];
+import { ACHIEVEMENTS } from "@learn-english/shared";
+import type { Band, GameKey, UserStats } from "@learn-english/shared";
 
 function statsDocRef(uid: string) {
   return doc(db, "userStats", uid);
@@ -178,16 +81,6 @@ export async function savePlacementResult(band: Band, score: number, totalQuesti
     console.warn("Firestore placement-result write failed.", err);
   }
 }
-
-export type GameKey =
-  | "quiz"
-  | "scramble"
-  | "fillBlank"
-  | "listening"
-  | "speedRound"
-  | "wordMatch"
-  | "typeWord"
-  | "sentenceBuilder";
 
 // Records that the user finished one round of a game (used for the
 // "played all advanced games" achievement).

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import { getBandLabel } from "@/lib/wordsDb";
 import { cn } from "@/lib/utils";
-import type { Band } from "@/types";
+import { getBandLabel } from "@learn-english/shared";
+import type { Band } from "@learn-english/shared";
 
 const BAND_STYLES: Record<Band, string> = {
   1: "bg-gradient-to-br from-emerald-500 to-emerald-600",
