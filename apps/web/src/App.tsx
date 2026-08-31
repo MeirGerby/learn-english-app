@@ -6,6 +6,7 @@ import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import AdminPage from "@/pages/admin/AdminPage";
 import AccountPage from "@/pages/account/AccountPage";
 import CoursePage from "@/pages/course/CoursePage";
+import MaterialsPage from "@/pages/materials/MaterialsPage";
 import PlacementTestPage from "@/pages/placement/PlacementTestPage";
 import GamesListPage from "@/pages/games/GamesListPage";
 import FlashcardsPage from "@/pages/games/flashcards/FlashcardsPage";
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/course" element={<CoursePage />} />
+        <Route path="/materials" element={<MaterialsPage />} />
         <Route path="/placement-test" element={<PlacementTestPage />} />
         <Route
           path="/games"

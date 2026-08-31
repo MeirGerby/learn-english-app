@@ -11,6 +11,7 @@ import { WordsModule } from '../words/words.module.js';
 import { UserStatsModule } from '../user-stats/user-stats.module.js';
 import { CourseContentModule } from '../course-content/course-content.module.js';
 import { FeedbackModule } from '../feedback/feedback.module.js';
+import { MaterialsModule } from '../materials/materials.module.js';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FeedbackModule } from '../feedback/feedback.module.js';
     UserStatsModule,
     CourseContentModule,
     FeedbackModule,
+    MaterialsModule,
   ],
   controllers: [HealthRouter],
 })
