@@ -1,0 +1,5 @@
+{
+    "entrypoint": "src/app/app.module.ts",
+    "tsConfig": "tsconfig.json",
+    "routerPattern": "src/**/*.router.ts"
+}

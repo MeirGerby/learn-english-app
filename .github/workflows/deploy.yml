@@ -24,10 +24,12 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npx turbo run build --filter=web
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: apps/web/dist
 
   deploy:
     needs: build
