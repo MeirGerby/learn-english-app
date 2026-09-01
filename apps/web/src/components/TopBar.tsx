@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { clearAuthToken } from "@/lib/authToken";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ interface TopBarProps {
 export function TopBar({ backTo }: TopBarProps) {
   const { user, admin } = useAuth();
 
+  const location = useLocation();
+
+  const isLoginPage = location.pathname === "/login";
+
   // Signing out is now a purely local, synchronous operation (clear the
   // stored JWT) with no network call - the async isSigningOut guard this
   // used to need was specifically for Firebase's signOut() call rejecting
@@ -19,6 +23,7 @@ export function TopBar({ backTo }: TopBarProps) {
     clearAuthToken();
   };
 
+  
   return (
     <div className="flex items-center justify-between flex-wrap gap-2.5 mb-6">
       {backTo ? (
@@ -53,11 +58,15 @@ export function TopBar({ backTo }: TopBarProps) {
           </>
         ) : (
           <>
-            <Link to="/login" className="text-primary font-semibold text-sm hover:underline">
-              התחברות
+            <Link to="/login">
+              <Button size="lg" variant={isLoginPage ? "default" : "outline"}>
+                התחברות
+              </Button>
             </Link>
             <Link to="/register">
-              <Button size="sm">הרשמה</Button>
+              <Button size="lg" variant={!isLoginPage ? "default" : "outline"}>
+                הרשמה
+              </Button>
             </Link>
           </>
         )}
