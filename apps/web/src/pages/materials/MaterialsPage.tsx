@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -14,74 +14,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useFetchData } from "@/hooks/useFetchData";
+import { useAsyncSubmit } from "@/hooks/useAsyncSubmit";
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 export default function MaterialsPage() {
   useDocumentTitle("חומרים");
-  const { user, admin, loading } = useAuth();
+  const { user, admin, loading: authLoading } = useAuth();
   const location = useLocation();
-  const [items, setItems] = useState<MaterialItem[]>([]);
-  const [contentLoading, setContentLoading] = useState(true);
-  const [contentError, setContentError] = useState(false);
-  const [caption, setCaption] = useState("");
-  const [uploadError, setUploadError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { items, loading: contentLoading, error: contentError, refetch } = useFetchData(listMaterials, user?.id);
 
-  const refetch = useCallback(async () => {
+  const handleDelete = async (item: MaterialItem) => {
+    if (!window.confirm(`למחוק את "${item.filename}"? לא ניתן לבטל פעולה זו.`)) return;
     try {
-      setItems(await listMaterials());
-      setContentError(false);
-    } catch {
-      setContentError(true);
-    } finally {
-      setContentLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    setContentLoading(true);
-    setContentError(false);
-    void refetch();
-    // Keyed on user?.id, not the user object - see usePlacement.tsx for why.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  async function handleUpload(e: FormEvent) {
-    e.preventDefault();
-    if (isSubmitting) return;
-    setUploadError("");
-
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) {
-      setUploadError("בחרו קובץ PDF להעלאה.");
-      return;
-    }
-    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-      setUploadError("ניתן להעלות קבצי PDF בלבד.");
-      return;
-    }
-    if (file.size > MAX_FILE_BYTES) {
-      setUploadError(`הקובץ גדול מדי (מקסימום ${formatFileSize(MAX_FILE_BYTES)}).`);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await uploadMaterial(file, caption.trim());
-      setCaption("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      await deleteMaterial(item.id);
       await refetch();
     } catch {
-      setUploadError("העלאת הקובץ נכשלה. נסי שוב.");
-    } finally {
-      setIsSubmitting(false);
+      alert("מחיקת הקובץ נכשלה. נסי שוב.");
     }
-  }
+  };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="app mx-auto max-w-xl w-full px-4 py-6">
         <TopBar />
@@ -101,31 +55,7 @@ export default function MaterialsPage() {
         <p className="text-muted-foreground text-sm">דפי עבודה וחומרי לימוד להורדה.</p>
       </header>
 
-      {admin && (
-        <section className="bg-card border rounded-xl p-5 mb-8 shadow-sm">
-          <h2 className="font-semibold mb-3">העלאת חומר חדש</h2>
-          <form onSubmit={handleUpload} className="flex flex-col gap-3">
-            <div>
-              <Label htmlFor="material-file" className="text-muted-foreground text-sm">
-                קובץ PDF
-              </Label>
-              <Input id="material-file" type="file" accept="application/pdf,.pdf" ref={fileInputRef} className="mt-1 h-11 pt-1.5" />
-            </div>
-            <div>
-              <Label htmlFor="material-caption" className="text-muted-foreground text-sm">
-                כיתוב (רשות)
-              </Label>
-              <Input id="material-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1 h-11" />
-            </div>
-            <p aria-live="polite" className="text-destructive text-sm min-h-[18px]">
-              {uploadError}
-            </p>
-            <Button type="submit" className="self-start h-11" disabled={isSubmitting}>
-              {isSubmitting ? "מעלה..." : "העלאה"}
-            </Button>
-          </form>
-        </section>
-      )}
+      {admin && <UploadMaterialForm onSuccess={refetch} />}
 
       {contentLoading ? (
         <p className="text-center text-muted-foreground py-12">טוען חומרים...</p>
@@ -151,20 +81,7 @@ export default function MaterialsPage() {
                 <p className="text-xs text-muted-foreground m-0">{formatFileSize(item.fileSize)}</p>
               </div>
               {admin && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="shrink-0"
-                  onClick={async () => {
-                    if (!window.confirm(`למחוק את "${item.filename}"? לא ניתן לבטל פעולה זו.`)) return;
-                    try {
-                      await deleteMaterial(item.id);
-                      await refetch();
-                    } catch {
-                      alert("מחיקת הקובץ נכשלה. נסי שוב.");
-                    }
-                  }}
-                >
+                <Button variant="outline" size="sm" className="shrink-0" onClick={() => handleDelete(item)}>
                   מחיקה
                 </Button>
               )}
@@ -173,5 +90,67 @@ export default function MaterialsPage() {
         </ul>
       )}
     </div>
+  );
+}
+
+function UploadMaterialForm({ onSuccess }: { onSuccess: () => void }) {
+  const [caption, setCaption] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadForm = useAsyncSubmit();
+
+  const handleUpload = (e: FormEvent) => {
+    e.preventDefault();
+
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      uploadForm.setError("בחרו קובץ PDF להעלאה.");
+      return;
+    }
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      uploadForm.setError("ניתן להעלות קבצי PDF בלבד.");
+      return;
+    }
+    if (file.size > MAX_FILE_BYTES) {
+      uploadForm.setError(`הקובץ גדול מדי (מקסימום ${formatFileSize(MAX_FILE_BYTES)}).`);
+      return;
+    }
+
+    uploadForm.execute(
+      () => uploadMaterial(file, caption.trim()),
+      {
+        onSuccess: async () => {
+          setCaption("");
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          onSuccess();
+        },
+        onError: () => uploadForm.setError("העלאת הקובץ נכשלה. נסי שוב."),
+      }
+    );
+  };
+
+  return (
+    <section className="bg-card border rounded-xl p-5 mb-8 shadow-sm">
+      <h2 className="font-semibold mb-3">העלאת חומר חדש</h2>
+      <form onSubmit={handleUpload} className="flex flex-col gap-3">
+        <div>
+          <Label htmlFor="material-file" className="text-muted-foreground text-sm">
+            קובץ PDF
+          </Label>
+          <Input id="material-file" type="file" accept="application/pdf,.pdf" ref={fileInputRef} className="mt-1 h-11 pt-1.5" />
+        </div>
+        <div>
+          <Label htmlFor="material-caption" className="text-muted-foreground text-sm">
+            כיתוב (רשות)
+          </Label>
+          <Input id="material-caption" value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1 h-11" />
+        </div>
+        <p aria-live="polite" className="text-destructive text-sm min-h-[18px]">
+          {uploadForm.error}
+        </p>
+        <Button type="submit" className="self-start h-11" disabled={uploadForm.isSubmitting}>
+          {uploadForm.isSubmitting ? "מעלה..." : "העלאה"}
+        </Button>
+      </form>
+    </section>
   );
 }

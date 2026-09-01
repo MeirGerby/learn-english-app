@@ -7,6 +7,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { cn } from "@/lib/utils";
 import { getBandLabel, ACHIEVEMENTS } from "@learn-english/shared";
 import type { Band } from "@learn-english/shared";
+import { Lock, Info, Sparkles, RefreshCw, Trophy, Flame } from "lucide-react";
 
 const GAMES: { href: string; icon: string; title: string; desc: string; minBand: Band }[] = [
   // Band 1
@@ -71,142 +72,217 @@ const GAMES: { href: string; icon: string; title: string; desc: string; minBand:
 ];
 
 export default function GamesListPage() {
-  useDocumentTitle("משחקים");
+  useDocumentTitle("משחקים | הודיה ג'רבי");
   const { user, admin, unlockedBand, stats, loading: placementLoading } = usePlacement();
   const loggedIn = !!user;
   const [expandedAchievementId, setExpandedAchievementId] = useState<string | null>(null);
   const [expandedGameHref, setExpandedGameHref] = useState<string | null>(null);
 
   return (
-    <div className="app mx-auto max-w-3xl w-full px-4 py-6">
-      <TopBar backTo={{ href: "/", label: "🏠 חזרה לדף הבית" }} />
+    <div
+      dir="rtl"
+      className="
+        ht-page
+        font-sans
+        selection:bg-rose-500
+        selection:text-white
+        pb-24
+      "
+    >
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-4 flex flex-col gap-6">
+        <TopBar backTo={{ href: "/", label: "חזרה לדף הבית" }} />
 
-      <p className="text-center text-muted-foreground font-semibold mb-1">בחרו איך להתחיל ללמוד:</p>
+        {/* =====================================================
+            LEVEL STATUS BANNER
+        ====================================================== */}
+        <section className="ht-card p-6 text-center">
+          <div className="inline-flex items-center gap-2 mb-2 px-4 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-xs font-bold text-rose-600">
+            <Sparkles className="w-3.5 h-3.5" />
+            בחרו משחק כדי להתחיל לתרגל
+          </div>
 
-      {user && !admin && !placementLoading && (
-        <p className="text-center text-sm text-muted-foreground mb-3">
-          הרמה שלכם: <span className="font-semibold text-foreground">{getBandLabel(unlockedBand)}</span>{" "}
-          ·{" "}
-          <Link to="/placement-test" className="text-primary hover:underline">
-            מבחן רמה מחדש
-          </Link>
-        </p>
-      )}
-      {!user && (
-        <p className="text-center text-sm text-muted-foreground mb-3">
-          <Link to="/login" state={{ from: "/games" }} className="text-primary hover:underline">
-            התחברו
-          </Link>{" "}
-          ועברו מבחן רמה כדי לפתוח את כל התכנים המתאימים לכם
-        </p>
-      )}
-
-      <main className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 items-start">
-        {GAMES.map((game) => {
-          const locked = !placementLoading && game.minBand > unlockedBand;
-          const isExpanded = expandedGameHref === game.href;
-          const descId = `game-desc-${game.href}`;
-          return (
-            <div
-              key={game.href}
-              className={cn(
-                "relative flex flex-col rounded-2xl bg-card border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all",
-                locked && "opacity-70"
-              )}
-            >
+          {user && !admin && !placementLoading && (
+            <p className="text-xs sm:text-sm text-slate-600 flex items-center justify-center gap-2 mt-1">
+              <span>
+                הרמה שלכם: <strong className="text-rose-600 font-bold">{getBandLabel(unlockedBand)}</strong>
+              </span>
+              <span className="text-slate-300">•</span>
               <Link
-                to={game.href}
-                className="flex flex-col items-center text-center gap-1.5 p-3 sm:p-4 no-underline text-foreground"
+                to="/placement-test"
+                className="inline-flex items-center gap-1.5 text-slate-700 hover:text-rose-600 underline underline-offset-4 transition-colors font-medium"
               >
-                {game.minBand > 1 ? (
-                  <div className="flex items-center gap-1">
-                    <BandBadge band={game.minBand} />
-                    {locked && <span title="נדרשת רמה גבוהה יותר">🔒</span>}
-                  </div>
-                ) : (
-                  <div className="h-5" />
-                )}
-                <span className="text-3xl sm:text-4xl">{game.icon}</span>
-                <span className="text-sm sm:text-base font-bold text-primary leading-tight">{game.title}</span>
+                <RefreshCw className="w-3.5 h-3.5 text-rose-500" />
+                מבחן רמה מחדש
               </Link>
-              <button
-                type="button"
-                title={game.desc}
-                aria-label={locked ? "מידע על המשחק ועל הנעילה" : "מידע על המשחק"}
-                aria-expanded={isExpanded}
-                aria-controls={descId}
-                onClick={() => setExpandedGameHref(isExpanded ? null : game.href)}
-                className="absolute top-1 end-1 min-w-8 min-h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+            </p>
+          )}
+
+          {!user && (
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+              <Link to="/login" state={{ from: "/games" }} className="text-rose-600 font-bold hover:underline">
+                התחברו
+              </Link>{" "}
+              ועברו מבחן רמה כדי לפתוח את כל המשחקים
+            </p>
+          )}
+        </section>
+
+        {/* =====================================================
+            GAMES GRID
+        ====================================================== */}
+        <main className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 items-start">
+          {GAMES.map((game) => {
+            const locked = !placementLoading && game.minBand > unlockedBand;
+            const isExpanded = expandedGameHref === game.href;
+            const descId = `game-desc-${game.href}`;
+
+            return (
+              <div
+                key={game.href}
+                className={cn(
+                  "relative flex flex-col rounded-2xl bg-white border border-slate-200 shadow-sm transition-all duration-300 overflow-hidden group",
+                  locked
+                    ? "opacity-60 bg-slate-50 border-slate-200"
+                    : "ht-card-hover"
+                )}
               >
-                ⓘ
-              </button>
-              {isExpanded && (
-                <p id={descId} className="text-xs text-muted-foreground text-center px-3 pb-3 -mt-1">
-                  {locked && (
-                    <span className="block font-semibold text-foreground mb-1">
-                      🔒 נדרשת רמה גבוהה יותר
+                <Link
+                  to={game.href}
+                  className="flex flex-col items-center text-center gap-2 p-4 sm:p-5 no-underline text-slate-900 h-full justify-between"
+                >
+                  <div className="w-full flex items-center justify-between min-h-[24px]">
+                    {game.minBand > 1 ? (
+                      <div className="flex items-center gap-1.5">
+                        <BandBadge band={game.minBand} />
+                        {locked && (
+                          <span
+                            title="נדרשת רמה גבוהה יותר"
+                            className="p-1 rounded-md bg-rose-50 text-rose-600 border border-rose-200 text-xs"
+                          >
+                            <Lock className="w-3 h-3" />
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        זמין לכולם
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="my-2 transition-transform duration-300 group-hover:scale-110">
+                    <span className="text-4xl sm:text-5xl filter drop-shadow-sm">
+                      {game.icon}
                     </span>
-                  )}
-                  {game.desc}
+                  </div>
+
+                  <span className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">
+                    {game.title}
+                  </span>
+                </Link>
+
+                <button
+                  type="button"
+                  title={game.desc}
+                  aria-label={locked ? "מידע על המשחק ועל הנעילה" : "מידע על המשחק"}
+                  aria-expanded={isExpanded}
+                  aria-controls={descId}
+                  onClick={() => setExpandedGameHref(isExpanded ? null : game.href)}
+                  className="absolute top-2.5 left-2.5 p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors z-20"
+                >
+                  <Info className="w-4 h-4" />
+                </button>
+
+                {isExpanded && (
+                  <div
+                    id={descId}
+                    className="text-xs text-slate-600 text-center px-4 pb-4 pt-2 bg-slate-50 border-t border-slate-200"
+                  >
+                    {locked && (
+                      <span className="font-bold text-rose-600 mb-1 flex items-center justify-center gap-1">
+                        <Lock className="w-3 h-3" /> נדרשת רמה גבוהה יותר
+                      </span>
+                    )}
+                    {game.desc}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </main>
+
+        {/* =====================================================
+            USER ACHIEVEMENTS DASHBOARD
+        ====================================================== */}
+        {loggedIn && (
+          <section className="mt-4 ht-card p-6">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold mb-2">
+                <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                <span>הישגים וניקוד</span>
+              </div>
+
+              <h2 className="text-lg sm:text-xl font-black text-slate-900">
+                {placementLoading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0}`}
+              </h2>
+
+              {!placementLoading && (stats?.bestStreak ?? 0) > 0 && (
+                <p className="text-xs text-slate-500 mt-1 flex items-center justify-center gap-1">
+                  <Flame className="w-3.5 h-3.5 text-amber-500" />
+                  שיא תשובות נכונות ברצף: <strong className="text-slate-800">{stats?.bestStreak}</strong>
                 </p>
               )}
             </div>
-          );
-        })}
-      </main>
 
-      {loggedIn && (
-        <section className="mt-5">
-          <div className="mb-2.5">
-            <p className="text-center text-muted-foreground font-semibold text-sm">
-              {placementLoading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0} · ההישגים שלי`}
-            </p>
-            {!placementLoading && (stats?.bestStreak ?? 0) > 0 && (
-              <p className="text-center text-muted-foreground text-xs mt-0.5">
-                השיא שלך: {stats?.bestStreak} תשובות נכונות ברצף
-              </p>
-            )}
-          </div>
-          <div className="flex flex-wrap justify-center gap-2">
-            {ACHIEVEMENTS.map((ach) => {
-              const unlocked = stats?.achievements?.includes(ach.id) ?? false;
-              const isExpanded = expandedAchievementId === ach.id;
-              const descId = `achievement-desc-${ach.id}`;
-              return (
-                <div key={ach.id} className="flex flex-col items-center gap-1 max-w-[9rem]">
-                  <button
-                    type="button"
-                    title={ach.descHe}
-                    aria-expanded={isExpanded}
-                    aria-controls={descId}
-                    onClick={() => setExpandedAchievementId(isExpanded ? null : ach.id)}
-                    className={cn(
-                      "text-sm font-semibold px-3 py-1.5 rounded-full border transition-colors",
-                      unlocked ? "bg-amber-50 border-amber-200 text-amber-800" : "bg-muted border-border text-muted-foreground opacity-60",
-                      isExpanded && "ring-2 ring-primary"
+            <div className="flex flex-wrap justify-center gap-2.5">
+              {ACHIEVEMENTS.map((ach) => {
+                const unlocked = stats?.achievements?.includes(ach.id) ?? false;
+                const isExpanded = expandedAchievementId === ach.id;
+                const descId = `achievement-desc-${ach.id}`;
+
+                return (
+                  <div key={ach.id} className="flex flex-col items-center gap-1.5 max-w-[10rem]">
+                    <button
+                      type="button"
+                      title={ach.descHe}
+                      aria-expanded={isExpanded}
+                      aria-controls={descId}
+                      onClick={() => setExpandedAchievementId(isExpanded ? null : ach.id)}
+                      className={cn(
+                        "text-xs font-bold px-3.5 py-2 rounded-xl border transition-all flex items-center gap-1.5",
+                        unlocked
+                          ? "bg-amber-50 border-amber-200 text-amber-800 shadow-xs"
+                          : "bg-slate-50 border-slate-200 text-slate-400 opacity-70 hover:opacity-100",
+                        isExpanded && "ring-2 ring-rose-500 border-transparent"
+                      )}
+                    >
+                      <span>{ach.icon}</span>
+                      <span>{ach.nameHe}</span>
+                    </button>
+
+                    {isExpanded && (
+                      <div
+                        id={descId}
+                        className="text-[11px] text-slate-600 text-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 shadow-sm"
+                      >
+                        <p className="text-slate-700">{ach.descHe}</p>
+                        {!unlocked && stats != null && ach.progress && (() => {
+                          const { current, target } = ach.progress(stats);
+                          return (
+                            <span className="block mt-1 font-semibold text-rose-600">
+                              התקדמות: {Math.min(current, target)} / {target}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     )}
-                  >
-                    {ach.icon} {ach.nameHe}
-                  </button>
-                  {isExpanded && (
-                    <p id={descId} className="text-xs text-muted-foreground text-center">
-                      {ach.descHe}
-                      {!unlocked && stats != null && ach.progress && (() => {
-                        const { current, target } = ach.progress(stats);
-                        return (
-                          <span className="block mt-0.5">
-                            התקדמות: {Math.min(current, target)} מתוך {target}
-                          </span>
-                        );
-                      })()}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

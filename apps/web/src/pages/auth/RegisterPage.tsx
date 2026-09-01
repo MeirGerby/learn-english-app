@@ -1,13 +1,16 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
 import { trpc, getTRPCErrorCode } from "@/lib/trpc";
 import { setAuthToken } from "@/lib/authToken";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/PasswordInput";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useAsyncSubmit } from "@/hooks/useAsyncSubmit";
+import { UserPlus } from "lucide-react";
+import hightalkLogo from "@/assets/hightalk-logo.png";
 
 const ERROR_MESSAGES: Record<string, string> = {
   CONFLICT: "כתובת האימייל כבר רשומה במערכת.",
@@ -17,120 +20,146 @@ const ERROR_MESSAGES: Record<string, string> = {
 const MIN_PASSWORD_LENGTH = 8;
 
 export default function RegisterPage() {
-  useDocumentTitle("הרשמה");
+  useDocumentTitle("הרשמה | הודיה ג'רבי");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+
+  const form = useAsyncSubmit();
+
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { from?: string } | null;
   const from = typeof state?.from === "string" && state.from.startsWith("/") ? state.from : "/";
 
-  async function handleSubmit(e: FormEvent) {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
-    setError("");
 
     if (password !== confirm) {
-      setError("הסיסמאות אינן תואמות.");
+      form.setError("הסיסמאות אינן תואמות.");
       return;
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      setError(`הסיסמה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`);
+      form.setError(`הסיסמה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`);
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const { token } = await trpc.auth.register.mutate({ email, password });
-      setAuthToken(token);
-      navigate(from, { replace: true });
-    } catch (err) {
-      const code = getTRPCErrorCode(err);
-      setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+    form.execute(
+      () => trpc.auth.register.mutate({ email, password }),
+      {
+        onSuccess: ({ token }) => {
+          setAuthToken(token);
+          navigate(from, { replace: true });
+        },
+        onError: (err) => {
+          const code = getTRPCErrorCode(err);
+          form.setError((code && ERROR_MESSAGES[code]) || "אירעה שגיאה. נסו שוב.");
+        },
+      }
+    );
+  };
 
   return (
-    <div className="app mx-auto max-w-xl w-full px-4 py-6">
-      <TopBar />
-      <main className="max-w-sm mx-auto mt-10">
-        <h1 className="text-center font-bold text-2xl mb-5">הרשמה</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-1.5 bg-card border rounded-2xl p-6">
-          <Label htmlFor="reg-email" className="text-muted-foreground mt-2">
-            אימייל
-          </Label>
-          <Input id="reg-email" type="email" required autoComplete="email" dir="ltr" className="h-11" value={email} onChange={(e) => setEmail(e.target.value)} />
+    <div className="min-h-screen bg-[#08090a] text-slate-100 font-sans pb-24 selection:bg-rose-500 selection:text-white">
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-rose-500/15 via-purple-500/5 to-transparent blur-3xl pointer-events-none" />
 
-          <Label htmlFor="reg-password" className="text-muted-foreground mt-2">
-            סיסמה
-          </Label>
-          <div className="relative" dir="ltr">
-            <Input
-              id="reg-password"
-              type={showPassword ? "text" : "password"}
-              required
-              minLength={MIN_PASSWORD_LENGTH}
-              autoComplete="new-password"
-              className="h-11 pe-9"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button
-              type="button"
-              aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute top-1/2 -translate-y-1/2 end-2 min-w-8 min-h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
-            >
-              {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
-            </button>
+      <div className="relative z-10 max-w-2xl mx-auto px-4 pt-4 flex flex-col gap-6">
+        <TopBar />
+
+        <main className="max-w-md w-full mx-auto mt-2">
+          {/* Dominant Form Header Logo */}
+          <div className="flex flex-col items-center mb-8">
+            <Link to="/" className="relative group mb-5">
+              <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
+              <div className="relative bg-slate-950 px-6 py-4 rounded-2xl border border-slate-800">
+                <img
+                  src={hightalkLogo}
+                  alt="Hightalk Logo"
+                  className="h-16 sm:h-20 w-auto object-contain filter drop-shadow-[0_0_15px_rgba(244,63,94,0.35)]"
+                />
+              </div>
+            </Link>
+
+            <h1 className="text-2xl font-black tracking-tight text-white">יצירת חשבון חדש</h1>
+            <p className="text-slate-400 text-xs mt-1">הרשמו כדי להתחיל לתרגל ולעקוב אחר ההתקדמות</p>
           </div>
 
-          <Label htmlFor="reg-confirm" className="text-muted-foreground mt-2">
-            אימות סיסמה
-          </Label>
-          <div className="relative" dir="ltr">
-            <Input
-              id="reg-confirm"
-              type={showConfirm ? "text" : "password"}
-              required
-              minLength={MIN_PASSWORD_LENGTH}
-              autoComplete="new-password"
-              className="h-11 pe-9"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
-            <button
-              type="button"
-              aria-label={showConfirm ? "הסתר סיסמה" : "הצג סיסמה"}
-              onClick={() => setShowConfirm((v) => !v)}
-              className="absolute top-1/2 -translate-y-1/2 end-2 min-w-8 min-h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
-            >
-              {showConfirm ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
-            </button>
+          <div className="relative overflow-hidden rounded-3xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-teal-500" />
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div>
+                <Label htmlFor="reg-email" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                  דואר אלקטרוני
+                </Label>
+                <Input
+                  id="reg-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  dir="ltr"
+                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="reg-password" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                  סיסמה
+                </Label>
+                <PasswordInput
+                  id="reg-password"
+                  required
+                  minLength={MIN_PASSWORD_LENGTH}
+                  autoComplete="new-password"
+                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="reg-confirm" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                  אימות סיסמה
+                </Label>
+                <PasswordInput
+                  id="reg-confirm"
+                  required
+                  minLength={MIN_PASSWORD_LENGTH}
+                  autoComplete="new-password"
+                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                />
+              </div>
+
+              {form.error && (
+                <p aria-live="polite" className="text-rose-400 text-xs mt-0.5 font-medium">
+                  {form.error}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                className="mt-2 h-11 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-950/40 transition-all duration-200"
+                disabled={form.isSubmitting}
+              >
+                <UserPlus className="w-4 h-4 me-2" />
+                {form.isSubmitting ? "נרשמים..." : "הרשמה"}
+              </Button>
+            </form>
           </div>
 
-          <p aria-live="polite" className="text-destructive text-sm min-h-[18px] mt-1">
-            {error}
+          <p className="text-center mt-6 text-slate-400 text-xs">
+            כבר יש לכם חשבון?{" "}
+            <Link to="/login" state={location.state} className="text-rose-400 font-bold hover:underline">
+              התחברות
+            </Link>
           </p>
-
-          <Button type="submit" className="mt-4 h-11" disabled={isSubmitting}>
-            {isSubmitting ? "נרשמים..." : "הרשמה"}
-          </Button>
-        </form>
-        <p className="text-center mt-4 text-muted-foreground text-sm">
-          כבר יש לכם חשבון?{" "}
-          <Link to="/login" state={location.state} className="text-primary font-semibold">
-            התחברות
-          </Link>
-        </p>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

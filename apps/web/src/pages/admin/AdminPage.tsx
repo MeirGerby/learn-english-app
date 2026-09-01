@@ -6,6 +6,7 @@ import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useAsyncSubmit } from "@/hooks/useAsyncSubmit";
 
 interface FeedbackItem {
   id: string;
@@ -20,39 +21,49 @@ export default function AdminPage() {
   const location = useLocation();
   const [feedbackText, setFeedbackText] = useState("");
   const [items, setItems] = useState<FeedbackItem[]>([]);
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+  const submitForm = useAsyncSubmit();
 
   const refetch = useCallback(async () => {
     try {
       setItems(await trpc.feedback.list.query());
     } catch {
-      // Leave whatever was already shown on a transient fetch failure.
+      // Leave existing items on query failures
     }
   }, []);
 
   useEffect(() => {
-    if (!admin) return;
-    void refetch();
-    // Keyed on user?.id, not the user object - see usePlacement.tsx for why.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [admin, user?.id]);
+    if (admin) void refetch();
+  }, [admin, user?.id, refetch]);
 
-  async function handleSubmitFeedback(e: FormEvent) {
+  const handleSubmitFeedback = (e: FormEvent) => {
     e.preventDefault();
-    if (isSubmittingFeedback) return;
     const text = feedbackText.trim();
     if (!text) return;
-    setIsSubmittingFeedback(true);
+
+    submitForm.execute(
+      () => trpc.feedback.create.mutate({ text }),
+      {
+        onSuccess: async () => {
+          setFeedbackText("");
+          await refetch();
+        },
+        onError: () => alert("שמירת המשוב נכשלה. נסו שוב."),
+      }
+    );
+  };
+
+  const handleRemoveFeedback = async (item: FeedbackItem) => {
+    const snippet = item.text.length > 40 ? `${item.text.slice(0, 40)}...` : item.text;
+    if (!window.confirm(`למחוק את המשוב "${snippet}"? לא ניתן לבטל פעולה זו.`)) return;
+
     try {
-      await trpc.feedback.create.mutate({ text });
-      setFeedbackText("");
+      await trpc.feedback.remove.mutate({ id: item.id });
       await refetch();
     } catch {
-      alert("שמירת המשוב נכשלה. נסו שוב.");
-    } finally {
-      setIsSubmittingFeedback(false);
+      alert("מחיקת המשוב נכשלה. נסו שוב.");
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -95,8 +106,8 @@ export default function AdminPage() {
               placeholder="תארו את הבאג, הרעיון או השיפור הנדרש..."
               className="min-h-24"
             />
-            <Button type="submit" className="self-start mt-1" disabled={isSubmittingFeedback}>
-              {isSubmittingFeedback ? "שומרת..." : "שמירת משוב"}
+            <Button type="submit" className="self-start mt-1" disabled={submitForm.isSubmitting}>
+              {submitForm.isSubmitting ? "שומרת..." : "שמירת משוב"}
             </Button>
           </form>
         </section>
@@ -111,20 +122,7 @@ export default function AdminPage() {
                   <span>
                     <span dir="ltr">{item.authorEmail}</span> · {new Date(item.createdAt).toLocaleString("he-IL")}
                   </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      const snippet = item.text.length > 40 ? `${item.text.slice(0, 40)}...` : item.text;
-                      if (!window.confirm(`למחוק את המשוב "${snippet}"? לא ניתן לבטל פעולה זו.`)) return;
-                      try {
-                        await trpc.feedback.remove.mutate({ id: item.id });
-                        await refetch();
-                      } catch {
-                        alert("מחיקת המשוב נכשלה. נסו שוב.");
-                      }
-                    }}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleRemoveFeedback(item)}>
                     מחיקה
                   </Button>
                 </div>

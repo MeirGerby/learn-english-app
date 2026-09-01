@@ -1,48 +1,149 @@
 import { Link } from "react-router-dom";
-import { TopBar } from "@/components/TopBar";
-import { Button } from "@/components/ui/button";
+import {
+  Sparkles,
+  GraduationCap,
+  Gamepad2,
+  FileText,
+  CheckCircle2,
+  ArrowLeft,
+  BookOpen,
+} from "lucide-react";
+
+// HighTalk Design System Imports
+import {
+  PageShell,
+  BrandHeader,
+  BrandHero,
+  BrandBadge,
+  SectionHeading,
+  BrandActionCard,
+  BrandCard,
+} from "@/components/ui";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import hightalkLogo from "@/assets/hightalk-logo.png";
 
 export default function HomePage() {
-  useDocumentTitle("מורה לאנגלית");
+  useDocumentTitle("הודיה ג'רבי | מומחית לרכישת שפה והוראת אנגלית");
 
   return (
-    <div className="app mx-auto max-w-xl w-full px-4 py-6">
-      <TopBar />
+    <PageShell>
+      <BrandHeader />
 
-      <header className="flex flex-col items-center text-center gap-2 mb-8 mt-4">
-        <img src={hightalkLogo} alt="Hightalk" className="h-20 w-auto mb-1" />
-        <h1 className="text-2xl font-bold m-0">הודיה ג'רבי</h1>
-        <p className="text-primary font-bold m-0">מורה לאנגלית</p>
-        <p className="text-muted-foreground max-w-md leading-relaxed mt-1">
-          עם 5 שנות ניסיון בהוראת אנגלית לילדים ותואר בהוראת אנגלית, הודיה מלווה תלמידים בדרך מהנה ובגובה העיניים
-          לרכישת השפה - החל מאוצר מילים בסיסי ועד ביטחון אמיתי בדיבור, קריאה וכתיבה.
-        </p>
-        <div className="flex flex-wrap justify-center gap-2 my-1.5">
-          <span className="bg-accent text-primary text-sm font-semibold px-3 py-1.5 rounded-full">🎓 תואר בהוראת אנגלית</span>
-          <span className="bg-accent text-primary text-sm font-semibold px-3 py-1.5 rounded-full">🧒 התמחות בהוראת ילדים</span>
-          <span className="bg-accent text-primary text-sm font-semibold px-3 py-1.5 rounded-full">⭐ 5+ שנות ניסיון</span>
-        </div>
-      </header>
+      <main className="pt-6 sm:pt-10 flex flex-col gap-10">
+        {/* =====================================================
+            HERO SECTION
+        ====================================================== */}
+        <BrandHero className="bg-white border border-slate-200 shadow-sm text-slate-900">
+          <BrandBadge icon={Sparkles} className="bg-rose-50 text-rose-600 border border-rose-200">
+            ללמוד אנגלית אחרת
+          </BrandBadge>
 
-      <div className="flex flex-col gap-3 max-w-xs mx-auto">
-        <Link to="/games">
-          <Button size="lg" className="w-full text-base h-14">
-            🎮 למשחקים
-          </Button>
-        </Link>
-        <Link to="/course">
-          <Button size="lg" variant="outline" className="w-full text-base h-14">
-            🎓 לקורס של הודיה
-          </Button>
-        </Link>
-        <Link to="/materials">
-          <Button size="lg" variant="outline" className="w-full text-base h-14">
-            📄 חומרים של הודיה
-          </Button>
-        </Link>
-      </div>
-    </div>
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-2">
+            הודיה ג'רבי
+          </h1>
+
+          <p className="text-rose-600 font-bold text-lg sm:text-xl">
+            מומחית לרכישת שפה והוראת אנגלית
+          </p>
+
+          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            שיטת לימוד חדשנית המשלבת טכניקות מבוססות מחקר, חוויית משחק אינטראקטיבית
+            ולמידה מותאמת אישית לכל רמה.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <BrandBadge icon={GraduationCap} className="bg-slate-100 text-slate-700">
+              B.Ed בהוראת אנגלית
+            </BrandBadge>
+            <BrandBadge icon={CheckCircle2} className="bg-slate-100 text-slate-700">
+              ניסיון מוכח בלמידה מותאמת
+            </BrandBadge>
+          </div>
+        </BrandHero>
+
+        {/* =====================================================
+            LEARNING PATHWAYS SECTION
+        ====================================================== */}
+        <section className="flex flex-col gap-6">
+          <SectionHeading
+            eyebrow="HIGHTALK"
+            title="הדרך שלך ללמוד"
+            description="בחרו את מסלול הלימוד המתאים ביותר עבורכם"
+          />
+
+          <div className="flex flex-col gap-4">
+            {/* Primary Action Card - Games */}
+            <BrandActionCard
+              to="/games"
+              icon={Gamepad2}
+              variant="primary"
+              title="משחקי למידה"
+              description="תרגול אנגלית דרך משחק, אתגר והנאה - מותאם לרמה האישית שלכם"
+              badgeText="מומלץ להתחיל כאן"
+              className="bg-gradient-to-r from-rose-50 via-white to-white border-rose-200 shadow-sm hover:border-rose-300"
+            />
+
+            {/* Secondary Action Cards Grid */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <BrandActionCard
+                to="/course"
+                icon={BookOpen}
+                title="הקורס של הודיה"
+                description="תכנית הלימודים המלאה לשיפור הדיבור והבנת השפה"
+                className="ht-card-hover"
+              />
+
+              <BrandActionCard
+                to="/materials"
+                icon={FileText}
+                title="חומרי לימוד"
+                description="דפי עבודה, סיכומים וחומרי תרגול להורדה"
+                className="ht-card-hover"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================
+            WHY HIGHTALK FEATURE SECTION
+        ====================================================== */}
+        <section className="mt-4">
+          <BrandCard className="ht-card p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center sm:text-right">
+                <span className="text-xs font-bold text-rose-600 tracking-wider uppercase">
+                  למה HighTalk?
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                  רוצים לדעת איפה להתחיל?
+                </h3>
+                <p className="text-sm text-slate-600 max-w-md">
+                  קחו מבחן רמה קצר ולקבלת המלצות מותאמות אישית למשחקים ולתכנים המתאימים בדיוק עבורכם.
+                </p>
+              </div>
+
+              <Link
+                to="/placement-test"
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  px-6
+                  py-3.5
+                  rounded-xl
+                  font-bold
+                  text-sm
+                  ht-primary
+                  shrink-0
+                  ht-focus
+                "
+              >
+                <span>התחילו מבחן רמה</span>
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+            </div>
+          </BrandCard>
+        </section>
+      </main>
+    </PageShell>
   );
 }

@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { clearAuthToken } from "@/lib/authToken";
-import { Button } from "@/components/ui/button";
+import { LogOut, Settings, Key, ArrowRight, UserPlus, LogIn } from "lucide-react";
+import hightalkLogo from "@/assets/hightalk-logo.png";
 
 interface TopBarProps {
   backTo?: { href: string; label: string };
@@ -9,68 +10,92 @@ interface TopBarProps {
 
 export function TopBar({ backTo }: TopBarProps) {
   const { user, admin } = useAuth();
-
   const location = useLocation();
-
   const isLoginPage = location.pathname === "/login";
 
-  // Signing out is now a purely local, synchronous operation (clear the
-  // stored JWT) with no network call - the async isSigningOut guard this
-  // used to need was specifically for Firebase's signOut() call rejecting
-  // on flaky wifi, a failure mode that no longer exists once there's
-  // nothing to await.
-  const handleSignOut = () => {
-    clearAuthToken();
-  };
-
-  
   return (
-    <div className="flex items-center justify-between flex-wrap gap-2.5 mb-6">
+    <header className="w-full flex items-center justify-between gap-4 py-3 px-5 bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl">
+      {/* Brand / Navigation Anchor */}
       {backTo ? (
-        <Link to={backTo.href} className="font-bold text-foreground no-underline">
-          {backTo.label}
+        <Link
+          to={backTo.href}
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white transition-colors group"
+        >
+          <ArrowRight className="w-4 h-4 text-rose-500 group-hover:-translate-x-1 transition-transform" />
+          <span>{backTo.label}</span>
         </Link>
       ) : (
-        <Link to="/" className="font-bold text-foreground no-underline">
-          📚 Learn English
+        <Link to="/" className="flex items-center gap-2 group">
+          <img
+            src={hightalkLogo}
+            alt="Hightalk Logo"
+            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 filter drop-shadow-[0_0_12px_rgba(244,63,94,0.35)]"
+          />
         </Link>
       )}
 
-      <div className="flex items-center gap-2.5 flex-wrap">
+      {/* Action Navigation Bar */}
+      <div className="flex items-center gap-3">
         {user ? (
-          <>
-            <span className="text-muted-foreground text-sm" dir="ltr">{user.email}</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden sm:inline-block text-xs font-semibold text-slate-400 dir-ltr bg-slate-950/50 px-3 py-1.5 rounded-xl border border-slate-800">
+              {user.email}
+            </span>
+
             {admin && (
-              <Link to="/admin" className="text-primary font-semibold text-sm hover:underline">
-                ⚙️ ניהול
+              <Link
+                to="/admin"
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl border border-transparent hover:border-slate-700/60 transition-all"
+                title="ניהול"
+              >
+                <Settings className="w-4 h-4" />
               </Link>
             )}
-            <Link to="/account" className="text-primary font-semibold text-sm hover:underline">
-              🔑 שינוי סיסמה
-            </Link>
-            <Button
-              variant="link"
-              className="text-destructive p-0 h-auto text-sm"
-              onClick={handleSignOut}
+
+            <Link
+              to="/account"
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl border border-transparent hover:border-slate-700/60 transition-all"
+              title="חשבון"
             >
-              התנתקות
-            </Button>
-          </>
+              <Key className="w-4 h-4" />
+            </Link>
+
+            <button
+              onClick={clearAuthToken}
+              className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl border border-transparent hover:border-rose-500/20 transition-all"
+              title="התנתקות"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         ) : (
-          <>
-            <Link to="/login">
-              <Button size="lg" variant={isLoginPage ? "default" : "outline"}>
-                התחברות
-              </Button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/login"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                isLoginPage
+                  ? "bg-slate-800 text-white border border-slate-700"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>התחברות</span>
             </Link>
-            <Link to="/register">
-              <Button size="lg" variant={!isLoginPage ? "default" : "outline"}>
-                הרשמה
-              </Button>
+
+            <Link
+              to="/register"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                !isLoginPage
+                  ? "bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-950/40"
+                  : "bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>הרשמה</span>
             </Link>
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </header>
   );
 }

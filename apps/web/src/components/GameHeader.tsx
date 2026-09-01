@@ -1,18 +1,19 @@
 import type { ReactNode } from "react";
+import { Trophy, Flame } from "lucide-react";
 
-interface GameHeaderProps {
-  title: ReactNode;
-  score: number;
-  streak: number;
-}
-
-export function GameHeader({ title, score, streak }: GameHeaderProps) {
+export function GameHeader({ title, score, streak }: { title: ReactNode; score: number; streak: number }) {
   return (
-    <header className="flex items-center justify-between mb-4 flex-wrap gap-2">
-      <h1 className="text-2xl font-bold m-0 flex items-center gap-2">{title}</h1>
-      <div className="flex gap-3 font-semibold text-primary text-sm">
-        <span>ניקוד: {score}</span>
-        <span>רצף: {streak}</span>
+    <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+      <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-2">{title}</h1>
+      <div className="flex items-center gap-3 text-xs font-bold">
+        <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 text-amber-400">
+          <Trophy className="w-3.5 h-3.5" />
+          <span>{score}</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 text-rose-400">
+          <Flame className="w-3.5 h-3.5" />
+          <span>{streak}</span>
+        </div>
       </div>
     </header>
   );
