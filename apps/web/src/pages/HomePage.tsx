@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import hightalkLogo from "@/assets/hightalk-logo.png";
 
 export default function HomePage() {
   useDocumentTitle("מורה לאנגלית");
@@ -11,9 +12,7 @@ export default function HomePage() {
       <TopBar />
 
       <header className="flex flex-col items-center text-center gap-2 mb-8 mt-4">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-indigo-400 text-white font-extrabold text-2xl mb-1">
-          HG
-        </div>
+        <img src={hightalkLogo} alt="Hightalk" className="h-20 w-auto mb-1" />
         <h1 className="text-2xl font-bold m-0">הודיה ג'רבי</h1>
         <p className="text-primary font-bold m-0">מורה לאנגלית</p>
         <p className="text-muted-foreground max-w-md leading-relaxed mt-1">
