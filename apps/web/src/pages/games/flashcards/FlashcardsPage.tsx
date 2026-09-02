@@ -278,7 +278,8 @@ export default function FlashcardsPage() {
                       onClick={() => handleQuizAnswer(opt)}
                       className={cn(
                         "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",
-                        !isAnswered && "hover:bg-accent cursor-pointer",
+                        !isAnswered &&
+                          "border-rose-500/40 text-rose-100 hover:bg-rose-500/10 hover:border-rose-400 cursor-pointer",
                         isAnswered && isThisCorrect && "bg-green-500 border-green-500 text-white font-semibold",
                         isAnswered &&
                           !isThisCorrect &&
