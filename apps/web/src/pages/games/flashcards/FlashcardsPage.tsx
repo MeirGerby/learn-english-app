@@ -238,13 +238,13 @@ export default function FlashcardsPage() {
               <Progress value={(fcIndex / words.length) * 100} className="mt-1.5" />
               <div className="flex gap-2.5">
                 <Button
-                  className="flex-1 h-11 bg-red-100 text-red-600 hover:bg-red-200"
+                  className="flex-1 h-11 bg-red-500 text-white hover:bg-red-600"
                   onClick={handleUnknown}
                 >
                   עדיין לומד/ת
                 </Button>
                 <Button
-                  className="flex-1 h-11 bg-green-100 text-green-600 hover:bg-green-200"
+                  className="flex-1 h-11 bg-green-500 text-white hover:bg-green-600"
                   onClick={handleKnown}
                 >
                   אני כבר יודע/ת ✓
@@ -279,11 +279,11 @@ export default function FlashcardsPage() {
                       className={cn(
                         "rounded-lg border px-4 py-3.5 text-start text-sm transition-colors",
                         !isAnswered && "hover:bg-accent cursor-pointer",
-                        isAnswered && isThisCorrect && "bg-green-100 border-green-500 text-green-700 font-semibold",
+                        isAnswered && isThisCorrect && "bg-green-500 border-green-500 text-white font-semibold",
                         isAnswered &&
                           !isThisCorrect &&
                           opt.word === answeredOption?.word &&
-                          "bg-red-100 border-red-500 text-red-700 font-semibold"
+                          "bg-red-500 border-red-500 text-white font-semibold"
                       )}
                     >
                       {opt.translation}
@@ -296,7 +296,7 @@ export default function FlashcardsPage() {
                 className={cn(
                   "text-center mt-3.5 font-semibold min-h-6",
                   answeredOption &&
-                    (answeredOption.word === currentQuizWord.word ? "text-green-600" : "text-red-600")
+                    (answeredOption.word === currentQuizWord.word ? "text-green-500" : "text-red-500")
                 )}
               >
                 {answeredOption
