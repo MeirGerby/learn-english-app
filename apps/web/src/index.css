@@ -184,7 +184,7 @@
   }
 
   body {
-    background: var(--hightalk-bg);
+    background: #08090a;
     color: var(--hightalk-text);
   }
 }
@@ -196,14 +196,13 @@
   -------------------------------- */
 
   .ht-surface {
-    @apply bg-white border border-slate-200;
-    box-shadow: var(--hightalk-shadow);
+    @apply bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl;
   }
 
   .ht-surface-hover {
     @apply transition-all duration-200
-      hover:bg-slate-50
-      hover:border-rose-200;
+      hover:bg-slate-800/80
+      hover:border-rose-500/30;
   }
 
   /* --------------------------------
@@ -211,20 +210,18 @@
   -------------------------------- */
 
   .ht-card {
-    @apply rounded-2xl bg-white border border-slate-200;
-    box-shadow: var(--hightalk-shadow);
+    @apply rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl;
   }
 
   .ht-card-hover {
-    @apply rounded-2xl bg-white border border-slate-200
+    @apply rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl
       transition-all duration-200
       hover:-translate-y-0.5
-      hover:border-rose-200;
-    box-shadow: var(--hightalk-shadow);
+      hover:border-rose-500/30;
   }
 
   .ht-card-hover:hover {
-    box-shadow: var(--hightalk-shadow-hover);
+    box-shadow: 0 20px 45px -15px rgba(244, 63, 94, 0.25);
   }
 
   /* --------------------------------
@@ -235,7 +232,7 @@
     @apply bg-rose-600 text-white
       hover:bg-rose-500
       transition-all
-      shadow-sm;
+      shadow-lg shadow-rose-950/40;
   }
 
   /* --------------------------------
@@ -254,11 +251,11 @@
   -------------------------------- */
 
   .ht-muted {
-    @apply text-slate-500;
+    @apply text-slate-400;
   }
 
   .ht-subtle {
-    @apply text-slate-400;
+    @apply text-slate-500;
   }
 
   /* --------------------------------
@@ -267,8 +264,10 @@
 
   .ht-page {
     @apply min-h-screen
-      bg-slate-100
-      text-slate-900;
+      bg-[#08090a]
+      text-slate-100
+      selection:bg-rose-500
+      selection:text-white;
   }
 
   /* --------------------------------
@@ -281,6 +280,7 @@
       mx-auto
       px-4
       sm:px-6
+      pt-4
       pb-24;
   }
 }

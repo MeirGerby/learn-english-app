@@ -96,30 +96,30 @@ export default function GamesListPage() {
             LEVEL STATUS BANNER
         ====================================================== */}
         <section className="ht-card p-6 text-center">
-          <div className="inline-flex items-center gap-2 mb-2 px-4 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-xs font-bold text-rose-600">
+          <div className="inline-flex items-center gap-2 mb-2 px-4 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-400">
             <Sparkles className="w-3.5 h-3.5" />
             בחרו משחק כדי להתחיל לתרגל
           </div>
 
           {user && !admin && !placementLoading && (
-            <p className="text-xs sm:text-sm text-slate-600 flex items-center justify-center gap-2 mt-1">
+            <p className="text-xs sm:text-sm text-slate-400 flex items-center justify-center gap-2 mt-1">
               <span>
-                הרמה שלכם: <strong className="text-rose-600 font-bold">{getBandLabel(unlockedBand)}</strong>
+                הרמה שלכם: <strong className="text-rose-400 font-bold">{getBandLabel(unlockedBand)}</strong>
               </span>
-              <span className="text-slate-300">•</span>
+              <span className="text-slate-600">•</span>
               <Link
                 to="/placement-test"
-                className="inline-flex items-center gap-1.5 text-slate-700 hover:text-rose-600 underline underline-offset-4 transition-colors font-medium"
+                className="inline-flex items-center gap-1.5 text-slate-300 hover:text-rose-400 underline underline-offset-4 transition-colors font-medium"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-rose-500" />
+                <RefreshCw className="w-3.5 h-3.5 text-rose-400" />
                 מבחן רמה מחדש
               </Link>
             </p>
           )}
 
           {!user && (
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              <Link to="/login" state={{ from: "/games" }} className="text-rose-600 font-bold hover:underline">
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              <Link to="/login" state={{ from: "/games" }} className="text-rose-400 font-bold hover:underline">
                 התחברו
               </Link>{" "}
               ועברו מבחן רמה כדי לפתוח את כל המשחקים
@@ -140,15 +140,15 @@ export default function GamesListPage() {
               <div
                 key={game.href}
                 className={cn(
-                  "relative flex flex-col rounded-2xl bg-white border border-slate-200 shadow-sm transition-all duration-300 overflow-hidden group",
+                  "relative flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl transition-all duration-300 overflow-hidden group",
                   locked
-                    ? "opacity-60 bg-slate-50 border-slate-200"
+                    ? "opacity-50 bg-slate-900/40 border-slate-800/60"
                     : "ht-card-hover"
                 )}
               >
                 <Link
                   to={game.href}
-                  className="flex flex-col items-center text-center gap-2 p-4 sm:p-5 no-underline text-slate-900 h-full justify-between"
+                  className="flex flex-col items-center text-center gap-2 p-4 sm:p-5 no-underline text-white h-full justify-between"
                 >
                   <div className="w-full flex items-center justify-between min-h-[24px]">
                     {game.minBand > 1 ? (
@@ -157,14 +157,14 @@ export default function GamesListPage() {
                         {locked && (
                           <span
                             title="נדרשת רמה גבוהה יותר"
-                            className="p-1 rounded-md bg-rose-50 text-rose-600 border border-rose-200 text-xs"
+                            className="p-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs"
                           >
                             <Lock className="w-3 h-3" />
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                         זמין לכולם
                       </span>
                     )}
@@ -176,7 +176,7 @@ export default function GamesListPage() {
                     </span>
                   </div>
 
-                  <span className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">
+                  <span className="text-sm sm:text-base font-bold text-white group-hover:text-rose-400 transition-colors leading-tight">
                     {game.title}
                   </span>
                 </Link>
@@ -188,7 +188,7 @@ export default function GamesListPage() {
                   aria-expanded={isExpanded}
                   aria-controls={descId}
                   onClick={() => setExpandedGameHref(isExpanded ? null : game.href)}
-                  className="absolute top-2.5 left-2.5 p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors z-20"
+                  className="absolute top-2.5 left-2.5 p-1.5 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-slate-800/80 transition-colors z-20"
                 >
                   <Info className="w-4 h-4" />
                 </button>
@@ -196,10 +196,10 @@ export default function GamesListPage() {
                 {isExpanded && (
                   <div
                     id={descId}
-                    className="text-xs text-slate-600 text-center px-4 pb-4 pt-2 bg-slate-50 border-t border-slate-200"
+                    className="text-xs text-slate-400 text-center px-4 pb-4 pt-2 bg-slate-950/40 border-t border-slate-800/60"
                   >
                     {locked && (
-                      <span className="font-bold text-rose-600 mb-1 flex items-center justify-center gap-1">
+                      <span className="font-bold text-rose-400 mb-1 flex items-center justify-center gap-1">
                         <Lock className="w-3 h-3" /> נדרשת רמה גבוהה יותר
                       </span>
                     )}
@@ -217,19 +217,19 @@ export default function GamesListPage() {
         {loggedIn && (
           <section className="mt-4 ht-card p-6">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold mb-2">
-                <Trophy className="w-3.5 h-3.5 text-amber-500" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold mb-2">
+                <Trophy className="w-3.5 h-3.5 text-amber-400" />
                 <span>הישגים וניקוד</span>
               </div>
 
-              <h2 className="text-lg sm:text-xl font-black text-slate-900">
+              <h2 className="text-lg sm:text-xl font-black text-white">
                 {placementLoading ? "טוען הישגים..." : `ניקוד מצטבר בחשבון: ${stats?.totalScore ?? 0}`}
               </h2>
 
               {!placementLoading && (stats?.bestStreak ?? 0) > 0 && (
-                <p className="text-xs text-slate-500 mt-1 flex items-center justify-center gap-1">
-                  <Flame className="w-3.5 h-3.5 text-amber-500" />
-                  שיא תשובות נכונות ברצף: <strong className="text-slate-800">{stats?.bestStreak}</strong>
+                <p className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
+                  <Flame className="w-3.5 h-3.5 text-amber-400" />
+                  שיא תשובות נכונות ברצף: <strong className="text-slate-200">{stats?.bestStreak}</strong>
                 </p>
               )}
             </div>
@@ -251,8 +251,8 @@ export default function GamesListPage() {
                       className={cn(
                         "text-xs font-bold px-3.5 py-2 rounded-xl border transition-all flex items-center gap-1.5",
                         unlocked
-                          ? "bg-amber-50 border-amber-200 text-amber-800 shadow-xs"
-                          : "bg-slate-50 border-slate-200 text-slate-400 opacity-70 hover:opacity-100",
+                          ? "bg-amber-500/10 border-amber-500/30 text-amber-300 shadow-xs"
+                          : "bg-slate-800/40 border-slate-700/60 text-slate-500 opacity-70 hover:opacity-100",
                         isExpanded && "ring-2 ring-rose-500 border-transparent"
                       )}
                     >
@@ -263,13 +263,13 @@ export default function GamesListPage() {
                     {isExpanded && (
                       <div
                         id={descId}
-                        className="text-[11px] text-slate-600 text-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 shadow-sm"
+                        className="text-[11px] text-slate-400 text-center bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60 shadow-sm"
                       >
-                        <p className="text-slate-700">{ach.descHe}</p>
+                        <p className="text-slate-300">{ach.descHe}</p>
                         {!unlocked && stats != null && ach.progress && (() => {
                           const { current, target } = ach.progress(stats);
                           return (
-                            <span className="block mt-1 font-semibold text-rose-600">
+                            <span className="block mt-1 font-semibold text-rose-400">
                               התקדמות: {Math.min(current, target)} / {target}
                             </span>
                           );
