@@ -22,10 +22,12 @@ import { RequirePlacement } from "@/components/RequirePlacement";
 import { AchievementToast } from "@/components/AchievementToast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PlacementProvider } from "@/hooks/usePlacement";
+import { ThemeProvider } from "@/hooks/useTheme";
 
 export default function App() {
   return (
     <BrowserRouter basename="/learn-english-app">
+      <ThemeProvider>
       <PlacementProvider>
       <AchievementToast />
       <ErrorBoundary>
@@ -115,6 +117,7 @@ export default function App() {
       </Routes>
       </ErrorBoundary>
       </PlacementProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

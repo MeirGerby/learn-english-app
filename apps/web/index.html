@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/learn-english-app/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>הודיה ג'רבי - מורה לאנגלית</title>
+    <script>
+      // Apply the saved/system theme before first paint, to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var saved = localStorage.getItem("theme");
+          document.documentElement.classList.toggle("dark", saved !== "light");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

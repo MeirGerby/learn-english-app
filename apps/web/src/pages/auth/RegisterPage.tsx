@@ -60,8 +60,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08090a] text-slate-100 font-sans pb-24 selection:bg-rose-500 selection:text-white">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-rose-500/15 via-purple-500/5 to-transparent blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#08090a] dark:text-slate-100 font-sans pb-24 selection:bg-rose-500 selection:text-white">
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-rose-500/10 dark:from-rose-500/15 via-purple-500/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 pt-4 flex flex-col gap-6">
         <TopBar />
@@ -71,7 +71,7 @@ export default function RegisterPage() {
           <div className="flex flex-col items-center mb-8">
             <Link to="/" className="relative group mb-5">
               <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
-              <div className="relative bg-slate-950 px-6 py-4 rounded-2xl border border-slate-800">
+              <div className="relative bg-white border border-slate-200 dark:bg-slate-950 dark:border-slate-800 px-6 py-4 rounded-2xl">
                 <img
                   src={hightalkLogo}
                   alt="Hightalk Logo"
@@ -80,16 +80,16 @@ export default function RegisterPage() {
               </div>
             </Link>
 
-            <h1 className="text-2xl font-black tracking-tight text-white">יצירת חשבון חדש</h1>
-            <p className="text-slate-400 text-xs mt-1">הרשמו כדי להתחיל לתרגל ולעקוב אחר ההתקדמות</p>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">יצירת חשבון חדש</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">הרשמו כדי להתחיל לתרגל ולעקוב אחר ההתקדמות</p>
           </div>
 
-          <div className="relative overflow-hidden rounded-3xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-sm dark:bg-slate-900/80 dark:border-slate-800/80 dark:backdrop-blur-xl dark:shadow-2xl p-6 sm:p-8">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-teal-500" />
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
-                <Label htmlFor="reg-email" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                <Label htmlFor="reg-email" className="text-slate-600 dark:text-slate-300 text-xs font-medium mb-1.5 block">
                   דואר אלקטרוני
                 </Label>
                 <Input
@@ -98,7 +98,7 @@ export default function RegisterPage() {
                   required
                   autoComplete="email"
                   dir="ltr"
-                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  className="h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 dark:bg-slate-950/60 dark:border-slate-800 dark:text-white dark:placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +106,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <Label htmlFor="reg-password" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                <Label htmlFor="reg-password" className="text-slate-600 dark:text-slate-300 text-xs font-medium mb-1.5 block">
                   סיסמה
                 </Label>
                 <PasswordInput
@@ -114,14 +114,14 @@ export default function RegisterPage() {
                   required
                   minLength={MIN_PASSWORD_LENGTH}
                   autoComplete="new-password"
-                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  className="h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 dark:bg-slate-950/60 dark:border-slate-800 dark:text-white dark:placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="reg-confirm" className="text-slate-300 text-xs font-medium mb-1.5 block">
+                <Label htmlFor="reg-confirm" className="text-slate-600 dark:text-slate-300 text-xs font-medium mb-1.5 block">
                   אימות סיסמה
                 </Label>
                 <PasswordInput
@@ -129,14 +129,14 @@ export default function RegisterPage() {
                   required
                   minLength={MIN_PASSWORD_LENGTH}
                   autoComplete="new-password"
-                  className="h-11 bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
+                  className="h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 dark:bg-slate-950/60 dark:border-slate-800 dark:text-white dark:placeholder:text-slate-500 focus:border-rose-500 focus:ring-rose-500/20"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                 />
               </div>
 
               {form.error && (
-                <p aria-live="polite" className="text-rose-400 text-xs mt-0.5 font-medium">
+                <p aria-live="polite" className="text-rose-600 dark:text-rose-400 text-xs mt-0.5 font-medium">
                   {form.error}
                 </p>
               )}
@@ -152,9 +152,9 @@ export default function RegisterPage() {
             </form>
           </div>
 
-          <p className="text-center mt-6 text-slate-400 text-xs">
+          <p className="text-center mt-6 text-slate-500 dark:text-slate-400 text-xs">
             כבר יש לכם חשבון?{" "}
-            <Link to="/login" state={location.state} className="text-rose-400 font-bold hover:underline">
+            <Link to="/login" state={location.state} className="text-rose-600 dark:text-rose-400 font-bold hover:underline">
               התחברות
             </Link>
           </p>

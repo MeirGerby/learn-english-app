@@ -184,8 +184,7 @@
   }
 
   body {
-    background: #08090a;
-    color: var(--hightalk-text);
+    @apply bg-white text-slate-900 dark:bg-[#08090a] dark:text-slate-100;
   }
 }
 
@@ -196,13 +195,14 @@
   -------------------------------- */
 
   .ht-surface {
-    @apply bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl;
+    @apply bg-white border border-slate-200
+      dark:bg-slate-900/80 dark:border-slate-800/80 dark:backdrop-blur-xl;
   }
 
   .ht-surface-hover {
     @apply transition-all duration-200
-      hover:bg-slate-800/80
-      hover:border-rose-500/30;
+      hover:bg-slate-50 hover:border-rose-200
+      dark:hover:bg-slate-800/80 dark:hover:border-rose-500/30;
   }
 
   /* --------------------------------
@@ -210,17 +210,19 @@
   -------------------------------- */
 
   .ht-card {
-    @apply rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl;
+    @apply rounded-2xl bg-white border border-slate-200 shadow-sm
+      dark:bg-slate-900/80 dark:border-slate-800/80 dark:backdrop-blur-xl dark:shadow-2xl;
   }
 
   .ht-card-hover {
-    @apply rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl
+    @apply rounded-2xl bg-white border border-slate-200 shadow-sm
+      dark:bg-slate-900/80 dark:border-slate-800/80 dark:backdrop-blur-xl dark:shadow-2xl
       transition-all duration-200
       hover:-translate-y-0.5
-      hover:border-rose-500/30;
+      hover:border-rose-200 dark:hover:border-rose-500/30;
   }
 
-  .ht-card-hover:hover {
+  .dark .ht-card-hover:hover {
     box-shadow: 0 20px 45px -15px rgba(244, 63, 94, 0.25);
   }
 
@@ -251,11 +253,11 @@
   -------------------------------- */
 
   .ht-muted {
-    @apply text-slate-400;
+    @apply text-slate-500 dark:text-slate-400;
   }
 
   .ht-subtle {
-    @apply text-slate-500;
+    @apply text-slate-400 dark:text-slate-500;
   }
 
   /* --------------------------------
@@ -264,8 +266,8 @@
 
   .ht-page {
     @apply min-h-screen
-      bg-[#08090a]
-      text-slate-100
+      bg-slate-50 text-slate-900
+      dark:bg-[#08090a] dark:text-slate-100
       selection:bg-rose-500
       selection:text-white;
   }
