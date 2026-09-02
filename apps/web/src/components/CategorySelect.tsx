@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { WordListDialog } from "@/components/WordListDialog";
 import { getBandLabel, getCategoryBand, getCategoryLabel } from "@learn-english/shared";
 import type { CategoryKey } from "@learn-english/shared";
 
@@ -30,6 +31,7 @@ export function CategorySelect({ categories, value, onChange, unlockedCategories
           })}
         </SelectContent>
       </Select>
+      <WordListDialog category={value} />
     </div>
   );
 }
