@@ -10,6 +10,6 @@ export const feedback = pgTable("feedback", {
   text: text("text").notNull(),
   authorId: uuid("author_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
