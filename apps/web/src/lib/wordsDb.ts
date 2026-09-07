@@ -7,18 +7,28 @@ import type { CategoryKey, WordEntry } from "@learn-english/shared";
 // before falling back rather than bailing out during a routine cold start.
 const FETCH_TIMEOUT_MS = 15000;
 
+// `id` is present only when the word came from a real DB row (the API
+// path); absent for the bundled WORD_DATA fallback, which has no DB
+// identity at all. Games pass `.id` as the optional `wordId` on
+// recordAnswer - a fallback-served round simply can't record per-word
+// progress, which is an acceptable degradation (score/achievements still
+// work either way).
+export interface WordEntryWithId extends WordEntry {
+  id?: string;
+}
+
 function timeout(ms: number): Promise<"TIMEOUT"> {
   return new Promise((resolve) => setTimeout(() => resolve("TIMEOUT"), ms));
 }
 
-async function fetchWords(category: CategoryKey): Promise<WordEntry[]> {
+async function fetchWords(category: CategoryKey): Promise<WordEntryWithId[]> {
   try {
     const result = await Promise.race([
       trpc.words.listByCategory.query({ category }),
       timeout(FETCH_TIMEOUT_MS),
     ]);
     if (result !== "TIMEOUT" && result.length > 0) {
-      return result.map((w) => ({ word: w.word, translation: w.translation, example: w.example }));
+      return result.map((w) => ({ id: w.id, word: w.word, translation: w.translation, example: w.example }));
     }
     if (result === "TIMEOUT") {
       console.warn(`API word fetch timed out for "${category}", using local fallback.`);
@@ -42,13 +52,13 @@ async function fetchWords(category: CategoryKey): Promise<WordEntry[]> {
 // .catch() below is a defensive backstop so a future change to fetchWords
 // can't silently turn a single bad call into a permanently-poisoned cache
 // entry for the rest of the session.
-const wordCache = new Map<CategoryKey, Promise<WordEntry[]>>();
+const wordCache = new Map<CategoryKey, Promise<WordEntryWithId[]>>();
 
 // Loads the word list for a category from the API (Postgres, seeded from
 // the same WORD_DATA this falls back to). Falls back to the bundled
 // wordData.ts content if the API is empty, errors, or is too slow, so the
 // site keeps working either way.
-export function loadWords(category: CategoryKey): Promise<WordEntry[]> {
+export function loadWords(category: CategoryKey): Promise<WordEntryWithId[]> {
   const cached = wordCache.get(category);
   if (cached) return cached;
   const promise = fetchWords(category).catch((err) => {

@@ -5,3 +5,5 @@ export * from "./course-items.js";
 export * from "./feedback.js";
 export * from "./password-reset-tokens.js";
 export * from "./materials.js";
+export * from "./user-word-progress.js";
+export * from "./practice-sessions.js";

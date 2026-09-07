@@ -16,17 +16,23 @@ interface RecordAnswerArgs {
   points?: number;
   correct: boolean;
   currentStreak?: number;
+  // The word answered, when known - absent when the round was served from
+  // the offline WORD_DATA fallback (see wordsDb.ts's WordEntryWithId).
+  // Optional so games can be wired to send it one at a time rather than
+  // needing a single all-8-games cutover.
+  wordId?: string;
 }
 
 // Records one answer's outcome for the signed-in user. No-op for anonymous
 // visitors - their score stays localStorage-only.
-export async function recordAnswer({ points = 0, correct, currentStreak = 0 }: RecordAnswerArgs) {
+export async function recordAnswer({ points = 0, correct, currentStreak = 0, wordId }: RecordAnswerArgs) {
   if (!isSignedIn()) return;
   try {
     const { newlyUnlocked } = await trpc.userStats.recordAnswer.mutate({
       points,
       correct,
       currentStreak,
+      wordId,
     });
     dispatchUnlocks(newlyUnlocked);
   } catch (err) {
@@ -46,12 +52,26 @@ export async function savePlacementResult(band: Band, score: number, totalQuesti
   }
 }
 
+interface RecordGameCompletedSession {
+  category?: string;
+  correctCount?: number;
+  totalCount?: number;
+  score?: number;
+  durationSeconds?: number;
+}
+
 // Records that the user finished one round of a game (used for the
-// "played all advanced/intermediate games" achievements).
-export async function recordGameCompleted(gameKey: GameKey) {
+// "played all advanced/intermediate games" achievements). When the
+// optional session fields are all present, the API also records a
+// practice_sessions row - same incremental-rollout reasoning as
+// recordAnswer's wordId.
+export async function recordGameCompleted(gameKey: GameKey, session?: RecordGameCompletedSession) {
   if (!isSignedIn()) return;
   try {
-    const { newlyUnlocked } = await trpc.userStats.recordGameCompleted.mutate({ gameKey });
+    const { newlyUnlocked } = await trpc.userStats.recordGameCompleted.mutate({
+      gameKey,
+      ...session,
+    });
     dispatchUnlocks(newlyUnlocked);
   } catch (err) {
     console.warn("recordGameCompleted failed.", err);

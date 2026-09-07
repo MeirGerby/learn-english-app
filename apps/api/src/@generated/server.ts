@@ -15,6 +15,8 @@ const t = initTRPC.create();
 const publicProcedure = t.procedure;
 import { registerInputSchema, authOutputSchema, loginInputSchema, authUserOutputSchema, requestPasswordResetInputSchema, resetPasswordInputSchema, changePasswordInputSchema } from "../auth/dto/auth.dto.js";
 import { courseItemListOutputSchema, addCourseItemInputSchema, courseItemOutputSchema, removeCourseItemInputSchema } from "../course-content/dto/course-content.dto.js";
+import { studentListOutputSchema, getStudentSummaryInputSchema } from "../dashboard/dto/dashboard.dto.js";
+import { progressSummaryOutputSchema } from "../progress/dto/progress.dto.js";
 import { feedbackListOutputSchema, createFeedbackInputSchema, removeFeedbackInputSchema } from "../feedback/dto/feedback.dto.js";
 import { materialListOutputSchema, uploadMaterialInputSchema, materialOutputSchema, removeMaterialInputSchema } from "../materials/dto/materials.dto.js";
 import { userStatsOutputSchema, recordAnswerInputSchema, statsWithUnlocksOutputSchema, recordGameCompletedInputSchema, savePlacementResultInputSchema } from "../user-stats/dto/user-stats.dto.js";
@@ -59,6 +61,15 @@ const appRouter = t.router({
       .input(removeCourseItemInputSchema)
       .mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as unknown as Awaited<ReturnType<CourseContentRouter["remove"]>>)
     }),
+  dashboard: t.router({
+    listStudents: publicProcedure
+      .output(studentListOutputSchema)
+      .query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    getStudentSummary: publicProcedure
+      .input(getStudentSummaryInputSchema)
+      .output(progressSummaryOutputSchema)
+      .query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+    }),
   feedback: t.router({
     list: publicProcedure
       .output(feedbackListOutputSchema)
@@ -81,6 +92,11 @@ const appRouter = t.router({
     remove: publicProcedure
       .input(removeMaterialInputSchema)
       .mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as unknown as Awaited<ReturnType<MaterialsRouter["remove"]>>)
+    }),
+  progress: t.router({
+    getMySummary: publicProcedure
+      .output(progressSummaryOutputSchema)
+      .query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
     }),
   userStats: t.router({
     getStats: publicProcedure

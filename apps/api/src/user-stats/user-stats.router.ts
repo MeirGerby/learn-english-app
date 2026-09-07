@@ -53,6 +53,7 @@ export class UserStatsRouter {
         data.points ?? 0,
         data.correct,
         data.currentStreak ?? 0,
+        data.wordId,
       );
     } catch (error) {
       this.logger.error('Failed to record answer', error);
@@ -74,7 +75,13 @@ export class UserStatsRouter {
   ) {
     const user = requireUser(ctx);
     try {
-      return await this.userStatsService.recordGameCompleted(user.id, data.gameKey);
+      return await this.userStatsService.recordGameCompleted(user.id, data.gameKey, {
+        category: data.category,
+        correctCount: data.correctCount,
+        totalCount: data.totalCount,
+        score: data.score,
+        durationSeconds: data.durationSeconds,
+      });
     } catch (error) {
       this.logger.error('Failed to record game completion', error);
       throw new TRPCError({

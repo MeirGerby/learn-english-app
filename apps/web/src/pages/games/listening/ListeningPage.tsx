@@ -6,7 +6,7 @@ import { CategorySelect } from "@/components/CategorySelect";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
-import { loadWords } from "@/lib/wordsDb";
+import { loadWords, type WordEntryWithId } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { EmptyGameState } from "@/components/EmptyGameState";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getCategoryKeysForBand, shuffle } from "@learn-english/shared";
-import type { CategoryKey, WordEntry } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 const ROUND_SIZE = 10;
 const CATEGORIES = getCategoryKeysForBand(3);
@@ -42,7 +42,7 @@ export default function ListeningPage() {
   const gameLocked = placementLoading || unlockedBand < 3;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState<WordEntry[]>([]);
+  const [order, setOrder] = useState<WordEntryWithId[]>([]);
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [input, setInput] = useState("");
@@ -50,18 +50,21 @@ export default function ListeningPage() {
   const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
   const [hintUsed, setHintUsed] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
+  const [missedWords, setMissedWords] = useState<WordEntryWithId[]>([]);
   const [roundKey, setRoundKey] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const answeringRef = useRef(false);
-  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntryWithId[] } | null>(null);
+  const roundScoreRef = useRef(0);
+  const correctCountRef = useRef(0);
+  const roundStartRef = useRef(Date.now());
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      let nextOrder: WordEntry[];
+      let nextOrder: WordEntryWithId[];
       if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
         nextOrder = shuffle(pendingPracticeRef.current.words);
       } else {
@@ -73,6 +76,9 @@ export default function ListeningPage() {
       setCorrectCount(0);
       setShowResults(false);
       setMissedWords([]);
+      correctCountRef.current = 0;
+      roundScoreRef.current = 0;
+      roundStartRef.current = Date.now();
       setLoading(false);
       if (nextOrder.length) startWord(nextOrder[0]);
     });
@@ -83,7 +89,7 @@ export default function ListeningPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, roundKey]);
 
-  function startWord(word: WordEntry) {
+  function startWord(word: WordEntryWithId) {
     setInput("");
     setDisabled(false);
     answeringRef.current = false;
@@ -102,7 +108,13 @@ export default function ListeningPage() {
     const next = index + 1;
     if (next >= order.length) {
       setShowResults(true);
-      recordGameCompleted("listening");
+      recordGameCompleted("listening", {
+        category,
+        correctCount: correctCountRef.current,
+        totalCount: order.length,
+        score: roundScoreRef.current,
+        durationSeconds: Math.round((Date.now() - roundStartRef.current) / 1000),
+      });
       return;
     }
     setIndex(next);
@@ -117,15 +129,17 @@ export default function ListeningPage() {
       const points = hintUsed ? 6 : 12;
       recordLocal(points, true);
       setCorrectCount((c) => c + 1);
+      correctCountRef.current += 1;
+      roundScoreRef.current += points;
       setFeedback({ text: `נכון! +${points} נקודות ✓`, color: "text-green-600" });
       setDisabled(true);
       answeringRef.current = true;
-      recordAnswer({ points, correct: true, currentStreak: streak + 1 });
+      recordAnswer({ points, correct: true, currentStreak: streak + 1, wordId: current.id });
       setTimeout(advance, 900);
     } else {
       setFeedback({ text: "לא בדיוק, נסו שוב! (או האזינו שוב)", color: "text-red-600" });
       recordLocal(0, false);
-      recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+      recordAnswer({ points: 0, correct: false, currentStreak: 0, wordId: current.id });
       inputRef.current?.select();
     }
   }
@@ -138,10 +152,11 @@ export default function ListeningPage() {
 
   function handleSkip() {
     if (answeringRef.current) return;
-    setMissedWords((m) => [...m, order[index]]);
-    setFeedback({ text: `המילה הייתה: ${order[index].word}`, color: "text-red-600" });
+    const current = order[index];
+    setMissedWords((m) => [...m, current]);
+    setFeedback({ text: `המילה הייתה: ${current.word}`, color: "text-red-600" });
     recordLocal(0, false);
-    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    recordAnswer({ points: 0, correct: false, currentStreak: 0, wordId: current.id });
     setDisabled(true);
     answeringRef.current = true;
     setTimeout(advance, 1400);

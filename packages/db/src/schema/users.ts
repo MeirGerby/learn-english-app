@@ -8,5 +8,8 @@ export const users = pgTable("users", {
   // server-only ADMIN_EMAILS env var - never retroactive if that list
   // changes later (would need a manual UPDATE).
   isAdmin: boolean("is_admin").notNull().default(false),
+  // Nullable - existing users have none until they set one. Lets the
+  // teacher dashboard show a name instead of a raw email.
+  displayName: text("display_name"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
