@@ -12,6 +12,8 @@ import { UserStatsModule } from '../user-stats/user-stats.module.js';
 import { CourseContentModule } from '../course-content/course-content.module.js';
 import { FeedbackModule } from '../feedback/feedback.module.js';
 import { MaterialsModule } from '../materials/materials.module.js';
+import { ProgressModule } from '../progress/progress.module.js';
+import { DashboardModule } from '../dashboard/dashboard.module.js';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { MaterialsModule } from '../materials/materials.module.js';
     CourseContentModule,
     FeedbackModule,
     MaterialsModule,
+    ProgressModule,
+    DashboardModule,
   ],
   controllers: [HealthRouter],
 })

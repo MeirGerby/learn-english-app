@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ACHIEVEMENTS } from '@learn-english/shared';
 import type { Band, GameKey, UserStats } from '@learn-english/shared';
 import { UserStatsRepository } from './user-stats.repository.js';
+import { ProgressService } from '../progress/progress.service.js';
 import type { StatsWithUnlocksOutput, UserStatsOutput } from './dto/user-stats.dto.js';
 
 export class UserStatsNotFoundError extends Error {
@@ -41,7 +42,10 @@ function toUserStats(row: UserStatsRow): UserStatsOutput {
 
 @Injectable()
 export class UserStatsService {
-  constructor(private readonly userStatsRepository: UserStatsRepository) {}
+  constructor(
+    private readonly userStatsRepository: UserStatsRepository,
+    private readonly progressService: ProgressService,
+  ) {}
 
   async getStats(userId: string): Promise<UserStatsOutput> {
     const row = await this.userStatsRepository.findByUserId(userId);
@@ -81,13 +85,40 @@ export class UserStatsService {
     points: number,
     correct: boolean,
     currentStreak: number,
+    wordId?: string,
   ): Promise<StatsWithUnlocksOutput> {
     await this.userStatsRepository.applyAnswer(userId, points, correct, currentStreak);
+    if (wordId) {
+      await this.progressService.recordWordAnswer(userId, wordId, correct);
+    }
     return this.withAchievementCheck(userId);
   }
 
-  async recordGameCompleted(userId: string, gameKey: GameKey): Promise<StatsWithUnlocksOutput> {
+  async recordGameCompleted(
+    userId: string,
+    gameKey: GameKey,
+    session?: {
+      category?: string;
+      correctCount?: number;
+      totalCount?: number;
+      score?: number;
+      durationSeconds?: number;
+    },
+  ): Promise<StatsWithUnlocksOutput> {
     await this.userStatsRepository.incrementRound(userId, gameKey);
+    if (
+      session?.correctCount !== undefined &&
+      session?.totalCount !== undefined &&
+      session?.score !== undefined
+    ) {
+      await this.progressService.recordSession(userId, gameKey, {
+        category: session.category,
+        correctCount: session.correctCount,
+        totalCount: session.totalCount,
+        score: session.score,
+        durationSeconds: session.durationSeconds,
+      });
+    }
     return this.withAchievementCheck(userId);
   }
 

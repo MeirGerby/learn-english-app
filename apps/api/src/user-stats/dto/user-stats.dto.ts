@@ -30,10 +30,24 @@ export const recordAnswerInputSchema = z.object({
   points: z.number().optional(),
   correct: z.boolean(),
   currentStreak: z.number().optional(),
+  // Optional so games can be wired to send it incrementally, one at a
+  // time, rather than needing a single all-8-games cutover. When present,
+  // also upserts a user_word_progress row for this (user, word).
+  wordId: z.uuid().optional(),
 });
 
 export const recordGameCompletedInputSchema = z.object({
   gameKey: gameKeySchema,
+  // Optional session fields - when correctCount/totalCount/score are all
+  // present, a practice_sessions row is recorded alongside the existing
+  // roundsCompleted increment. Same incremental-rollout reasoning as
+  // wordId above. category is separately optional even when the others
+  // are sent - Speed Round spans every category, so it has none to report.
+  category: z.string().optional(),
+  correctCount: z.number().optional(),
+  totalCount: z.number().optional(),
+  score: z.number().optional(),
+  durationSeconds: z.number().optional(),
 });
 
 export const savePlacementResultInputSchema = z.object({
