@@ -8,13 +8,13 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords } from "@/lib/wordsDb";
+import { loadWords, type WordEntryWithId } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { getCategoryKeysForBand, shuffle } from "@learn-english/shared";
-import type { CategoryKey, WordEntry } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 const ROUND_SIZE = 8;
 const POINTS_PER_CORRECT = 15;
@@ -30,7 +30,7 @@ export default function SentenceBuilderPage() {
   const gameLocked = placementLoading || unlockedBand < 2;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState<WordEntry[]>([]);
+  const [order, setOrder] = useState<WordEntryWithId[]>([]);
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [tokens, setTokens] = useState<string[]>([]);
@@ -40,9 +40,12 @@ export default function SentenceBuilderPage() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
-  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
+  const [missedWords, setMissedWords] = useState<WordEntryWithId[]>([]);
   const busyRef = useRef(false);
-  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntryWithId[] } | null>(null);
+  const roundScoreRef = useRef(0);
+  const correctCountRef = useRef(0);
+  const roundStartRef = useRef(Date.now());
 
   useEffect(() => {
     busyRef.current = false;
@@ -53,7 +56,7 @@ export default function SentenceBuilderPage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      let nextOrder: WordEntry[];
+      let nextOrder: WordEntryWithId[];
       if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
         nextOrder = shuffle(pendingPracticeRef.current.words);
       } else {
@@ -70,6 +73,9 @@ export default function SentenceBuilderPage() {
       setCorrectCount(0);
       setShowResults(false);
       setMissedWords([]);
+      correctCountRef.current = 0;
+      roundScoreRef.current = 0;
+      roundStartRef.current = Date.now();
       setLoading(false);
       if (nextOrder.length) startSentence(nextOrder[0]);
     });
@@ -84,7 +90,7 @@ export default function SentenceBuilderPage() {
     setRoundKey((k) => k + 1);
   }
 
-  function startSentence(word: WordEntry) {
+  function startSentence(word: WordEntryWithId) {
     const nextTokens = word.example.split(" ");
     setTokens(nextTokens);
     setBankIds(shuffle(nextTokens.map((_, i) => i)));
@@ -97,7 +103,13 @@ export default function SentenceBuilderPage() {
     const next = index + 1;
     if (next >= order.length) {
       setShowResults(true);
-      recordGameCompleted("sentenceBuilder");
+      recordGameCompleted("sentenceBuilder", {
+        category,
+        correctCount: correctCountRef.current,
+        totalCount: order.length,
+        score: roundScoreRef.current,
+        durationSeconds: Math.round((Date.now() - roundStartRef.current) / 1000),
+      });
       return;
     }
     setIndex(next);
@@ -115,12 +127,16 @@ export default function SentenceBuilderPage() {
         const isCorrect = next.every((chipId, i) => chipId === i);
         setResult(isCorrect ? "correct" : "incorrect");
         recordLocal(isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0, isCorrect);
-        if (isCorrect) setCorrectCount((c) => c + 1);
-        else setMissedWords((m) => [...m, current]);
+        if (isCorrect) {
+          setCorrectCount((c) => c + 1);
+          correctCountRef.current += 1;
+          roundScoreRef.current += Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2);
+        } else setMissedWords((m) => [...m, current]);
         recordAnswer({
           points: isCorrect ? Math.max(POINTS_PER_CORRECT - hintsUsed * 3, 2) : 0,
           correct: isCorrect,
           currentStreak: isCorrect ? streak + 1 : 0,
+          wordId: current.id,
         });
         setTimeout(advance, isCorrect ? 900 : 2200);
       }
@@ -157,7 +173,7 @@ export default function SentenceBuilderPage() {
     busyRef.current = true;
     setResult("incorrect");
     recordLocal(0, false);
-    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    recordAnswer({ points: 0, correct: false, currentStreak: 0, wordId: current.id });
     setMissedWords((m) => [...m, current]);
     setTimeout(advance, 2200);
   }

@@ -7,14 +7,14 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { BandBadge } from "@/components/BandBadge";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
-import { loadWords } from "@/lib/wordsDb";
+import { loadWords, type WordEntryWithId } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@learn-english/shared";
-import type { CategoryKey, WordEntry } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 const ROUND_SIZE = 12;
 const TIME_PER_QUESTION_MS = 6000;
@@ -33,13 +33,13 @@ export default function SpeedRoundPage() {
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
-  const [pool, setPool] = useState<WordEntry[]>([]);
-  const [order, setOrder] = useState<WordEntry[]>([]);
+  const [pool, setPool] = useState<WordEntryWithId[]>([]);
+  const [order, setOrder] = useState<WordEntryWithId[]>([]);
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
-  const [options, setOptions] = useState<WordEntry[]>([]);
-  const [answered, setAnswered] = useState<WordEntry | null>(null);
+  const [missedWords, setMissedWords] = useState<WordEntryWithId[]>([]);
+  const [options, setOptions] = useState<WordEntryWithId[]>([]);
+  const [answered, setAnswered] = useState<WordEntryWithId | null>(null);
   const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
@@ -72,14 +72,19 @@ export default function SpeedRoundPage() {
   // whether or not it matched - so a stale tag can never leak into a later,
   // unrelated round. See CLAUDE.md rule 100 for the same fix already
   // proven in FillBlankPage.tsx.
-  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntryWithId[] } | null>(null);
+  // Tracks when the current round started, purely for the recordGameCompleted
+  // session summary's durationSeconds - reset alongside the other per-round
+  // state below, whether that's a fresh random round or a practice-missed
+  // restart (both funnel through the same effect).
+  const roundStartRef = useRef(Date.now());
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      let nextOrder: WordEntry[];
+      let nextOrder: WordEntryWithId[];
       if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
         nextOrder = shuffle(pendingPracticeRef.current.words);
       } else {
@@ -97,6 +102,7 @@ export default function SpeedRoundPage() {
       setMissedWords([]);
       setShowResults(false);
       setLoading(false);
+      roundStartRef.current = Date.now();
       if (nextOrder.length) startQuestion(nextOrder[0], words);
     });
     return () => {
@@ -106,12 +112,12 @@ export default function SpeedRoundPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, roundKey]);
 
-  function buildOptions(current: WordEntry, words: WordEntry[]) {
+  function buildOptions(current: WordEntryWithId, words: WordEntryWithId[]) {
     const wrong = pickDistractors(words, current, 3);
     return shuffle([current, ...wrong]);
   }
 
-  function startQuestion(word: WordEntry, words: WordEntry[]) {
+  function startQuestion(word: WordEntryWithId, words: WordEntryWithId[]) {
     answeringRef.current = false;
     setAnswered(null);
     setFeedback(null);
@@ -135,7 +141,13 @@ export default function SpeedRoundPage() {
     const next = index + 1;
     if (next >= order.length) {
       setShowResults(true);
-      recordGameCompleted("speedRound");
+      recordGameCompleted("speedRound", {
+        category,
+        correctCount,
+        totalCount: order.length,
+        score: correctCount * POINTS_PER_CORRECT,
+        durationSeconds: Math.round((Date.now() - roundStartRef.current) / 1000),
+      });
       return;
     }
     setIndex(next);
@@ -151,18 +163,18 @@ export default function SpeedRoundPage() {
     setRoundKey((k) => k + 1);
   }
 
-  function handleTimeout(current: WordEntry) {
+  function handleTimeout(current: WordEntryWithId) {
     if (answeringRef.current) return;
     answeringRef.current = true;
     setAnswered((prev) => prev ?? current); // marks answered without a chosen option
     setFeedback({ text: `הזמן נגמר! התשובה הנכונה: "${current.translation}"`, color: "text-red-600" });
     recordLocal(0, false);
-    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    recordAnswer({ points: 0, correct: false, currentStreak: 0, wordId: current.id });
     setMissedWords((m) => [...m, current]);
     setTimeout(() => advanceRef.current(), 1200);
   }
 
-  function handleAnswer(opt: WordEntry) {
+  function handleAnswer(opt: WordEntryWithId) {
     if (answeringRef.current) return;
     answeringRef.current = true;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -184,6 +196,7 @@ export default function SpeedRoundPage() {
       points: isCorrect ? POINTS_PER_CORRECT : 0,
       correct: isCorrect,
       currentStreak: isCorrect ? streak + 1 : 0,
+      wordId: current.id,
     });
     setTimeout(() => advanceRef.current(), 900);
   }

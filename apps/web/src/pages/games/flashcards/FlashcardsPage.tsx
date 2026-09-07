@@ -8,18 +8,18 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords } from "@/lib/wordsDb";
+import { loadWords, type WordEntryWithId } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { getCategoryKeys, getCategoryBand, getCategoryKeysUpToBand, shuffle, pickDistractors } from "@learn-english/shared";
-import type { CategoryKey, WordEntry } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 const QUIZ_SESSION_SIZE = 10;
 const CATEGORIES = getCategoryKeys();
 
-function buildOptions(current: WordEntry, pool: WordEntry[]): WordEntry[] {
+function buildOptions(current: WordEntryWithId, pool: WordEntryWithId[]): WordEntryWithId[] {
   return shuffle([current, ...pickDistractors(pool, current, 3)]);
 }
 
@@ -29,7 +29,7 @@ export default function FlashcardsPage() {
   const { unlockedBand } = usePlacement();
   const unlockedCategories = getCategoryKeysUpToBand(unlockedBand);
   const [category, setCategory] = useState<CategoryKey>("basics");
-  const [words, setWords] = useState<WordEntry[]>([]);
+  const [words, setWords] = useState<WordEntryWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<"flashcards" | "quiz">("flashcards");
 
@@ -37,14 +37,15 @@ export default function FlashcardsPage() {
   const [flipped, setFlipped] = useState(false);
   const answeringRef = useRef(false);
 
-  const [quizOrder, setQuizOrder] = useState<WordEntry[]>([]);
+  const [quizOrder, setQuizOrder] = useState<WordEntryWithId[]>([]);
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizCorrectCount, setQuizCorrectCount] = useState(0);
-  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
-  const [quizOptions, setQuizOptions] = useState<WordEntry[]>([]);
-  const [answeredOption, setAnsweredOption] = useState<WordEntry | null>(null);
+  const [missedWords, setMissedWords] = useState<WordEntryWithId[]>([]);
+  const [quizOptions, setQuizOptions] = useState<WordEntryWithId[]>([]);
+  const [answeredOption, setAnsweredOption] = useState<WordEntryWithId | null>(null);
   const [showQuizResults, setShowQuizResults] = useState(false);
   const quizAnsweringRef = useRef(false);
+  const roundStartRef = useRef(Date.now());
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +65,7 @@ export default function FlashcardsPage() {
       setShowQuizResults(false);
       setAnsweredOption(null);
       quizAnsweringRef.current = false;
+      roundStartRef.current = Date.now();
       if (order.length) setQuizOptions(buildOptions(order[0], data));
     });
     return () => {
@@ -91,7 +93,7 @@ export default function FlashcardsPage() {
     if (answeringRef.current) return;
     answeringRef.current = true;
     recordLocal(1, true);
-    recordAnswer({ points: 1, correct: true, currentStreak: streak + 1 });
+    recordAnswer({ points: 1, correct: true, currentStreak: streak + 1, wordId: card.id });
     nextFlashcard();
   }
 
@@ -99,7 +101,7 @@ export default function FlashcardsPage() {
     if (answeringRef.current) return;
     answeringRef.current = true;
     recordLocal(0, false);
-    recordAnswer({ points: 0, correct: false, currentStreak: 0 });
+    recordAnswer({ points: 0, correct: false, currentStreak: 0, wordId: card.id });
     nextFlashcard();
   }
 
@@ -112,6 +114,7 @@ export default function FlashcardsPage() {
     setShowQuizResults(false);
     setAnsweredOption(null);
     quizAnsweringRef.current = false;
+    roundStartRef.current = Date.now();
     if (order.length) setQuizOptions(buildOptions(order[0], words));
   }
 
@@ -125,10 +128,11 @@ export default function FlashcardsPage() {
     setShowQuizResults(false);
     setAnsweredOption(null);
     quizAnsweringRef.current = false;
+    roundStartRef.current = Date.now();
     if (order.length) setQuizOptions(buildOptions(order[0], words));
   }
 
-  function handleQuizAnswer(opt: WordEntry) {
+  function handleQuizAnswer(opt: WordEntryWithId) {
     if (quizAnsweringRef.current) return;
     quizAnsweringRef.current = true;
     if (answeredOption) return;
@@ -138,14 +142,20 @@ export default function FlashcardsPage() {
     recordLocal(10, isCorrect);
     if (isCorrect) setQuizCorrectCount((c) => c + 1);
     else setMissedWords((m) => [...m, current]);
-    recordAnswer({ points: isCorrect ? 10 : 0, correct: isCorrect, currentStreak: isCorrect ? streak + 1 : 0 });
+    recordAnswer({ points: isCorrect ? 10 : 0, correct: isCorrect, currentStreak: isCorrect ? streak + 1 : 0, wordId: current.id });
   }
 
   function nextQuizQuestion() {
     const nextIndex = quizIndex + 1;
     if (nextIndex >= quizOrder.length) {
       setShowQuizResults(true);
-      recordGameCompleted("quiz");
+      recordGameCompleted("quiz", {
+        category,
+        correctCount: quizCorrectCount,
+        totalCount: quizOrder.length,
+        score: quizCorrectCount * 10,
+        durationSeconds: Math.round((Date.now() - roundStartRef.current) / 1000),
+      });
       return;
     }
     setQuizIndex(nextIndex);

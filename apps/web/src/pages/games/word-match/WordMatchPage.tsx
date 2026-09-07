@@ -8,13 +8,13 @@ import { EmptyGameState } from "@/components/EmptyGameState";
 import { useGameScore } from "@/hooks/useGameScore";
 import { usePlacement } from "@/hooks/usePlacement";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loadWords } from "@/lib/wordsDb";
+import { loadWords, type WordEntryWithId } from "@/lib/wordsDb";
 import { recordAnswer, recordGameCompleted } from "@/lib/userStats";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { getCategoryKeysForBand, shuffle, pickRoundWithDistinctTranslations } from "@learn-english/shared";
-import type { CategoryKey, WordEntry } from "@learn-english/shared";
+import type { CategoryKey } from "@learn-english/shared";
 
 const PAIR_COUNT = 8;
 const POINTS_PER_MATCH = 10;
@@ -28,9 +28,9 @@ export default function WordMatchPage() {
   const gameLocked = placementLoading || unlockedBand < 2;
   const [category, setCategory] = useState<CategoryKey>(CATEGORIES[0]);
   const [loading, setLoading] = useState(true);
-  const [pairs, setPairs] = useState<WordEntry[]>([]);
-  const [leftOrder, setLeftOrder] = useState<WordEntry[]>([]);
-  const [rightOrder, setRightOrder] = useState<WordEntry[]>([]);
+  const [pairs, setPairs] = useState<WordEntryWithId[]>([]);
+  const [leftOrder, setLeftOrder] = useState<WordEntryWithId[]>([]);
+  const [rightOrder, setRightOrder] = useState<WordEntryWithId[]>([]);
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [selectedRight, setSelectedRight] = useState<string | null>(null);
@@ -40,9 +40,10 @@ export default function WordMatchPage() {
   const [roundKey, setRoundKey] = useState(0);
   const [statusMessage, setStatusMessage] = useState<{ text: string; color: string } | null>(null);
   const [wrongCounts, setWrongCounts] = useState<Map<string, number>>(new Map());
-  const [missedWords, setMissedWords] = useState<WordEntry[]>([]);
+  const [missedWords, setMissedWords] = useState<WordEntryWithId[]>([]);
   const busyRef = useRef(false);
-  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntry[] } | null>(null);
+  const pendingPracticeRef = useRef<{ category: CategoryKey; words: WordEntryWithId[] } | null>(null);
+  const roundStartRef = useRef(Date.now());
 
   useEffect(() => {
     busyRef.current = false;
@@ -53,7 +54,7 @@ export default function WordMatchPage() {
     setLoading(true);
     loadWords(category).then((words) => {
       if (cancelled) return;
-      let round: WordEntry[];
+      let round: WordEntryWithId[];
       if (pendingPracticeRef.current && pendingPracticeRef.current.category === category) {
         round = pendingPracticeRef.current.words;
       } else {
@@ -72,6 +73,7 @@ export default function WordMatchPage() {
       setStatusMessage(null);
       setWrongCounts(new Map());
       setMissedWords([]);
+      roundStartRef.current = Date.now();
       busyRef.current = false;
       setLoading(false);
     });
@@ -90,10 +92,17 @@ export default function WordMatchPage() {
       setSelectedRight(null);
       setStatusMessage({ text: "התאמה נכונה! ✓", color: "text-green-600" });
       recordLocal(POINTS_PER_MATCH, true);
-      recordAnswer({ points: POINTS_PER_MATCH, correct: true, currentStreak: streak + 1 });
+      const matchedEntry = pairs.find((p) => p.word === leftWord);
+      recordAnswer({ points: POINTS_PER_MATCH, correct: true, currentStreak: streak + 1, wordId: matchedEntry?.id });
       if (nextMatched.size >= pairs.length) {
         setShowResults(true);
-        recordGameCompleted("wordMatch");
+        recordGameCompleted("wordMatch", {
+          category,
+          correctCount: nextMatched.size,
+          totalCount: pairs.length,
+          score: nextMatched.size * POINTS_PER_MATCH,
+          durationSeconds: Math.round((Date.now() - roundStartRef.current) / 1000),
+        });
       }
     } else {
       setWrongFlash({ left: leftWord, right: rightWord });
@@ -102,7 +111,7 @@ export default function WordMatchPage() {
       recordLocal(0, false);
       recordAnswer({ points: 0, correct: false, currentStreak: 0 });
       const nextCounts = new Map(wrongCounts);
-      const newlyMissed: WordEntry[] = [];
+      const newlyMissed: WordEntryWithId[] = [];
       for (const w of [leftWord, rightWord]) {
         const count = (nextCounts.get(w) ?? 0) + 1;
         nextCounts.set(w, count);
