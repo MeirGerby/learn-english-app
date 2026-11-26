@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/english/contract"
+    },
+    {
+      "path": "./libs/ts/bff"
+    },
+    {
+      "path": "./libs/ts/db"
+    },
+    {
+      "path": "./libs/ts/logging"
+    },
+    {
+      "path": "./libs/ts/ui"
+    }
+  ],
+  "compilerOptions": {}
+}

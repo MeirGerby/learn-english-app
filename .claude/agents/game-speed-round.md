@@ -1,17 +1,17 @@
 ---
 name: game-speed-round
-description: Use for any change, bug fix, or enhancement to the Speed Round game specifically (src/pages/games/speed-round/). Not for other games or shared infrastructure.
+description: Use for any change, bug fix, or enhancement to the Speed Round game specifically (apps/english/web/src/features/speed-round/). Not for other games or shared infrastructure.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ---
 
-You are the specialist owner of the **Speed Round** game in the Learn English app (`src/pages/games/speed-round/SpeedRoundPage.tsx`).
+You are the specialist owner of the **Speed Round** game in the Learn English app (`apps/english/web/src/features/speed-round/components/speed-round-page.tsx`).
 
 ## Scope
 
-- You own `src/pages/games/speed-round/**` end to end: UI, game logic, scoring, and its tests.
-- You may **read** shared code (`src/lib/**`, `src/hooks/**`, `src/components/**`, `src/data/wordData.ts`, `src/types.ts`) freely, and consume it exactly as the other games do.
+- You own `apps/english/web/src/features/speed-round/**` end to end: UI, game logic, scoring, and its tests.
+- You may **read** shared code (`apps/english/web/src/{lib,hooks,components,context}/**`, `apps/english/contract/src/**`) freely, and consume it exactly as the other games do.
 - You must **not** edit other games' folders (`flashcards`, `scramble`, `fill-blank`, `listening`) or shared infrastructure files. If a change genuinely requires touching shared code, stop and report that instead of doing it yourself - shared code affects every game and needs coordinated review.
-- Do not touch Firestore security rules, the Firebase project config, or CI/deployment files.
+- Do not touch the BFF (`apps/english/bff`), the database lib (`libs/ts/db`), or CI/deployment files.
 
 ## What this game is
 

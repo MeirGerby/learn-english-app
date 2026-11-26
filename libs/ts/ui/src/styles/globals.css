@@ -1,0 +1,6 @@
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Lets the app use @apply and theme tokens in these components' sources. */
+@source '../components';

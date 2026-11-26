@@ -1,0 +1,32 @@
+{
+  "name": "@learn-english/logging",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@learn-english/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./server": {
+      "@learn-english/source": "./src/logger.ts",
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.js",
+      "default": "./dist/logger.js"
+    }
+  },
+  "nx": {
+    "name": "@learn-english/logging",
+    "tags": [
+      "type:util",
+      "scope:shared",
+      "lang:node"
+    ]
+  },
+  "dependencies": {
+    "pino": "10.3.1"
+  }
+}

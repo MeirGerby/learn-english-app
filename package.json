@@ -1,33 +1,66 @@
 {
-  "name": "learn-english-monorepo",
+  "name": "@learn-english/source",
+  "version": "0.0.0",
+  "license": "MIT",
   "private": true,
-  "packageManager": "npm@11.17.0",
+  "packageManager": "pnpm@11.23.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "dev": "nx run-many -t dev -p @learn-english/english-bff @learn-english/english-web",
+    "db:generate": "cd libs/ts/db && drizzle-kit generate",
+    "db:migrate": "nx build @learn-english/db && node libs/ts/db/dist/migrate.js",
+    "db:seed": "nx build @learn-english/db && node libs/ts/db/dist/seed.js",
+    "format": "nx run-many -t format",
+    "format:check": "nx run-many -t format:check"
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
-    "turbo": "^2.10.9"
+    "@nx/js": "23.2.1",
+    "@nx/oxlint": "23.2.1",
+    "@nx/react": "23.2.1",
+    "@nx/vite": "23.2.1",
+    "@swc-node/register": "1.11.1",
+    "@swc/core": "1.15.8",
+    "@swc/helpers": "0.5.18",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "drizzle-kit": "^0.31.10",
+    "nx": "23.2.1",
+    "oxfmt": "0.76.0",
+    "oxlint": "1.80.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "tslib": "^2.3.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.10"
   },
-  "engines": {
-    "node": ">=20"
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "allowScripts": {
-    "@firebase/util@1.12.1": true,
-    "protobufjs@7.6.5": true,
-    "esbuild@0.18.20": true,
-    "esbuild@0.28.2": true,
-    "esbuild@0.19.12": true,
-    "argon2@0.45.1": true,
-    "@parcel/watcher@2.6.0": true,
-    "unrs-resolver@1.12.2": true
+  "nx": {
+    "tags": [
+      "lang:node",
+      "scope:tooling"
+    ],
+    "targets": {
+      "format": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "oxfmt",
+          "cwd": "{workspaceRoot}"
+        }
+      },
+      "format:check": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "oxfmt --check",
+          "cwd": "{workspaceRoot}"
+        }
+      }
+    }
   }
 }

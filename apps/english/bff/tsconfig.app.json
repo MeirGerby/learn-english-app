@@ -1,0 +1,32 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    // Vite bundles this app from TS source, and the web imports AppRouter
+    // through the `@learn-english/source` condition, also from source.
+    // Nothing reads a .d.ts from here, so nothing is emitted.
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"],
+  "references": [
+    {
+      "path": "../contract/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/ts/db/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/ts/logging/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/ts/bff/tsconfig.lib.json"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "/dist",
+    "/coverage",
+    "/.nx/cache",
+    "/.nx/workspace-data",
+    "apps/*/web/src/routeTree.gen.ts",
+    "libs/ts/db/migrations",
+    "libs/ts/db/src/word-data.ts",
+    "pnpm-lock.yaml",
+    ".claude",
+    ".agents",
+    ".codex",
+    "/CLAUDE.md",
+    "/AGENTS.md",
+    ".tanstack"
+  ]
+}

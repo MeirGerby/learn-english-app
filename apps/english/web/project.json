@@ -1,0 +1,31 @@
+{
+  "name": "@learn-english/english-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/english/web/src",
+  "projectType": "application",
+  "tags": ["type:web", "scope:english", "lang:node"],
+  "// targets": "build/dev/preview are inferred by @nx/vite/plugin - run: nx show project @learn-english/english-web",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p tsconfig.app.json",
+        "cwd": "apps/english/web"
+      },
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": [
+            "@learn-english/ui",
+            "@learn-english/logging",
+            "@learn-english/english-contract",
+            "@learn-english/db",
+            "@learn-english/bff"
+          ]
+        }
+      ]
+    }
+  }
+}

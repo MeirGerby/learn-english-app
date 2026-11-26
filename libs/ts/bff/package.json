@@ -1,0 +1,38 @@
+{
+  "name": "@learn-english/bff",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@learn-english/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "nx": {
+    "name": "@learn-english/bff",
+    "tags": [
+      "type:server",
+      "scope:shared",
+      "lang:node"
+    ]
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@hono/trpc-server": "^0.4.2",
+    "@learn-english/db": "workspace:*",
+    "@learn-english/logging": "workspace:*",
+    "@trpc/server": "^11.18.0",
+    "awilix": "^13.0.5",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.13.1",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7"
+  }
+}
