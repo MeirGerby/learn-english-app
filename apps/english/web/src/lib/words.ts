@@ -6,57 +6,45 @@ import {
 import { queryClient } from './query-client';
 import { trpcClient } from './trpc';
 
-// Longer than a normal request: the BFF may be waking from a cold start on
-// Render's free tier (30-50 s), and the bundled list is a fine fallback.
-const FETCH_TIMEOUT_MS = 15_000;
-
 // `id` exists only for a word that came from the database. A word from the
-// bundled fallback has none, so its answers update the score but not the
+// bundled list has none, so its answers update the score but not the
 // per-word progress.
 export interface WordEntryWithId extends WordEntry {
   id?: string;
 }
 
-function timeout(ms: number): Promise<'TIMEOUT'> {
-  return new Promise((resolve) => setTimeout(() => resolve('TIMEOUT'), ms));
-}
-
 async function fetchWords(category: CategoryKey): Promise<WordEntryWithId[]> {
-  try {
-    const result = await Promise.race([
-      trpcClient.words.listByCategory.query({ category }),
-      timeout(FETCH_TIMEOUT_MS),
-    ]);
+  const result = await trpcClient.words.listByCategory.query({ category });
 
-    if (result !== 'TIMEOUT' && result.length > 0) {
-      return result.map(({ id, word, translation, example }) => ({
-        id,
-        word,
-        translation,
-        example,
-      }));
-    }
-  } catch (error) {
-    console.warn(
-      `Word fetch failed for "${category}", using the bundled list.`,
-      error,
-    );
-  }
-
-  return WORD_DATA[category];
+  return result.map(({ id, word, translation, example }) => ({
+    id,
+    word,
+    translation,
+    example,
+  }));
 }
 
-// Cached in TanStack Query for the whole tab: category switches, game
-// mounts and restarts reuse one request, and two callers that ask at once
-// share it. fetchWords never rejects, so no failure is ever cached.
+// A game never waits for the BFF, which may be failing or waking from a cold
+// start on Render's free tier (30-50 s). Until the server's list arrives,
+// this answers with the bundled one and fetches in the background, so a later
+// round, category switch or visit gets the server's words.
+//
+// The fetched list is cached in TanStack Query for the whole tab, and two
+// callers that ask at once share one request. A failure is not cached, so the
+// next call tries again.
 export function loadWords(category: CategoryKey): Promise<WordEntryWithId[]> {
-  return queryClient.fetchQuery({
-    queryKey: ['words', category],
+  const queryKey = ['words', category];
+  const fetched = queryClient.getQueryData<WordEntryWithId[]>(queryKey);
+
+  if (fetched?.length) return Promise.resolve(fetched);
+
+  // Does nothing if the list is already cached; never rejects.
+  void queryClient.prefetchQuery({
+    queryKey,
     queryFn: () => fetchWords(category),
-    // The default pauses the query while offline, which would also hold back
-    // the bundled-list fallback.
-    networkMode: 'always',
     staleTime: Infinity,
     gcTime: Infinity,
   });
+
+  return Promise.resolve(WORD_DATA[category]);
 }
