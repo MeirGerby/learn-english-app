@@ -1,0 +1,42 @@
+{
+  "name": "@learn-english/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@learn-english/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "@learn-english/source": "./src/schema.ts",
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js",
+      "default": "./dist/schema.js"
+    },
+    "./word-data": {
+      "@learn-english/source": "./src/word-data.ts",
+      "types": "./dist/word-data.d.ts",
+      "import": "./dist/word-data.js",
+      "default": "./dist/word-data.js"
+    }
+  },
+  "nx": {
+    "name": "@learn-english/db",
+    "tags": [
+      "type:data",
+      "scope:shared",
+      "lang:node"
+    ]
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "dotenv": "^17.0.0"
+  }
+}

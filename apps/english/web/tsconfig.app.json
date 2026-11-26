@@ -1,0 +1,31 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "jsx": "react-jsx",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "types": [
+      "node",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts",
+      "vite/client"
+    ],
+    "rootDir": "src",
+    // Vite bundles this app from TS source, nothing reads a .d.ts from it.
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false
+  },
+  "exclude": ["dist", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    {
+      "path": "../../../libs/ts/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../contract/tsconfig.lib.json"
+    }
+  ]
+}

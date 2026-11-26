@@ -1,8 +1,0 @@
-export { BrandBadge } from "./brand-badge";
-export { BrandButton } from "./brand-button";
-export { BrandCard } from "./brand-card";
-export { BrandIcon } from "./brand-icon";
-export { PageShell } from "./page-shell";
-export { SectionHeading } from "./section-heading";
-export { BrandActionCard } from "./brand-action-card";
-export { BrandHero } from "./brand-hero";

@@ -1,0 +1,31 @@
+{
+  "name": "@learn-english/english-bff",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@learn-english/source": "./src/router.ts",
+      "default": "./src/router.ts"
+    }
+  },
+  "dependencies": {
+    "@learn-english/bff": "workspace:*",
+    "@learn-english/db": "workspace:*",
+    "@learn-english/english-contract": "workspace:*",
+    "@learn-english/logging": "workspace:*",
+    "@trpc/server": "^11.18.0",
+    "argon2": "^0.45.1",
+    "awilix": "^13.0.5",
+    "dotenv": "^17.0.0",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.13.1",
+    "resend": "^4.0.1",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@hono/vite-dev-server": "^0.26.1",
+    "@trpc/client": "^11.18.0"
+  }
+}

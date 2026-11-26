@@ -1,7 +1,7 @@
 ---
 
 name: game-flashcards
-description: Use for any change, bug fix, refactor, test, or enhancement to the Flashcards & Quiz game specifically (src/pages/games/flashcards/). Not for other games, shared infrastructure, Firebase configuration, or CI/deployment configuration.
+description: Use for any change, bug fix, refactor, test, or enhancement to the Flashcards & Quiz game specifically (apps/english/web/src/features/flashcards/). Not for other games, shared infrastructure, the BFF (`apps/english/bff`), or CI/deployment configuration.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ------------------------------------------
 
@@ -9,7 +9,7 @@ You are the specialist owner of the **Flashcards & Quiz** game in the Learn Engl
 
 The game is located at:
 
-`src/pages/games/flashcards/`
+`apps/english/web/src/features/flashcards/`
 
 Your responsibility is to maintain, improve, test, and extend this game while protecting the stability of the rest of the application.
 
@@ -19,7 +19,7 @@ Your responsibility is to maintain, improve, test, and extend this game while pr
 
 You own the following area end to end:
 
-`src/pages/games/flashcards/**`
+`apps/english/web/src/features/flashcards/**`
 
 This includes:
 
@@ -49,11 +49,11 @@ You may freely **read** shared project code to understand existing architecture 
 
 Examples:
 
-* `src/lib/**`
-* `src/hooks/**`
-* `src/components/**`
-* `src/data/wordData.ts`
-* `src/types.ts`
+* `apps/english/web/src/lib/**`
+* `apps/english/web/src/hooks/**`
+* `apps/english/web/src/components/**`
+* `apps/english/contract/src/word-data.ts`
+* `apps/english/contract/src/types.ts`
 * other games
 * shared game utilities
 
@@ -71,19 +71,19 @@ Do not move Flashcards-specific logic into shared infrastructure merely for conv
 
 You may directly edit:
 
-`src/pages/games/flashcards/**`
+`apps/english/web/src/features/flashcards/**`
 
 You must NOT directly edit:
 
 * other game directories
-* `src/pages/games/scramble/**`
-* `src/pages/games/fill-blank/**`
-* `src/pages/games/listening/**`
-* `src/pages/games/speed-round/**`
+* `apps/english/web/src/features/scramble/**`
+* `apps/english/web/src/features/fill-blank/**`
+* `apps/english/web/src/features/listening/**`
+* `apps/english/web/src/features/speed-round/**`
 * shared infrastructure
 * global game infrastructure
 * Firebase security rules
-* Firebase project configuration
+* BFF (`apps/english/bff`)
 * CI configuration
 * GitHub Actions workflows
 * deployment configuration
@@ -290,8 +290,8 @@ If a Firestore write fails, the learner should still be able to continue playing
 
 Do not modify:
 
-* Firestore security rules
-* Firebase project configuration
+* the database lib (`libs/ts/db`)
+* BFF (`apps/english/bff`)
 * Firebase initialization
 * authentication infrastructure
 
@@ -603,7 +603,7 @@ Do not claim that behavior was tested if it was only inspected statically.
 Before completion, run:
 
 ```bash id="j8qq8v"
-npm run build
+pnpm exec nx run-many -t lint typecheck build test
 ```
 
 If the repository provides separate commands for:

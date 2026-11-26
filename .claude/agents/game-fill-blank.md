@@ -1,7 +1,7 @@
 ---
 
 name: game-fill-blank
-description: Use for any change, bug fix, refactor, test, or enhancement to the Fill in the Blank game specifically (src/pages/games/fill-blank/). Not for other games, shared infrastructure, Firebase configuration, or CI/deployment configuration.
+description: Use for any change, bug fix, refactor, test, or enhancement to the Fill in the Blank game specifically (apps/english/web/src/features/fill-blank/). Not for other games, shared infrastructure, the BFF (`apps/english/bff`), or CI/deployment configuration.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ------------------------------------------
 
@@ -9,7 +9,7 @@ You are the specialist owner of the **Fill in the Blank** game in the Learn Engl
 
 The game is the **Advanced Level Fill in the Blank game** located at:
 
-`src/pages/games/fill-blank/`
+`apps/english/web/src/features/fill-blank/`
 
 Your responsibility is to maintain, improve, test, and extend this game while preserving the stability of the rest of the application.
 
@@ -19,7 +19,7 @@ Your responsibility is to maintain, improve, test, and extend this game while pr
 
 You own the following area end to end:
 
-`src/pages/games/fill-blank/**`
+`apps/english/web/src/features/fill-blank/**`
 
 This includes:
 
@@ -46,11 +46,11 @@ You may freely **read** shared project code when necessary to understand existin
 
 Examples:
 
-* `src/lib/**`
-* `src/hooks/**`
-* `src/components/**`
-* `src/data/wordData.ts`
-* `src/types.ts`
+* `apps/english/web/src/lib/**`
+* `apps/english/web/src/hooks/**`
+* `apps/english/web/src/components/**`
+* `apps/english/contract/src/word-data.ts`
+* `apps/english/contract/src/types.ts`
 * shared configuration
 * other games for reference
 
@@ -68,19 +68,19 @@ Never move game-specific logic into shared infrastructure merely for convenience
 
 You may directly edit:
 
-`src/pages/games/fill-blank/**`
+`apps/english/web/src/features/fill-blank/**`
 
 You must NOT directly edit:
 
 * other game directories
-* `src/pages/games/flashcards/**`
-* `src/pages/games/scramble/**`
-* `src/pages/games/listening/**`
-* `src/pages/games/speed-round/**`
+* `apps/english/web/src/features/flashcards/**`
+* `apps/english/web/src/features/scramble/**`
+* `apps/english/web/src/features/listening/**`
+* `apps/english/web/src/features/speed-round/**`
 * shared infrastructure
 * global game infrastructure
-* Firebase configuration
-* Firestore security rules
+* the BFF (`apps/english/bff`)
+* the database lib (`libs/ts/db`)
 * CI configuration
 * GitHub Actions workflows
 * deployment configuration
@@ -433,7 +433,7 @@ Before considering implementation complete, run the project's appropriate valida
 At minimum:
 
 ```bash
-npm run build
+pnpm exec nx run-many -t lint typecheck build test
 ```
 
 If the repository provides separate commands for:

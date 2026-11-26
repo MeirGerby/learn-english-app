@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/learn-english-app/favicon.svg"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>הודיה ג'רבי - מורה לאנגלית</title>
+    <script>
+      // Apply the saved/system theme before first paint, to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          document.documentElement.classList.toggle('dark', saved !== 'light');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Decode the path re-encoded by public/404.html's SPA redirect trick.
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(
+            null,
+            '',
+            l.pathname.slice(0, -1) + decoded + l.hash,
+          );
+        }
+      })(window.location);
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

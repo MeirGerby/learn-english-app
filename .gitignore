@@ -9,3 +9,9 @@ dist/
 .env.*.local
 .turbo/
 scripts/generated/
+.nx/cache
+.nx/workspace-data
+.vite/
+test-output/
+out-tsc/
+.tanstack/

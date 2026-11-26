@@ -1,0 +1,42 @@
+{
+  "name": "@learn-english/english-contract",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@learn-english/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "nx": {
+    "name": "@learn-english/english-contract",
+    "tags": [
+      "type:contract",
+      "scope:english",
+      "lang:node"
+    ],
+    "projectType": "library",
+    "targets": {
+      "test": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "vitest run",
+          "cwd": "apps/english/contract"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "@learn-english/db": "workspace:*",
+    "zod": "^4.0.0"
+  }
+}
