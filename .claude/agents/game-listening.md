@@ -631,7 +631,7 @@ Do not claim otherwise.
 Before completion, run:
 
 ```bash id="y8t9x2"
-npm run build
+pnpm exec nx run-many -t lint typecheck build test
 ```
 
 If the repository provides separate commands for:

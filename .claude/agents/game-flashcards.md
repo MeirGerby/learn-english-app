@@ -83,7 +83,7 @@ You must NOT directly edit:
 * shared infrastructure
 * global game infrastructure
 * Firebase security rules
-* BFF (`apps/english/bff`)uration
+* BFF (`apps/english/bff`)
 * CI configuration
 * GitHub Actions workflows
 * deployment configuration
@@ -291,7 +291,7 @@ If a Firestore write fails, the learner should still be able to continue playing
 Do not modify:
 
 * the database lib (`libs/ts/db`)
-* BFF (`apps/english/bff`)uration
+* BFF (`apps/english/bff`)
 * Firebase initialization
 * authentication infrastructure
 
@@ -603,7 +603,7 @@ Do not claim that behavior was tested if it was only inspected statically.
 Before completion, run:
 
 ```bash id="j8qq8v"
-npm run build
+pnpm exec nx run-many -t lint typecheck build test
 ```
 
 If the repository provides separate commands for:

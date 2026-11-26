@@ -126,7 +126,7 @@ export type CourseItemOutput = z.infer<typeof CourseItemOutput>;
 export const AddCourseItemInput = z.object({
   type: CourseItemType,
   url: z.url(),
-  caption: z.string().trim().min(1).max(300),
+  caption: z.string().trim().max(300).optional().default(''),
 });
 
 export const IdInput = z.object({ id: z.uuid() });

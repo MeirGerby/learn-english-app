@@ -1,5 +1,7 @@
 import type { AppRouter } from '@learn-english/english-bff';
+import { ErrorComponent } from '@learn-english/ui/components/error-component';
 import { LoadingSpinner } from '@learn-english/ui/components/loading-spinner';
+import { Button } from '@learn-english/ui/components/ui/button';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
@@ -48,9 +50,11 @@ function InnerApp() {
   // loads (a sign-in) keep it mounted; the guards rerun when they finish.
   const [ready, setReady] = useState(false);
 
+  const unavailable = auth.unavailable || placement.unavailable;
+
   useEffect(() => {
-    if (!placement.loading) setReady(true);
-  }, [placement.loading]);
+    if (!placement.loading && !unavailable) setReady(true);
+  }, [placement.loading, unavailable]);
 
   // Route guards read auth and placement in beforeLoad, so they run again
   // whenever either changes (sign-in, sign-out, a fresh placement band).
@@ -59,6 +63,15 @@ function InnerApp() {
   useEffect(() => {
     if (ready) void router.invalidate();
   }, [ready, auth.user, placement.unlockedBand, placement.mustTakeTest]);
+
+  if (!ready && unavailable) {
+    return (
+      <LoadFailed
+        onRetry={auth.unavailable ? auth.retry : placement.retry}
+        onSignOut={auth.signOut}
+      />
+    );
+  }
 
   if (!ready) {
     return (
@@ -73,6 +86,30 @@ function InnerApp() {
       router={router}
       context={{ auth, placement, queryClient, trpc }}
     />
+  );
+}
+
+function LoadFailed({
+  onRetry,
+  onSignOut,
+}: {
+  onRetry: () => void;
+  onSignOut: () => void;
+}) {
+  return (
+    <ErrorComponent
+      title="לא הצלחנו לטעון את החשבון"
+      message="בדקו את החיבור לאינטרנט ונסו שוב."
+    >
+      <div className="flex justify-center gap-2.5">
+        <Button className="h-11" onClick={onRetry}>
+          נסו שוב
+        </Button>
+        <Button variant="outline" className="h-11" onClick={onSignOut}>
+          התנתקות והמשך
+        </Button>
+      </div>
+    </ErrorComponent>
   );
 }
 

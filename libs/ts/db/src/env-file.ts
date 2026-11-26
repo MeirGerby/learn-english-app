@@ -10,8 +10,9 @@ export function loadBffEnv(): string {
     ),
   });
 
+  // `||`, not `??`: .env.example leaves DATABASE_URL_UNPOOLED empty.
   const connectionString =
-    process.env['DATABASE_URL_UNPOOLED'] ?? process.env['DATABASE_URL'];
+    process.env['DATABASE_URL_UNPOOLED'] || process.env['DATABASE_URL'];
 
   if (!connectionString) {
     console.error(

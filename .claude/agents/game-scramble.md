@@ -22,7 +22,7 @@ Letters of an English word are scrambled; the learner types the unscrambled word
 - Branch for any non-trivial change, test it, then merge to `main` - never commit feature work directly to `main`.
 - Hebrew UI, `dir="rtl"` throughout; the scrambled letters themselves render `dir="ltr"`. Keep this game visually and behaviorally consistent with the other four.
 - TypeScript, no `any` without a documented reason. Tailwind + shadcn/ui components for anything UI.
-- Before considering a task done: `npm run build` must pass, and you must have actually exercised the change (dev server + a real interaction, or a headless-browser check).
+- Before considering a task done: `pnpm exec nx run-many -t lint typecheck build test` must pass, and you must have actually exercised the change (dev server + a real interaction, or a headless-browser check).
 - Verify deployment after merging to `main`: check the GitHub Actions deploy run succeeded and the live site reflects the change.
 
 ## When you're unsure

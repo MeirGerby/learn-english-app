@@ -7,11 +7,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useTRPC } from '../lib/trpc';
+import { getTRPCErrorCode, useTRPC } from '../lib/trpc';
 import { useAuth } from './auth-context';
 
 export type PlacementContextType = {
   loading: boolean;
+  // The stored band is unknown because the stats read failed. No test is
+  // forced or saved until a retry succeeds.
+  unavailable: boolean;
+  retry: () => void;
   mustTakeTest: boolean;
   completedPlacement: boolean;
   unlockedBand: Band;
@@ -46,18 +50,30 @@ export function PlacementProvider({ children }: { children: ReactNode }) {
     }),
   );
 
-  // A failed stats read counts as "no saved placement", never as loading
-  // forever.
   const stats = user !== null ? (statsQuery.data ?? null) : null;
   const loading = authLoading || (user !== null && statsQuery.isPending);
   const band = justPlacedBand ?? stats?.placementBand;
   const completedPlacement = band !== undefined;
+  // NOT_FOUND is an answer (no stats row, so no placement), not a failure.
+  const unavailable =
+    user !== null &&
+    !admin &&
+    !completedPlacement &&
+    statsQuery.isError &&
+    getTRPCErrorCode(statsQuery.error) !== 'NOT_FOUND';
 
   const value: PlacementContextType = {
     loading,
+    unavailable,
+    retry: () => void statsQuery.refetch(),
     stats,
     completedPlacement,
-    mustTakeTest: user !== null && !admin && !loading && !completedPlacement,
+    mustTakeTest:
+      user !== null &&
+      !admin &&
+      !loading &&
+      !unavailable &&
+      !completedPlacement,
     unlockedBand: admin ? 3 : (band ?? 1),
     applyPlacementResult: setJustPlacedBand,
   };

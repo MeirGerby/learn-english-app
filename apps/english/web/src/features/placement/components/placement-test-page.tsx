@@ -38,7 +38,13 @@ const routeApi = getRouteApi('/placement-test');
 export function PlacementTestPage() {
   useDocumentTitle('מבחן מיון רמה');
   const { user, loading: authLoading } = useAuth();
-  const { applyPlacementResult, unlockedBand } = usePlacement();
+  const {
+    applyPlacementResult,
+    unlockedBand,
+    loading: placementLoading,
+    unavailable: placementUnavailable,
+    retry: retryPlacement,
+  } = usePlacement();
   const navigate = useNavigate();
   // Where the student was headed when the games sent them here. It also
   // serves the login link, so a student who logs in mid-test comes back.
@@ -123,7 +129,17 @@ export function PlacementTestPage() {
         </p>
       )}
 
-      {loading ? (
+      {placementUnavailable ? (
+        // Without the stored band, a retake could overwrite a higher one.
+        <div className="text-center">
+          <p className="text-destructive text-sm mb-4">
+            לא הצלחנו לטעון את הרמה השמורה שלכם.
+          </p>
+          <Button className="h-11" onClick={retryPlacement}>
+            נסו שוב
+          </Button>
+        </div>
+      ) : loading || placementLoading ? (
         <p className="text-center text-muted-foreground text-sm">
           טוען שאלות...
         </p>

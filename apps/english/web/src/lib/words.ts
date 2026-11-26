@@ -53,6 +53,9 @@ export function loadWords(category: CategoryKey): Promise<WordEntryWithId[]> {
   return queryClient.fetchQuery({
     queryKey: ['words', category],
     queryFn: () => fetchWords(category),
+    // The default pauses the query while offline, which would also hold back
+    // the bundled-list fallback.
+    networkMode: 'always',
     staleTime: Infinity,
     gcTime: Infinity,
   });

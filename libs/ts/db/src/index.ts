@@ -18,7 +18,8 @@ export const createDb = ({
   // When `ssl` is not set, postgres-js follows the URL's `sslmode`.
   const client = postgres(connectionString, {
     max,
-    ssl: ssl || undefined,
+    // postgres-js reads the URL only when the key is absent, not undefined.
+    ...(ssl ? { ssl } : {}),
     prepare: false,
   });
   const db = drizzle(client, { schema });

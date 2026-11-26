@@ -433,7 +433,7 @@ Before considering implementation complete, run the project's appropriate valida
 At minimum:
 
 ```bash
-npm run build
+pnpm exec nx run-many -t lint typecheck build test
 ```
 
 If the repository provides separate commands for:

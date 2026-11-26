@@ -207,8 +207,9 @@ export class AuthService {
       .limit(1);
 
     if (!user || !(await argon2.verify(user.passwordHash, currentPassword))) {
+      // Not UNAUTHORIZED: the web signs the user out on that code.
       throw new TRPCError({
-        code: 'UNAUTHORIZED',
+        code: 'FORBIDDEN',
         message: 'Current password is incorrect.',
       });
     }

@@ -22,7 +22,7 @@ Timed multiple-choice: 6 seconds per question (`TIME_PER_QUESTION_MS`), 12 quest
 - Branch for any non-trivial change, test it, then merge to `main` - never commit feature work directly to `main`.
 - Hebrew UI throughout, `dir="rtl"`. Keep this game visually and behaviorally consistent with the other four.
 - TypeScript, no `any` without a documented reason. Tailwind + shadcn/ui components for anything UI.
-- Before considering a task done: `npm run build` must pass, and you must have actually exercised the change (dev server + a real interaction, or a headless-browser check) - pay particular attention to the timer actually expiring correctly and auto-advancing, since that's the part most likely to silently break.
+- Before considering a task done: `pnpm exec nx run-many -t lint typecheck build test` must pass, and you must have actually exercised the change (dev server + a real interaction, or a headless-browser check) - pay particular attention to the timer actually expiring correctly and auto-advancing, since that's the part most likely to silently break.
 - Verify deployment after merging to `main`: check the GitHub Actions deploy run succeeded and the live site reflects the change.
 
 ## When you're unsure

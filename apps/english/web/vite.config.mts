@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defaultClientConditions, defineConfig } from 'vite';
 
 const BFF_URL = process.env['BFF_URL'] ?? 'http://localhost:3001';
 
@@ -30,7 +30,8 @@ export default defineConfig(() => ({
   // Workspace libs export their TS source under this condition, the same one
   // tsconfig.base.json's customConditions uses, so no prior lib build.
   resolve: {
-    conditions: ['@learn-english/source'],
+    // Setting this replaces Vite's defaults, so they are listed too.
+    conditions: ['@learn-english/source', ...defaultClientConditions],
   },
 
   plugins: [

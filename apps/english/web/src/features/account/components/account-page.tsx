@@ -10,7 +10,7 @@ import { useDocumentTitle } from '../../../hooks/use-document-title';
 const MIN_PASSWORD_LENGTH = 8;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  UNAUTHORIZED: 'הסיסמה הנוכחית שגויה.',
+  FORBIDDEN: 'הסיסמה הנוכחית שגויה.',
   BAD_REQUEST: `הסיסמה החדשה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`,
 };
 
