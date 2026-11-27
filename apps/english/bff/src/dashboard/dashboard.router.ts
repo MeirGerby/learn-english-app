@@ -1,15 +1,15 @@
 import {
   ProgressSummaryOutput,
-  StudentListItem,
   StudentSummaryInput,
+  UserListItem,
 } from '@learn-english/english-contract';
 import { z } from 'zod';
 import { adminProcedure, router } from '../trpc.js';
 
 export const dashboardRouter = router({
-  listStudents: adminProcedure
-    .output(z.array(StudentListItem))
-    .query(({ ctx }) => ctx.cradle.dashboardService.listStudents()),
+  listUsers: adminProcedure
+    .output(z.array(UserListItem))
+    .query(({ ctx }) => ctx.cradle.dashboardService.listUsers()),
 
   getStudentSummary: adminProcedure
     .input(StudentSummaryInput)

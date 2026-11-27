@@ -6,6 +6,7 @@ import { TopBar } from '../../../components/top-bar';
 import { Button } from '@learn-english/ui/components/ui/button';
 import { Textarea } from '@learn-english/ui/components/ui/textarea';
 import { useDocumentTitle } from '../../../hooks/use-document-title';
+import { UsersList } from './users-list';
 
 type FeedbackItem = { id: string; text: string };
 
@@ -70,9 +71,11 @@ export function AdminPage() {
         <header className="mb-7">
           <h1 className="text-2xl font-bold mb-1">אזור ניהול</h1>
           <p className="text-muted-foreground text-sm">
-            יומן מעקב, תיעוד באגים ורעיונות לשיפור המערכת
+            המשתמשים הרשומים, יומן מעקב ורעיונות לשיפור המערכת
           </p>
         </header>
+
+        <UsersList />
 
         <section className="bg-card border rounded-xl p-5 mb-8 shadow-sm">
           <form onSubmit={handleSubmitFeedback} className="flex flex-col gap-2">

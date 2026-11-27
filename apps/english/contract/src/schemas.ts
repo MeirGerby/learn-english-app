@@ -197,9 +197,10 @@ export const ProgressSummaryOutput = z.object({
 
 export type ProgressSummaryOutput = z.infer<typeof ProgressSummaryOutput>;
 
-export const StudentListItem = z.object({
+export const UserListItem = z.object({
   id: z.uuid(),
   email: z.string(),
+  isAdmin: z.boolean(),
   displayName: z.string().optional(),
   createdAt: z.number(),
   totalScore: z.number(),
@@ -210,6 +211,6 @@ export const StudentListItem = z.object({
   lastActiveAt: z.number().optional(),
 });
 
-export type StudentListItem = z.infer<typeof StudentListItem>;
+export type UserListItem = z.infer<typeof UserListItem>;
 
 export const StudentSummaryInput = z.object({ userId: z.uuid() });

@@ -73,10 +73,14 @@ describe('procedure guards', () => {
 
   it('rejects an admin procedure for a student', async () => {
     expect(
-      await errorCode(
-        clientWith(tokenFor(false)).dashboard.listStudents.query(),
-      ),
+      await errorCode(clientWith(tokenFor(false)).dashboard.listUsers.query()),
     ).toBe('FORBIDDEN');
+  });
+
+  it('rejects the user list without a token', async () => {
+    expect(await errorCode(clientWith().dashboard.listUsers.query())).toBe(
+      'UNAUTHORIZED',
+    );
   });
 
   it('validates the input before it reaches a service', async () => {
