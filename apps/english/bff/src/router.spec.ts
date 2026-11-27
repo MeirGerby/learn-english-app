@@ -79,12 +79,6 @@ describe('procedure guards', () => {
     ).toBe('FORBIDDEN');
   });
 
-  it('keeps lesson progress behind sign-in', async () => {
-    expect(await errorCode(clientWith().lessons.getProgress.query())).toBe(
-      'UNAUTHORIZED',
-    );
-  });
-
   it('validates the input before it reaches a service', async () => {
     expect(
       await errorCode(
@@ -104,6 +98,14 @@ describe('material file route', () => {
     );
 
     expect(response.status).toBe(401);
+  });
+});
+
+describe('lesson guards', () => {
+  it('keeps lesson progress behind sign-in', async () => {
+    expect(await errorCode(clientWith().lessons.getProgress.query())).toBe(
+      'UNAUTHORIZED',
+    );
   });
 });
 
