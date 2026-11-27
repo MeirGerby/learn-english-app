@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   ArrowLeft,
   BookOpen,
+  MessagesSquare,
 } from 'lucide-react';
 
 // HighTalk Design System Imports
@@ -78,6 +79,14 @@ export function HomePage() {
               title="משחקי למידה"
               description="תרגול אנגלית דרך משחק, אתגר והנאה - מותאם לרמה האישית שלכם"
               badgeText="מומלץ להתחיל כאן"
+            />
+
+            <BrandActionCard
+              to="/lessons"
+              icon={MessagesSquare}
+              title="שיעורי שיחה"
+              description="לומדים לדבר צעד אחר צעד: מפתיחת שיחה ועד פרידה"
+              className="ht-card-hover"
             />
 
             {/* Secondary Action Cards Grid */}

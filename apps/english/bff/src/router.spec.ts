@@ -101,6 +101,14 @@ describe('material file route', () => {
   });
 });
 
+describe('lesson guards', () => {
+  it('keeps lesson progress behind sign-in', async () => {
+    expect(await errorCode(clientWith().lessons.getProgress.query())).toBe(
+      'UNAUTHORIZED',
+    );
+  });
+});
+
 describe('health', () => {
   it('answers without the database', async () => {
     const response = await app.fetch(new Request('http://bff.test/health'));

@@ -232,3 +232,19 @@ export const practiceSessions = pgTable(
     index('practice_sessions_completed_idx').on(desc(t.completedAt)),
   ],
 );
+
+// One row per conversation lesson a user finished. Lessons are code, not rows
+// (LESSONS in the contract), so lesson_id is a string validated by zod.
+export const lessonProgress = pgTable(
+  'lesson_progress',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    lessonId: text('lesson_id').notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.lessonId] })],
+);

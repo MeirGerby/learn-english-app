@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_KEYS, GAME_KEYS } from './constants.js';
+import { LESSON_IDS } from './lessons.js';
 
 const Password = z.string().min(8).max(200);
 
@@ -213,3 +214,11 @@ export const StudentListItem = z.object({
 export type StudentListItem = z.infer<typeof StudentListItem>;
 
 export const StudentSummaryInput = z.object({ userId: z.uuid() });
+
+// --- conversation lessons ----------------------------------------------------
+
+export const LessonProgressOutput = z.object({
+  completed: z.array(z.string()),
+});
+
+export const CompleteLessonInput = z.object({ lessonId: z.enum(LESSON_IDS) });
