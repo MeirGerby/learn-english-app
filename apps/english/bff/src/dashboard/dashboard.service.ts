@@ -1,7 +1,7 @@
 import { type Db, practiceSessions, users, userStats } from '@learn-english/db';
 import type {
   ProgressSummaryOutput,
-  StudentListItem,
+  UserListItem,
 } from '@learn-english/english-contract';
 import { TRPCError } from '@trpc/server';
 import { eq, sql } from 'drizzle-orm';
@@ -22,11 +22,14 @@ export class DashboardService {
     this.progressService = progressService;
   }
 
-  async listStudents(): Promise<StudentListItem[]> {
+  // Every account, admins included. The columns are listed one by one, so
+  // the password hash cannot slip into the answer.
+  async listUsers(): Promise<UserListItem[]> {
     const rows = await this.db
       .select({
         id: users.id,
         email: users.email,
+        isAdmin: users.isAdmin,
         displayName: users.displayName,
         createdAt: users.createdAt,
         totalScore: userStats.totalScore,
@@ -37,21 +40,21 @@ export class DashboardService {
         lastActiveAt: sql<string | null>`max(${practiceSessions.completedAt})`,
       })
       .from(users)
-      .innerJoin(userStats, eq(userStats.userId, users.id))
+      .leftJoin(userStats, eq(userStats.userId, users.id))
       .leftJoin(practiceSessions, eq(practiceSessions.userId, users.id))
-      .where(eq(users.isAdmin, false))
       .groupBy(users.id, userStats.userId)
       .orderBy(users.email);
 
     return rows.map((row) => ({
       id: row.id,
       email: row.email,
+      isAdmin: row.isAdmin,
       displayName: row.displayName ?? undefined,
       createdAt: row.createdAt.getTime(),
-      totalScore: row.totalScore,
-      totalCorrect: row.totalCorrect,
-      totalIncorrect: row.totalIncorrect,
-      bestStreak: row.bestStreak,
+      totalScore: row.totalScore ?? 0,
+      totalCorrect: row.totalCorrect ?? 0,
+      totalIncorrect: row.totalIncorrect ?? 0,
+      bestStreak: row.bestStreak ?? 0,
       placementBand:
         row.placementBand === 1 ||
         row.placementBand === 2 ||
