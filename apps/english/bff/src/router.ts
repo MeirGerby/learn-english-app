@@ -2,6 +2,7 @@ import { authRouter } from './auth/auth.router.js';
 import { courseContentRouter } from './course-content/course-content.router.js';
 import { dashboardRouter } from './dashboard/dashboard.router.js';
 import { feedbackRouter } from './feedback/feedback.router.js';
+import { lessonsRouter } from './lessons/lessons.router.js';
 import { materialsRouter } from './materials/materials.router.js';
 import { progressRouter } from './progress/progress.router.js';
 import { router } from './trpc.js';
@@ -21,6 +22,7 @@ export const appRouter = router({
   courseContent: courseContentRouter,
   feedback: feedbackRouter,
   materials: materialsRouter,
+  lessons: lessonsRouter,
 });
 
 export type AppRouter = typeof appRouter;
